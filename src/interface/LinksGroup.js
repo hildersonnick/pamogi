@@ -77,6 +77,8 @@ export function LinksGroup({
   initiallyOpened,
   links,
   index,
+  tasks,
+  subtasks,
 }) {
   const mockData = useStore((state) => state.mockData);
   const setMockData = useStore((state) => state.setMockData);
@@ -84,32 +86,47 @@ export function LinksGroup({
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
-  const items = (hasLinks ? links : []).map((link) => (
+  const items = (hasLinks ? links : []).map((link, index) => (
     <>
-      <Text
-        component="a"
-        className={classes.link}
-        href={link.link}
-        key={link.label}
-        onClick={(event) => event.preventDefault()}
-      >
-        {link.label}
-      </Text>
+      <Group>
+        <Text
+          component="a"
+          className={classes.link}
+          href={link.link}
+          key={link.label}
+          onClick={(event) => event.preventDefault()}
+        >
+          {link.label}
+        </Text>
+        <Button
+          disabled={maxSubTasks}
+          onClick={(e) => handleSubsubTask(e, index)}
+          size="xs"
+          variant="outline"
+          color="teal"
+          compact
+        >
+          Add Task
+        </Button>
+      </Group>
     </>
   ));
-  // const handleSubtopic = () => {
-  //   const newLink = { label: "Subtopic 3", link: "/" };
-  //   const newTopic = {
-  //     label: "New Topic",
-  //     icon: GiWaterfall,
-  //     initiallyOpened: false,
-  //     links: [
-  //       { label: "Subtopic 1", link: "/" },
-  //       { label: "Subtopic 2", link: "/" },
-  //     ],
-  //   };
-  //   setMockData([...mockData, newTopic]);
-  // };
+
+  const handleSubsubTask = (event, index) => {
+    // event.stopPropagation();
+    // console.log(index);
+    // const updatedTopics = [...mockData];
+    // if (!updatedTopics[index].subtasks) {
+    //   updatedTopics[index].subtasks = [];
+    // }
+    // console.log(updatedTopics[index]);
+    // updatedTopics[index].subtasks.push({ subtasks: index });
+    // // updatedTopics[index] = {
+    // //   ...updatedTopics[index],
+    // //   subtasks: [...updatedTopics[index].subtasks, { subtasks: index }],
+    // // };
+    // setMockData(updatedTopics);
+  };
 
   const handleSubtopic = (index) => {
     const updatedTopics = [...mockData];
@@ -123,7 +140,32 @@ export function LinksGroup({
     setMockData(updatedTopics);
   };
 
+  const handleSubTask = (event, index) => {
+    event.stopPropagation();
+
+    const updatedTopics = [...mockData];
+    updatedTopics[index] = {
+      ...updatedTopics[index],
+      tasks: [...updatedTopics[index].tasks, { tasks: index }],
+    };
+    setMockData(updatedTopics);
+  };
+
   const [maxLinks, setMaxLinks] = useState(false);
+  const [maxTasks, setMaxTasks] = useState(false);
+  const [maxSubTasks, setMaxSubTasks] = useState(false);
+
+  useEffect(() => {
+    if (subtasks.length >= 5) {
+      setMaxSubTasks(true);
+    }
+  }, [subtasks]);
+
+  useEffect(() => {
+    if (tasks.length >= 4) {
+      setMaxTasks(true);
+    }
+  }, [tasks]);
 
   useEffect(() => {
     if (links.length >= 5) {
@@ -144,6 +186,17 @@ export function LinksGroup({
             </ThemeIcon>
             <Box ml="md">{label}</Box>
           </Box>
+          <Button
+            disabled={maxTasks}
+            onClick={(e) => handleSubTask(e, index)}
+            size="xs"
+            variant="outline"
+            color="teal"
+            compact
+          >
+            Add Task +
+          </Button>
+
           {hasLinks && (
             <ChevronIcon
               className={classes.chevron}
@@ -166,8 +219,8 @@ export function LinksGroup({
             <Button
               size="xs"
               disabled={maxLinks}
-              mt={7}
-              mb={7}
+              mt={20}
+              mb={20}
               onClick={() => handleSubtopic(index)}
               variant="light"
               color="violet"

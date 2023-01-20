@@ -45,31 +45,22 @@ import { LinksGroup } from "./interface/LinksGroup";
 import { GrOverview } from "react-icons/gr";
 import { GiWaterfall } from "react-icons/gi";
 import { BsPlusSquareDotted } from "react-icons/bs";
-import Waterfall from "./newModels/Waterfall";
-import Sub11 from "./newModels/Sub11";
-import Sub12 from "./newModels/Sub12";
-import Sub13 from "./newModels/Sub13";
-import Sub14 from "./newModels/Sub14";
-import Sub15 from "./newModels/Sub15";
-import Sub21 from "./newModels/Sub21";
-import Sub22 from "./newModels/Sub22";
-import Sub23 from "./newModels/Sub23";
-import Sub24 from "./newModels/Sub24";
-import Sub25 from "./newModels/Sub25";
-import Sub31 from "./newModels/Sub31";
-import Sub32 from "./newModels/Sub32";
-import Sub33 from "./newModels/Sub33";
-import Sub34 from "./newModels/Sub34";
-import Sub35 from "./newModels/Sub35";
-import Sub41 from "./newModels/Sub41";
-import Sub42 from "./newModels/Sub42";
-import Sub43 from "./newModels/Sub43";
-import Sub44 from "./newModels/Sub44";
-import Sub51 from "./newModels/Sub51";
-import Sub52 from "./newModels/Sub52";
-import Sub53 from "./newModels/Sub53";
-import Sub54 from "./newModels/Sub54";
-import Sub55 from "./newModels/Sub55";
+import Waterfall from "./newerModels/Waterfall";
+import Hook1 from "./newerModels/Hook1";
+import Sub11 from "./newerModels/Sub11";
+import Sub12 from "./newerModels/Sub12";
+import Sub13 from "./newerModels/Sub13";
+import Sub14 from "./newerModels/Sub14";
+import Sub15 from "./newerModels/Sub15";
+import Tree11 from "./newerModels/Tree11";
+import Tree12 from "./newerModels/Tree12";
+import Tree13 from "./newerModels/Tree13";
+import Tree14 from "./newerModels/Tree14";
+import Task111 from "./newerModels/Task111";
+import Task112 from "./newerModels/Task112";
+import Task113 from "./newerModels/Task113";
+import Task114 from "./newerModels/Task114";
+import Task115 from "./newerModels/Task115";
 
 import useStore from "./store";
 
@@ -155,9 +146,11 @@ export default function App() {
       icon: GiWaterfall,
       initiallyOpened: false,
       links: [
-        { label: "Subtopic 1", link: "/" },
+        // { label: "Subtopic 1", link: "/" },
         // { label: "Subtopic 2", link: "/" },
       ],
+      tasks: [],
+      subtasks: [],
     };
     setMockData([...mockdata, newTopic]);
     // setNavIndex(mockdata.length);
@@ -237,17 +230,18 @@ const Scene = (props) => {
   const [branchThree, setBranchThree] = useState();
   const [branchFour, setBranchFour] = useState();
   const [branchFive, setBranchFive] = useState();
+  const [subTasks, setSubTasks] = useState();
+  const [subTasks2, setSubTasks2] = useState();
+  const [subTasks3, setSubTasks3] = useState();
+  const [subTasks4, setSubTasks4] = useState();
+  const [subTasks5, setSubTasks5] = useState();
+  const [subsubTasks, setSubsubTasks] = useState();
+  const [subsubTasks2, setSubsubTasks2] = useState();
+  const [subsubTasks3, setSubsubTasks3] = useState();
+  const [subsubTasks4, setSubsubTasks4] = useState();
+  const [subsubTasks5, setSubsubTasks5] = useState();
   useEffect(() => {
-    // const newWaterfalls = props.mockdata.map((item, index) => {
-    //   return (
-    //     <group onClick={() => handleClick(index)}>
-    //       <Waterfall key={item.label} index={index} />
-    //       <River2 key={item.label} index={index} />
-    //     </group>
-    //   );
-    // });
-    // setWaterfalls(newWaterfalls);
-    // console.log(props.mockdata);
+    console.log(props.mockdata);
     if (
       props.mockdata.length === 1 ||
       props.mockdata.length === 2 ||
@@ -255,10 +249,49 @@ const Scene = (props) => {
       props.mockdata.length === 4 ||
       props.mockdata.length === 5
     ) {
-      setBranchOne(<Sub11 />);
+      if (props.mockdata[0].tasks.length === 1) {
+        setSubTasks(
+          <>
+            <Tree11 />
+          </>
+        );
+      }
+      if (props.mockdata[0].tasks.length === 2) {
+        setSubTasks(
+          <>
+            <Tree11 /> <Tree12 />
+          </>
+        );
+      }
+      if (props.mockdata[0].tasks.length === 3) {
+        setSubTasks(
+          <>
+            <Tree11 /> <Tree12 />
+            <Tree13 />
+          </>
+        );
+      }
+      if (props.mockdata[0].tasks.length === 4) {
+        setSubTasks(
+          <>
+            <Tree11 /> <Tree12 />
+            <Tree13 /> <Tree14 />
+          </>
+        );
+      }
+      setBranchOne(<Hook1 />);
+      if (props.mockdata[0].links.length === 1) {
+        setBranchOne(
+          <>
+            <Hook1 />
+            <Sub11 />
+          </>
+        );
+      }
       if (props.mockdata[0].links.length === 2) {
         setBranchOne(
           <>
+            <Hook1 />
             <Sub11 />
             <Sub12 />
           </>
@@ -267,6 +300,7 @@ const Scene = (props) => {
       if (props.mockdata[0].links.length === 3) {
         setBranchOne(
           <>
+            <Hook1 />
             <Sub11 />
             <Sub12 />
             <Sub13 />
@@ -276,6 +310,7 @@ const Scene = (props) => {
       if (props.mockdata[0].links.length === 4) {
         setBranchOne(
           <>
+            <Hook1 />
             <Sub11 />
             <Sub12 />
             <Sub13 />
@@ -287,6 +322,7 @@ const Scene = (props) => {
         console.log("af;alsdjf");
         setBranchOne(
           <>
+            <Hook1 />
             <Sub11 />
             <Sub12 />
             <Sub13 />
@@ -302,46 +338,106 @@ const Scene = (props) => {
       props.mockdata.length === 4 ||
       props.mockdata.length === 5
     ) {
+      if (props.mockdata[1].tasks.length === 1) {
+        setSubTasks2(
+          <group position={[14, 0, 0]}>
+            <Tree11 />
+          </group>
+        );
+      }
+      if (props.mockdata[1].tasks.length === 2) {
+        setSubTasks2(
+          <>
+            <group position={[14, 0, 0]}>
+              <Tree11 /> <Tree12 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[1].tasks.length === 3) {
+        setSubTasks2(
+          <>
+            <group position={[14, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[1].tasks.length === 4) {
+        setSubTasks2(
+          <>
+            <group position={[14, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 /> <Tree14 />
+            </group>
+          </>
+        );
+      }
       setBranchTwo(
         <>
-          <Sub21 />
+          <group position={[14, 0, 0]} rotation-x={Math.PI}>
+            <Hook1 />
+          </group>
         </>
       );
+      if (props.mockdata[1].links.length === 1) {
+        setBranchTwo(
+          <>
+            <group position={[14, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+            </group>
+          </>
+        );
+      }
       if (props.mockdata[1].links.length === 2) {
         setBranchTwo(
           <>
-            <Sub21 />
-            <Sub22 />
+            <group position={[14, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+            </group>
           </>
         );
       }
       if (props.mockdata[1].links.length === 3) {
         setBranchTwo(
           <>
-            <Sub21 />
-            <Sub22 />
-            <Sub23 />
+            <group position={[14, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+            </group>
           </>
         );
       }
       if (props.mockdata[1].links.length === 4) {
         setBranchTwo(
           <>
-            <Sub21 />
-            <Sub22 />
-            <Sub23 />
-            <Sub24 />
+            <group position={[14, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+            </group>
           </>
         );
       }
       if (props.mockdata[1].links.length === 5) {
         setBranchTwo(
           <>
-            <Sub21 />
-            <Sub22 />
-            <Sub23 />
-            <Sub24 />
-            <Sub25 />
+            <group position={[14, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+              <Sub15 />
+            </group>
           </>
         );
       }
@@ -351,140 +447,316 @@ const Scene = (props) => {
       props.mockdata.length === 4 ||
       props.mockdata.length === 5
     ) {
+      if (props.mockdata[2].tasks.length === 1) {
+        setSubTasks3(
+          <group position={[27, 0, 0]}>
+            <Tree11 />
+          </group>
+        );
+      }
+      if (props.mockdata[2].tasks.length === 2) {
+        setSubTasks3(
+          <>
+            <group position={[27, 0, 0]}>
+              <Tree11 /> <Tree12 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[2].tasks.length === 3) {
+        setSubTasks3(
+          <>
+            <group position={[27, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[2].tasks.length === 4) {
+        setSubTasks3(
+          <>
+            <group position={[27, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 /> <Tree14 />
+            </group>
+          </>
+        );
+      }
       setBranchThree(
         <>
-          <Sub31 />
+          <group position={[27, 0, 0]}>
+            <Hook1 />
+          </group>
         </>
       );
-
+      if (props.mockdata[2].links.length === 1) {
+        setBranchThree(
+          <>
+            <group position={[27, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+            </group>
+          </>
+        );
+      }
       if (props.mockdata[2].links.length === 2) {
         setBranchThree(
           <>
-            <Sub31 />
-            <Sub32 />
+            <group position={[27, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+            </group>
           </>
         );
       }
       if (props.mockdata[2].links.length === 3) {
         setBranchThree(
           <>
-            <Sub31 />
-            <Sub32 />
-            <Sub33 />
+            <group position={[27, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+            </group>
           </>
         );
       }
       if (props.mockdata[2].links.length === 4) {
         setBranchThree(
           <>
-            <Sub31 />
-            <Sub32 />
-            <Sub33 />
-            <Sub34 />
+            <group position={[27, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+            </group>
           </>
         );
       }
       if (props.mockdata[2].links.length === 5) {
         setBranchThree(
           <>
-            <Sub31 />
-            <Sub32 />
-            <Sub33 />
-            <Sub34 />
-            <Sub35 />
+            <group position={[27, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+              <Sub15 />
+            </group>
           </>
         );
       }
     }
     if (props.mockdata.length === 4 || props.mockdata.length === 5) {
+      if (props.mockdata[3].tasks.length === 1) {
+        setSubTasks4(
+          <group position={[40, 0, 0]}>
+            <Tree11 />
+          </group>
+        );
+      }
+      if (props.mockdata[3].tasks.length === 2) {
+        setSubTasks4(
+          <>
+            <group position={[40, 0, 0]}>
+              <Tree11 /> <Tree12 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[3].tasks.length === 3) {
+        setSubTasks4(
+          <>
+            <group position={[40, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[3].tasks.length === 4) {
+        setSubTasks4(
+          <>
+            <group position={[40, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 /> <Tree14 />
+            </group>
+          </>
+        );
+      }
       setBranchFour(
         <>
-          <Sub41 />
+          <group position={[40, 0, 0]} rotation-x={Math.PI}>
+            <Hook1 />
+          </group>
         </>
       );
-
+      if (props.mockdata[3].links.length === 1) {
+        setBranchFour(
+          <>
+            <group position={[40, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+            </group>
+          </>
+        );
+      }
       if (props.mockdata[3].links.length === 2) {
         setBranchFour(
           <>
-            <Sub41 />
-            <Sub42 />
+            <group position={[40, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+            </group>
           </>
         );
       }
       if (props.mockdata[3].links.length === 3) {
         setBranchFour(
           <>
-            <Sub41 />
-            <Sub42 />
-            <Sub43 />
+            <group position={[40, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+            </group>
           </>
         );
       }
       if (props.mockdata[3].links.length === 4) {
         setBranchFour(
           <>
-            <Sub41 />
-            <Sub42 />
-            <Sub43 />
-            <Sub44 />
+            <group position={[40, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+            </group>
           </>
         );
       }
       if (props.mockdata[3].links.length === 5) {
         setBranchFour(
           <>
-            <Sub41 />
-            <Sub42 />
-            <Sub43 />
-            <Sub44 />
-            <Sub55 />
+            <group position={[40, 0, 0]} rotation-x={Math.PI}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+              <Sub15 />
+            </group>
           </>
         );
       }
     }
     if (props.mockdata.length === 5) {
+      if (props.mockdata[4].tasks.length === 1) {
+        setSubTasks5(
+          <group position={[53.5, 0, 0]}>
+            <Tree11 />
+          </group>
+        );
+      }
+      if (props.mockdata[4].tasks.length === 2) {
+        setSubTasks5(
+          <>
+            <group position={[53.5, 0, 0]}>
+              <Tree11 /> <Tree12 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[4].tasks.length === 3) {
+        setSubTasks5(
+          <>
+            <group position={[53.5, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 />
+            </group>
+          </>
+        );
+      }
+      if (props.mockdata[4].tasks.length === 4) {
+        setSubTasks5(
+          <>
+            <group position={[53.5, 0, 0]}>
+              <Tree11 /> <Tree12 />
+              <Tree13 /> <Tree14 />
+            </group>
+          </>
+        );
+      }
       setBranchFive(
         <>
-          <Sub51 />
+          <group position={[53.5, 0, 0]}>
+            <Hook1 />
+          </group>
         </>
       );
-
+      if (props.mockdata[4].links.length === 1) {
+        setBranchFive(
+          <>
+            <group position={[53.5, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+            </group>
+          </>
+        );
+      }
       if (props.mockdata[4].links.length === 2) {
         setBranchFive(
           <>
-            <Sub51 />
-            <Sub52 />
+            <group position={[53.5, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+            </group>
           </>
         );
       }
       if (props.mockdata[4].links.length === 3) {
         setBranchFive(
           <>
-            <Sub51 />
-            <Sub52 />
-            <Sub53 />
+            <group position={[53.5, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+            </group>
           </>
         );
       }
       if (props.mockdata[4].links.length === 4) {
         setBranchFive(
           <>
-            <Sub51 />
-            <Sub52 />
-            <Sub53 />
-            <Sub54 />
+            <group position={[53.5, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+            </group>
           </>
         );
       }
-
       if (props.mockdata[4].links.length === 5) {
         setBranchFive(
           <>
-            <Sub51 />
-            <Sub52 />
-            <Sub53 />
-            <Sub54 />
-            <Sub55 />
+            <group position={[53.5, 0, 0]}>
+              <Hook1 />
+              <Sub11 />
+              <Sub12 />
+              <Sub13 />
+              <Sub14 />
+              <Sub15 />
+            </group>
           </>
         );
       }
@@ -517,13 +789,16 @@ const Scene = (props) => {
     <>
       <group position={[0, -1.85, 0]} scale={0.3}>
         <Waterfall />
-        {/* <Sub11 />
-        <Sub12 /> */}
         {branchOne}
         {branchTwo}
         {branchThree}
         {branchFour}
         {branchFive}
+        {subTasks}
+        {subTasks2}
+        {subTasks3}
+        {subTasks4}
+        {subTasks5}
       </group>
       {/* {waterfalls} */}
 
@@ -548,7 +823,7 @@ const Scene = (props) => {
         sectionSize={2}
         sectionThickness={1.5}
         sectionColor={[0.5, 0.5, 10]}
-        fadeDistance={50}
+        fadeDistance={80}
       />
       <OrbitControls
         enablePan={false}
