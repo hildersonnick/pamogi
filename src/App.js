@@ -145,15 +145,11 @@ export default function App() {
       label: "Topic " + (mockdata.length + 1),
       icon: GiWaterfall,
       initiallyOpened: false,
-      links: [
-        // { label: "Subtopic 1", link: "/" },
-        // { label: "Subtopic 2", link: "/" },
-      ],
+      links: [],
       tasks: [],
       subtasks: [],
     };
     setMockData([...mockdata, newTopic]);
-    // setNavIndex(mockdata.length);
   };
   const [navIndex, setNavIndex] = useState(0);
 
@@ -235,11 +231,18 @@ const Scene = (props) => {
   const [subTasks3, setSubTasks3] = useState();
   const [subTasks4, setSubTasks4] = useState();
   const [subTasks5, setSubTasks5] = useState();
-  const [subsubTasks, setSubsubTasks] = useState();
+  // const [subsubTasks, setSubsubTasks] = useState();
   const [subsubTasks2, setSubsubTasks2] = useState();
   const [subsubTasks3, setSubsubTasks3] = useState();
   const [subsubTasks4, setSubsubTasks4] = useState();
   const [subsubTasks5, setSubsubTasks5] = useState();
+  const [subsubTasks, setSubsubTasks] = useState({});
+  const [topic1Tasks, setTopic1Tasks] = useState({});
+  const [topic2Tasks, setTopic2Tasks] = useState({});
+  const [topic3Tasks, setTopic3Tasks] = useState({});
+  const [topic4Tasks, setTopic4Tasks] = useState({});
+  const [topic5Tasks, setTopic5Tasks] = useState({});
+
   useEffect(() => {
     console.log(props.mockdata);
     if (
@@ -249,6 +252,141 @@ const Scene = (props) => {
       props.mockdata.length === 4 ||
       props.mockdata.length === 5
     ) {
+      let topic1Tasks = {};
+      let topic2Tasks = {};
+      let topic3Tasks = {};
+      let topic4Tasks = {};
+      let topic5Tasks = {};
+      if (props.mockdata.length > 0) {
+        props.mockdata.map((topic, topicIndex) => {
+          if (topicIndex === 0) {
+            topic.links.map((subtopic, subtopicIndex) => {
+              if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
+                topic1Tasks[subtopicIndex] = [];
+                for (
+                  let taskIndex = 0;
+                  taskIndex < subtopic.tasks.length;
+                  taskIndex++
+                ) {
+                  if (taskIndex < 5) {
+                    const task = subtopic.tasks[taskIndex];
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic1Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                      />
+                    );
+                  }
+                }
+              }
+            });
+            setTopic1Tasks(topic1Tasks);
+          }
+          if (topicIndex === 1) {
+            topic.links.map((subtopic, subtopicIndex) => {
+              if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
+                topic2Tasks[subtopicIndex] = [];
+                for (
+                  let taskIndex = 0;
+                  taskIndex < subtopic.tasks.length;
+                  taskIndex++
+                ) {
+                  if (taskIndex < 5) {
+                    const task = subtopic.tasks[taskIndex];
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic2Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                      />
+                    );
+                  }
+                }
+              }
+            });
+            setTopic2Tasks(topic2Tasks);
+          }
+          if (topicIndex === 2) {
+            topic.links.map((subtopic, subtopicIndex) => {
+              if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
+                topic3Tasks[subtopicIndex] = [];
+                for (
+                  let taskIndex = 0;
+                  taskIndex < subtopic.tasks.length;
+                  taskIndex++
+                ) {
+                  if (taskIndex < 5) {
+                    const task = subtopic.tasks[taskIndex];
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic3Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                      />
+                    );
+                  }
+                }
+              }
+            });
+            setTopic3Tasks(topic3Tasks);
+          }
+          if (topicIndex === 3) {
+            topic.links.map((subtopic, subtopicIndex) => {
+              if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
+                topic4Tasks[subtopicIndex] = [];
+                for (
+                  let taskIndex = 0;
+                  taskIndex < subtopic.tasks.length;
+                  taskIndex++
+                ) {
+                  if (taskIndex < 5) {
+                    const task = subtopic.tasks[taskIndex];
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic4Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                      />
+                    );
+                  }
+                }
+              }
+              setTopic4Tasks(topic4Tasks);
+            });
+          }
+          if (topicIndex === 4) {
+            topic.links.map((subtopic, subtopicIndex) => {
+              if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
+                topic5Tasks[subtopicIndex] = [];
+                for (
+                  let taskIndex = 0;
+                  taskIndex < subtopic.tasks.length;
+                  taskIndex++
+                ) {
+                  if (taskIndex < 5) {
+                    const task = subtopic.tasks[taskIndex];
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic5Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                      />
+                    );
+                  }
+                }
+              }
+              setTopic5Tasks(topic5Tasks);
+            });
+          }
+        });
+      }
+
       if (props.mockdata[0].tasks.length === 1) {
         setSubTasks(
           <>
@@ -280,6 +418,13 @@ const Scene = (props) => {
         );
       }
       setBranchOne(<Hook1 />);
+      // if (props.mockdata[0].links.tasks.length === 1) {
+      //   setSubsubTasks(
+      //     <>
+      //       <Task111 />
+      //     </>
+      //   );
+      // }
       if (props.mockdata[0].links.length === 1) {
         setBranchOne(
           <>
@@ -319,7 +464,6 @@ const Scene = (props) => {
         );
       }
       if (props.mockdata[0].links.length === 5) {
-        console.log("af;alsdjf");
         setBranchOne(
           <>
             <Hook1 />
@@ -799,6 +943,36 @@ const Scene = (props) => {
         {subTasks3}
         {subTasks4}
         {subTasks5}
+        {/* <group scale-y={5}>
+          {Object.keys(subsubTasks).map(
+            (subtopicIndex) => subsubTasks[subtopicIndex]
+          )}
+        </group> */}
+        <group scale-y={5}>
+          {Object.keys(topic1Tasks).map(
+            (subtopicIndex) => topic1Tasks[subtopicIndex]
+          )}
+        </group>
+        <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
+          {Object.keys(topic2Tasks).map(
+            (subtopicIndex) => topic2Tasks[subtopicIndex]
+          )}
+        </group>
+        <group scale-y={5} position={[27, 0, 0]}>
+          {Object.keys(topic3Tasks).map(
+            (subtopicIndex) => topic3Tasks[subtopicIndex]
+          )}
+        </group>
+        <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[40, 0, 0]}>
+          {Object.keys(topic4Tasks).map(
+            (subtopicIndex) => topic4Tasks[subtopicIndex]
+          )}
+        </group>
+        <group scale-y={5} position={[54, 0, 0]}>
+          {Object.keys(topic5Tasks).map(
+            (subtopicIndex) => topic5Tasks[subtopicIndex]
+          )}
+        </group>
       </group>
       {/* {waterfalls} */}
 

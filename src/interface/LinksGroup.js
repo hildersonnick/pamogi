@@ -86,7 +86,7 @@ export function LinksGroup({
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
-  const items = (hasLinks ? links : []).map((link, index) => (
+  const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
     <>
       <Group>
         <Text
@@ -100,7 +100,7 @@ export function LinksGroup({
         </Text>
         <Button
           disabled={maxSubTasks}
-          onClick={(e) => handleSubsubTask(e, index)}
+          onClick={(e) => handleSubsubTask(e, index, subtopicIndex)}
           size="xs"
           variant="outline"
           color="teal"
@@ -112,20 +112,39 @@ export function LinksGroup({
     </>
   ));
 
-  const handleSubsubTask = (event, index) => {
-    // event.stopPropagation();
-    // console.log(index);
-    // const updatedTopics = [...mockData];
-    // if (!updatedTopics[index].subtasks) {
-    //   updatedTopics[index].subtasks = [];
-    // }
-    // console.log(updatedTopics[index]);
-    // updatedTopics[index].subtasks.push({ subtasks: index });
-    // // updatedTopics[index] = {
-    // //   ...updatedTopics[index],
-    // //   subtasks: [...updatedTopics[index].subtasks, { subtasks: index }],
-    // // };
-    // setMockData(updatedTopics);
+  const handleSubsubTask = (event, topicIndex, subtopicIndex) => {
+    event.stopPropagation();
+    setSubsubMax(subsubMax + 1);
+
+    if (
+      mockData.length > 0 &&
+      mockData[topicIndex] &&
+      mockData[topicIndex].links &&
+      mockData[topicIndex].links.length > 0
+    ) {
+      const updatedTopics = [...mockData];
+      updatedTopics[topicIndex] = {
+        ...updatedTopics[topicIndex],
+        links: [
+          ...updatedTopics[topicIndex].links.slice(0, subtopicIndex),
+          {
+            ...updatedTopics[topicIndex].links[subtopicIndex],
+            tasks: [
+              ...(updatedTopics[topicIndex].links[subtopicIndex].tasks || []),
+              {
+                label:
+                  "Task " +
+                  ((updatedTopics[topicIndex].links[subtopicIndex].tasks || [])
+                    .length +
+                    1),
+              },
+            ],
+          },
+          ...updatedTopics[topicIndex].links.slice(subtopicIndex + 1),
+        ],
+      };
+      setMockData(updatedTopics);
+    }
   };
 
   const handleSubtopic = (index) => {
@@ -154,6 +173,14 @@ export function LinksGroup({
   const [maxLinks, setMaxLinks] = useState(false);
   const [maxTasks, setMaxTasks] = useState(false);
   const [maxSubTasks, setMaxSubTasks] = useState(false);
+  const [subsubMax, setSubsubMax] = useState(0);
+
+  // useEffect(() => {
+  //   console.log(subsubMax);
+  //   if (subsubMax >= 5) {
+  //     setMaxSubTasks(true);
+  //   }
+  // }, [subsubMax]);
 
   useEffect(() => {
     if (subtasks.length >= 5) {
