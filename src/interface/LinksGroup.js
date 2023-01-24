@@ -21,6 +21,7 @@ import "../styles.css";
 import { BsPlusSquareDotted } from "react-icons/bs";
 import useStore from "../store";
 import { GiWaterfall } from "react-icons/gi";
+import { Dialog, TextInput } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -80,6 +81,7 @@ export function LinksGroup({
   tasks,
   subtasks,
 }) {
+  const [opened2, setOpened2] = useState(false);
   const mockData = useStore((state) => state.mockData);
   const setMockData = useStore((state) => state.setMockData);
   const { classes, theme } = useStyles();
@@ -106,68 +108,91 @@ export function LinksGroup({
           color="teal"
           compact
         >
-          Add Task
+          Add Task +
         </Button>
       </Group>
     </>
   ));
 
-  const handleSubsubTask = (event, topicIndex, subtopicIndex) => {
-    event.stopPropagation();
+  const handleAddSubsubTask = () => {
     setSubsubMax(subsubMax + 1);
-
     if (
       mockData.length > 0 &&
-      mockData[topicIndex] &&
-      mockData[topicIndex].links &&
-      mockData[topicIndex].links.length > 0
+      mockData[parentIndex] &&
+      mockData[parentIndex].links &&
+      mockData[parentIndex].links.length > 0
     ) {
       const updatedTopics = [...mockData];
-      updatedTopics[topicIndex] = {
-        ...updatedTopics[topicIndex],
+      updatedTopics[parentIndex] = {
+        ...updatedTopics[parentIndex],
         links: [
-          ...updatedTopics[topicIndex].links.slice(0, subtopicIndex),
+          ...updatedTopics[parentIndex].links.slice(0, subIndex),
           {
-            ...updatedTopics[topicIndex].links[subtopicIndex],
+            ...updatedTopics[parentIndex].links[subIndex],
             tasks: [
-              ...(updatedTopics[topicIndex].links[subtopicIndex].tasks || []),
+              ...(updatedTopics[parentIndex].links[subIndex].tasks || []),
               {
-                label:
-                  "Task " +
-                  ((updatedTopics[topicIndex].links[subtopicIndex].tasks || [])
-                    .length +
-                    1),
+                label: taskName,
               },
             ],
           },
-          ...updatedTopics[topicIndex].links.slice(subtopicIndex + 1),
+          ...updatedTopics[parentIndex].links.slice(subIndex + 1),
         ],
       };
       setMockData(updatedTopics);
+      setTaskName("");
+      setOpened2(false);
     }
   };
+  const [subIndex, setSubIndex] = useState(null);
+  const handleSubsubTask = (event, topicIndex, subtopicIndex) => {
+    event.stopPropagation();
+    setDialogState("subsubtask");
+    setOpened2(true);
+    setParentIndex(topicIndex);
+    setSubIndex(subtopicIndex);
+  };
 
-  const handleSubtopic = (index) => {
+  const handleAddSubtopic = () => {
     const updatedTopics = [...mockData];
-    updatedTopics[index] = {
-      ...updatedTopics[index],
+    updatedTopics[parentIndex] = {
+      ...updatedTopics[parentIndex],
       links: [
-        ...updatedTopics[index].links,
-        { label: "Subtopic " + (links.length + 1), link: "/" },
+        ...updatedTopics[parentIndex].links,
+        { label: taskName, link: "/" },
       ],
     };
     setMockData(updatedTopics);
+    setTaskName("");
+    setOpened2(false);
   };
+  const handleSubtopic = (index) => {
+    setDialogState("subtopic");
+    setOpened2(true);
+    setParentIndex(index);
+  };
+  const [dialogState, setDialogState] = useState("");
 
-  const handleSubTask = (event, index) => {
-    event.stopPropagation();
+  const [parentIndex, setParentIndex] = useState(null);
 
+  const handleAddSubTask = (event, index) => {
     const updatedTopics = [...mockData];
-    updatedTopics[index] = {
-      ...updatedTopics[index],
-      tasks: [...updatedTopics[index].tasks, { tasks: index }],
+    updatedTopics[parentIndex] = {
+      ...updatedTopics[parentIndex],
+      tasks: [
+        ...updatedTopics[parentIndex].tasks,
+        { tasks: parentIndex, label: taskName },
+      ],
     };
     setMockData(updatedTopics);
+    setTaskName("");
+    setOpened2(false);
+  };
+  const handleSubTask = (event, index) => {
+    event.stopPropagation();
+    setDialogState("subtask");
+    setOpened2(true);
+    setParentIndex(index);
   };
 
   const [maxLinks, setMaxLinks] = useState(false);
@@ -200,8 +225,69 @@ export function LinksGroup({
     }
   }, [links]);
 
+  const [taskName, setTaskName] = useState("");
+
   return (
     <>
+      <Dialog
+        opened={opened2}
+        withCloseButton
+        onClose={() => setOpened2(false)}
+        size="lg"
+        radius="md"
+      >
+        {dialogState === "subtask" && (
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Add Task to {label}
+          </Text>
+        )}
+        {dialogState === "subtopic" && (
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Add Subtopic to {label}
+          </Text>
+        )}
+        {dialogState === "subsubtask" && (
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Add subtask
+          </Text>
+        )}
+
+        <Group align="flex-end">
+          {dialogState === "subtask" && (
+            <TextInput
+              placeholder="New Task"
+              style={{ flex: 1 }}
+              onChange={(e) => setTaskName(e.target.value)}
+              value={taskName}
+            />
+          )}
+          {dialogState === "subtopic" && (
+            <TextInput
+              placeholder="New Subtopic"
+              style={{ flex: 1 }}
+              onChange={(e) => setTaskName(e.target.value)}
+              value={taskName}
+            />
+          )}
+          {dialogState === "subsubtask" && (
+            <TextInput
+              placeholder="New Task"
+              style={{ flex: 1 }}
+              onChange={(e) => setTaskName(e.target.value)}
+              value={taskName}
+            />
+          )}
+          {dialogState === "subtask" && (
+            <Button onClick={handleAddSubTask}>Submit</Button>
+          )}
+          {dialogState === "subtopic" && (
+            <Button onClick={handleAddSubtopic}>Submit</Button>
+          )}
+          {dialogState === "subsubtask" && (
+            <Button onClick={handleAddSubsubTask}>Submit</Button>
+          )}
+        </Group>
+      </Dialog>
       <UnstyledButton
         onClick={() => setOpened((o) => !o)}
         className={classes.control}

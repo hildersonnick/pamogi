@@ -61,6 +61,7 @@ import Task112 from "./newerModels/Task112";
 import Task113 from "./newerModels/Task113";
 import Task114 from "./newerModels/Task114";
 import Task115 from "./newerModels/Task115";
+import { Dialog, TextInput, Text } from "@mantine/core";
 
 import useStore from "./store";
 
@@ -123,9 +124,6 @@ export default function App() {
   const setMockData = useStore((state) => state.setMockData);
   const { classes } = useStyles();
 
-  const handleClick = (index) => {
-    // setNavIndex(index);
-  };
   const [links, setLinks] = useState([]);
   useEffect(() => {
     setLinks(
@@ -139,10 +137,17 @@ export default function App() {
     );
   }, [mockdata]);
 
+  const [opened, setOpened] = useState(false);
+  const [topicName, setTopicName] = useState("");
+
   const handleAddTopic = () => {
+    setOpened(false);
+
+    if (!topicName) return;
+
     const newTopic = {
       index: mockdata.length,
-      label: "Topic " + (mockdata.length + 1),
+      label: topicName,
       icon: GiWaterfall,
       initiallyOpened: false,
       links: [],
@@ -150,11 +155,32 @@ export default function App() {
       subtasks: [],
     };
     setMockData([...mockdata, newTopic]);
+    setTopicName("");
   };
   const [navIndex, setNavIndex] = useState(0);
 
   return (
     <>
+      <Dialog
+        opened={opened}
+        withCloseButton
+        onClose={() => setOpened(false)}
+        size="lg"
+        radius="md"
+      >
+        <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+          Add Topic
+        </Text>
+        <Group align="flex-end">
+          <TextInput
+            placeholder="New Topic"
+            style={{ flex: 1 }}
+            onChange={(e) => setTopicName(e.target.value)}
+            value={topicName}
+          />
+          <Button onClick={handleAddTopic}>Submit</Button>
+        </Group>
+      </Dialog>
       <Navbar
         sx={{ backdropFilter: "blur(5px)" }}
         // height={800}
@@ -172,7 +198,7 @@ export default function App() {
           <div className={classes.linksInner}>{links}</div>
           <Center>
             <Button
-              onClick={() => handleAddTopic()}
+              onClick={() => setOpened(true)}
               variant="light"
               color="violet"
               rightIcon={<BsPlusSquareDotted color="violet" />}
