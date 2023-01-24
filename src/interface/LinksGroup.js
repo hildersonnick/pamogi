@@ -278,13 +278,23 @@ export function LinksGroup({
             />
           )}
           {dialogState === "subtask" && (
-            <Button onClick={handleAddSubTask}>Submit</Button>
+            <Button variant="light" color="violet" onClick={handleAddSubTask}>
+              Submit
+            </Button>
           )}
           {dialogState === "subtopic" && (
-            <Button onClick={handleAddSubtopic}>Submit</Button>
+            <Button variant="light" color="violet" onClick={handleAddSubtopic}>
+              Submit
+            </Button>
           )}
           {dialogState === "subsubtask" && (
-            <Button onClick={handleAddSubsubTask}>Submit</Button>
+            <Button
+              variant="light"
+              color="violet"
+              onClick={handleAddSubsubTask}
+            >
+              Submit
+            </Button>
           )}
         </Group>
       </Dialog>

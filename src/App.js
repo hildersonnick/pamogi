@@ -178,7 +178,9 @@ export default function App() {
             onChange={(e) => setTopicName(e.target.value)}
             value={topicName}
           />
-          <Button onClick={handleAddTopic}>Submit</Button>
+          <Button variant="light" color="violet" onClick={handleAddTopic}>
+            Submit
+          </Button>
         </Group>
       </Dialog>
       <Navbar
