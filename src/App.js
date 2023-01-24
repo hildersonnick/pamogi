@@ -8,6 +8,8 @@ import {
   OrbitControls,
   Environment,
   Hud,
+  Text as DreiText,
+  Billboard,
 } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
@@ -129,7 +131,7 @@ export default function App() {
     setLinks(
       mockdata.map((item, index) => (
         <>
-          <div onClick={() => handleClick(index)}>
+          <div>
             <LinksGroup index={index} {...item} key={item.label} />
           </div>
         </>
@@ -272,7 +274,6 @@ const Scene = (props) => {
   const [topic5Tasks, setTopic5Tasks] = useState({});
 
   useEffect(() => {
-    console.log(props.mockdata);
     if (
       props.mockdata.length === 1 ||
       props.mockdata.length === 2 ||
@@ -327,9 +328,11 @@ const Scene = (props) => {
                       subtopicIndex + 1
                     }${taskIndex + 1}`).default;
                     topic2Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                      />
+                      <>
+                        <TaskComponent
+                          key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                        />
+                      </>
                     );
                   }
                 }
@@ -446,14 +449,9 @@ const Scene = (props) => {
         );
       }
       setBranchOne(<Hook1 />);
-      // if (props.mockdata[0].links.tasks.length === 1) {
-      //   setSubsubTasks(
-      //     <>
-      //       <Task111 />
-      //     </>
-      //   );
-      // }
+
       if (props.mockdata[0].links.length === 1) {
+        // console.log(props.mockdata[0].links[0].label);
         setBranchOne(
           <>
             <Hook1 />
@@ -957,9 +955,42 @@ const Scene = (props) => {
     state.camera.lookAt(dummyRef.current.position);
   });
 
+  const [allText, setAllText] = useState([]);
+
+  useEffect(() => {
+    let newText = [];
+    props.mockdata.forEach((topic, topicIndex) => {
+      newText.push(
+        <Billboard position={[4 * topicIndex - 3, -1.5, 0]}>
+          <DreiText color={"black"} fontSize={0.3}>
+            {topic.label}
+          </DreiText>
+        </Billboard>
+      );
+      topic.links.forEach((link, linkIndex) => {
+        newText.push(
+          <Billboard
+            position={[
+              4 * topicIndex - 3,
+              -1.5,
+              topicIndex % 2 === 0
+                ? -2 * linkIndex * 1.2 - 2
+                : 2 * linkIndex * 1.2 + 2,
+            ]}
+          >
+            <DreiText fontSize={0.3}>{link.label}</DreiText>
+          </Billboard>
+        );
+      });
+    });
+    setAllText(allText.concat(newText));
+  }, [props.mockdata]);
+
   return (
     <>
-      <group position={[0, -1.85, 0]} scale={0.3}>
+      {allText}
+
+      <group position={[-7, -1.85, 0]} scale={0.3}>
         <Waterfall />
         {branchOne}
         {branchTwo}
@@ -1003,7 +1034,6 @@ const Scene = (props) => {
         </group>
       </group>
       {/* {waterfalls} */}
-
       <mesh ref={dummyRef}>
         <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
         <meshBasicMaterial
@@ -1013,9 +1043,7 @@ const Scene = (props) => {
           color="black"
         />
       </mesh>
-
       <pointLight position={[0, 10, 0]} intensity={1} />
-
       <Grid
         renderOrder={-1}
         position={[0, -1.85, 0]}

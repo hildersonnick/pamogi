@@ -90,7 +90,7 @@ export function LinksGroup({
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
   const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
     <>
-      <Group>
+      <Group position="apart">
         <Text
           component="a"
           className={classes.link}
@@ -101,6 +101,7 @@ export function LinksGroup({
           {link.label}
         </Text>
         <Button
+          mr={10}
           disabled={maxSubTasks}
           onClick={(e) => handleSubsubTask(e, index, subtopicIndex)}
           size="xs"
