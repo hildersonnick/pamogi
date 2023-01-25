@@ -961,25 +961,46 @@ const Scene = (props) => {
     let newText = [];
     props.mockdata.forEach((topic, topicIndex) => {
       newText.push(
-        <Billboard position={[4 * topicIndex - 3, -1.5, 0]}>
-          <DreiText color={"black"} fontSize={0.3}>
-            {topic.label}
-          </DreiText>
-        </Billboard>
+        // <Billboard position={[4 * topicIndex - 3, -1.5, 0]}>
+        <DreiText
+          position={[4 * topicIndex - 3, -1.84, 0.05]}
+          // rotation={[-Math.PI / 2, 0, topicIndex % 2 === 0 ? Math.PI : 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          color={"black"}
+          fontSize={0.3}
+        >
+          {topic.label}
+        </DreiText>
+        // </Billboard>
       );
       topic.links.forEach((link, linkIndex) => {
         newText.push(
-          <Billboard
+          // <Billboard
+          //   position={[
+          //     4 * topicIndex - 3,
+          //     -1.5,
+          //     topicIndex % 2 === 0
+          //       ? -2 * linkIndex * 1.2 - 2
+          //       : 2 * linkIndex * 1.2 + 2,
+          //   ]}
+          // >
+          <DreiText
+            rotation-x={-Math.PI / 2}
             position={[
-              4 * topicIndex - 3,
-              -1.5,
+              // 4 * topicIndex - 3,
+              linkIndex % 2 === 0
+                ? 4 * topicIndex - 1.75
+                : 4 * topicIndex - 4.25,
+              -1.84,
               topicIndex % 2 === 0
-                ? -2 * linkIndex * 1.2 - 2
-                : 2 * linkIndex * 1.2 + 2,
+                ? -2.35 * linkIndex * 0.91 - 2.35
+                : 2.35 * linkIndex * 0.91 + 2.35,
             ]}
+            fontSize={0.3}
           >
-            <DreiText fontSize={0.3}>{link.label}</DreiText>
-          </Billboard>
+            {link.label}
+          </DreiText>
+          // </Billboard>
         );
       });
     });
