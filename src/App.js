@@ -9,7 +9,6 @@ import {
   Environment,
   Hud,
   Text as DreiText,
-  Billboard,
 } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
