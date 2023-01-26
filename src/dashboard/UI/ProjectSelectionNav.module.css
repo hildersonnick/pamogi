@@ -1,0 +1,19 @@
+.dash_project-selection_container {
+    margin-top: 30px;
+  }
+  .dash_project-selection_select {
+    float: left;
+    margin-right: 20px;
+    background-color: #411a53;
+    padding: 15px 20px;
+    border-radius: 20px;
+    color: rgb(231, 206, 254);
+    border: none;
+  }
+  .dash_project-selection_create-button {
+    background-color: #c34594;
+    padding: 15px 20px;
+    border-radius: 20px;
+    color: rgb(231, 206, 254);
+    border: none;
+  }

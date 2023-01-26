@@ -46,6 +46,7 @@ import { UserButton } from "./interface/UserButton";
 import { LinksGroup } from "./interface/LinksGroup";
 import { GrOverview } from "react-icons/gr";
 import { GiWaterfall } from "react-icons/gi";
+import Dashboard from "./dashboard/Dashboard";
 import { BsPlusSquareDotted } from "react-icons/bs";
 import Waterfall from "./newerModels/Waterfall";
 import Hook1 from "./newerModels/Hook1";
@@ -110,6 +111,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function App() {
+  const [dashboardVisible, setDashboardVisible] = useState(false)
   // const [mockdata, setMockdata] = useState([
   //   // { label: "Overview", icon: GrOverview },
   //   // {
@@ -125,6 +127,7 @@ export default function App() {
   const mockdata = useStore((state) => state.mockData);
   const setMockData = useStore((state) => state.setMockData);
   const { classes } = useStyles();
+  
 
   const [links, setLinks] = useState([]);
   useEffect(() => {
@@ -161,78 +164,93 @@ export default function App() {
   };
   const [navIndex, setNavIndex] = useState(0);
 
-  return (
-    <>
-      <Dialog
-        opened={opened}
-        withCloseButton
-        onClose={() => setOpened(false)}
-        size="lg"
-        radius="md"
-      >
-        <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
-          Add Topic
-        </Text>
-        <Group align="flex-end">
-          <TextInput
-            placeholder="New Topic"
-            style={{ flex: 1 }}
-            onChange={(e) => setTopicName(e.target.value)}
-            value={topicName}
-          />
-          <Button variant="light" color="violet" onClick={handleAddTopic}>
-            Submit
-          </Button>
-        </Group>
-      </Dialog>
-      <Navbar
-        sx={{ backdropFilter: "blur(5px)" }}
-        // height={800}
-        width={{ sm: 300 }}
-        p="md"
-        className={classes.navbar}
-      >
-        <Navbar.Section className={classes.header}>
-          <Group position="apart">
-            <Image src="/pamogi-logo.png" width={100} />
+  if(dashboardVisible == true){
+    return(
+      <Dashboard />
+    )
+  } else {
+    return (
+      <>
+        <Dialog
+          opened={opened}
+          withCloseButton
+          onClose={() => setOpened(false)}
+          size="lg"
+          radius="md"
+        >
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Add Topic
+          </Text>
+          <Group align="flex-end">
+            <TextInput
+              placeholder="New Topic"
+              style={{ flex: 1 }}
+              onChange={(e) => setTopicName(e.target.value)}
+              value={topicName}
+            />
+            <Button variant="light" color="violet" onClick={handleAddTopic}>
+              Submit
+            </Button>
           </Group>
-        </Navbar.Section>
-
-        <Navbar.Section grow className={classes.links} component={ScrollArea}>
-          <div className={classes.linksInner}>{links}</div>
-          <Center>
+        </Dialog>
+        <Navbar
+          sx={{ backdropFilter: "blur(5px)" }}
+          // height={800}
+          width={{ sm: 300 }}
+          p="md"
+          className={classes.navbar}
+        >
+          <Navbar.Section className={classes.header}>
+            <Group position="apart">
+              <Image src="/pamogi-logo.png" width={100} />
+            </Group>
+          </Navbar.Section>
+  
+          <Navbar.Section grow className={classes.links} component={ScrollArea}>
+            <div className={classes.linksInner}>{links}</div>
+            <Center>
+              <Button
+                onClick={() => setOpened(true)}
+                variant="light"
+                color="violet"
+                rightIcon={<BsPlusSquareDotted color="violet" />}
+                disabled={mockdata.length >= 5}
+              >
+                Add Topic
+              </Button>
+            </Center>
+          </Navbar.Section>
+  
+          <Navbar.Section className={classes.footer}>
+            <UserButton
+              image="/mogi.jpg"
+              name="Pamogi Bot"
+              email="pamogi@pamogi.com"
+            />
+            <Center>
             <Button
-              onClick={() => setOpened(true)}
               variant="light"
               color="violet"
-              rightIcon={<BsPlusSquareDotted color="violet" />}
-              disabled={mockdata.length >= 5}
-            >
-              Add Topic
-            </Button>
-          </Center>
-        </Navbar.Section>
-
-        <Navbar.Section className={classes.footer}>
-          <UserButton
-            image="/mogi.jpg"
-            name="Pamogi Bot"
-            email="pamogi@pamogi.com"
-          />
-        </Navbar.Section>
-      </Navbar>
-      <Canvas
-        gl={{ logarithmicDepthBuffer: true }}
-        shadows
-        camera={{
-          position: [15, 15, 10],
-          fov: 25,
-        }}
-      >
-        <Scene navIndex={navIndex} mockdata={mockdata} />
-      </Canvas>
-    </>
-  );
+              onClick={() => setDashboardVisible(true)}
+              >
+                Go to Dashboard view
+              </Button>
+            </Center>
+          </Navbar.Section>
+        </Navbar>
+        <Canvas 
+          gl={{ logarithmicDepthBuffer: true }}
+          shadows
+          camera={{
+            position: [15, 15, 10],
+            fov: 25,
+          }}
+        >
+          <Scene navIndex={navIndex} mockdata={mockdata} />
+        </Canvas>
+      </>
+    );
+  }
 }
 
 const Scene = (props) => {
@@ -272,6 +290,8 @@ const Scene = (props) => {
   const [topic3Tasks, setTopic3Tasks] = useState({});
   const [topic4Tasks, setTopic4Tasks] = useState({});
   const [topic5Tasks, setTopic5Tasks] = useState({});
+  const [placeholderProjects, setPlaceholderProjects] = useState(["Equilibrium Project", "Lorem Project", "Ipsum Project"])
+  
 
   useEffect(() => {
     if (
@@ -1007,6 +1027,7 @@ const Scene = (props) => {
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
 
+
   return (
     <>
       {allText}
@@ -1088,4 +1109,5 @@ const Scene = (props) => {
       <Environment background preset="sunset" blur={0.8} />
     </>
   );
+          
 };
