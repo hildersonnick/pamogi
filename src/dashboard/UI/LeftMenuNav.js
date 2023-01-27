@@ -18,5 +18,4 @@ const LeftMenuBar = (props) => {
     </div>
   );
 };
-
 export default LeftMenuBar;
