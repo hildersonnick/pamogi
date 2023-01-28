@@ -9,13 +9,11 @@ import {
   Environment,
   Hud,
   Text as DreiText,
-  Billboard,
 } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
 import * as THREE from "three";
 import gsap from "gsap";
-// import Waterfall from "./models/Waterfall";
 import Trees from "./models/Trees";
 import River1 from "./models/River1";
 import River2 from "./models/River2";
@@ -456,7 +454,7 @@ const Scene = (props) => {
         setSubTasks(
           <>
             <Tree11 /> <Tree12 />
-            <Tree13 />
+            <Tree14 />
           </>
         );
       }
@@ -549,7 +547,7 @@ const Scene = (props) => {
           <>
             <group position={[14, 0, 0]}>
               <Tree11 /> <Tree12 />
-              <Tree13 />
+              <Tree14 />
             </group>
           </>
         );
@@ -658,7 +656,7 @@ const Scene = (props) => {
           <>
             <group position={[27, 0, 0]}>
               <Tree11 /> <Tree12 />
-              <Tree13 />
+              <Tree14 />
             </group>
           </>
         );
@@ -763,7 +761,7 @@ const Scene = (props) => {
           <>
             <group position={[40, 0, 0]}>
               <Tree11 /> <Tree12 />
-              <Tree13 />
+              <Tree14 />
             </group>
           </>
         );
@@ -868,7 +866,7 @@ const Scene = (props) => {
           <>
             <group position={[53.5, 0, 0]}>
               <Tree11 /> <Tree12 />
-              <Tree13 />
+              <Tree14 />
             </group>
           </>
         );
@@ -980,34 +978,26 @@ const Scene = (props) => {
   useEffect(() => {
     let newText = [];
     props.mockdata.forEach((topic, topicIndex) => {
+      console.log(topic);
       newText.push(
-        // <Billboard position={[4 * topicIndex - 3, -1.5, 0]}>
         <DreiText
-          position={[4 * topicIndex - 3, -1.84, 0.05]}
-          // rotation={[-Math.PI / 2, 0, topicIndex % 2 === 0 ? Math.PI : 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
+          position={[
+            topicIndex > 1 ? 4 * topicIndex - 3.1 : 4.2 * topicIndex - 3.1,
+            -1.84,
+            topicIndex % 2 === 0 ? -1 : 1,
+          ]}
+          rotation={[-Math.PI / 2, 0, Math.PI / 2]}
           color={"black"}
           fontSize={0.3}
         >
           {topic.label}
         </DreiText>
-        // </Billboard>
       );
       topic.links.forEach((link, linkIndex) => {
         newText.push(
-          // <Billboard
-          //   position={[
-          //     4 * topicIndex - 3,
-          //     -1.5,
-          //     topicIndex % 2 === 0
-          //       ? -2 * linkIndex * 1.2 - 2
-          //       : 2 * linkIndex * 1.2 + 2,
-          //   ]}
-          // >
           <DreiText
             rotation-x={-Math.PI / 2}
             position={[
-              // 4 * topicIndex - 3,
               linkIndex % 2 === 0
                 ? 4 * topicIndex - 1.75
                 : 4 * topicIndex - 4.25,
@@ -1020,10 +1010,27 @@ const Scene = (props) => {
           >
             {link.label}
           </DreiText>
-          // </Billboard>
+        );
+      });
+      topic.tasks.forEach((task, taskIndex) => {
+        newText.push(
+          <DreiText
+            rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+            position={[
+              taskIndex < 2
+                ? taskIndex * 2 - 4 * (-topicIndex + 1)
+                : (taskIndex - 2) * 2 - 4 * (-topicIndex + 1),
+              -1.84,
+              taskIndex < 2 ? -0.55 : 0.55,
+            ]}
+            fontSize={0.2}
+          >
+            {task.label}
+          </DreiText>
         );
       });
     });
+
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
 
@@ -1049,7 +1056,7 @@ const Scene = (props) => {
             (subtopicIndex) => subsubTasks[subtopicIndex]
           )}
         </group> */}
-        <group scale-y={5}>
+        <group scale-y={3}>
           {Object.keys(topic1Tasks).map(
             (subtopicIndex) => topic1Tasks[subtopicIndex]
           )}
