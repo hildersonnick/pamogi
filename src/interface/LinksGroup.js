@@ -10,6 +10,7 @@ import {
   Button,
   Stack,
   Center,
+  Indicator,
 } from "@mantine/core";
 import {
   TablerIcon,
@@ -88,6 +89,15 @@ export function LinksGroup({
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
+  const [count, setCount] = useState(0);
+  const [subTaskCount, setSubTaskCount] = useState(0);
+  useEffect(() => {
+    if (tasks) {
+      setCount(tasks.length);
+    }
+    console.log(links);
+  }, [tasks, links]);
+
   const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
     <>
       <Group position="apart">
@@ -100,6 +110,7 @@ export function LinksGroup({
         >
           {link.label}
         </Text>
+
         <Button
           mr={10}
           disabled={maxSubTasks}
@@ -109,7 +120,11 @@ export function LinksGroup({
           color="teal"
           compact
         >
-          Add Task +
+          Add Task (
+          {links[subtopicIndex].tasks === undefined
+            ? 0
+            : links[subtopicIndex].tasks?.length}
+          )
         </Button>
       </Group>
     </>
@@ -310,6 +325,7 @@ export function LinksGroup({
             </ThemeIcon>
             <Box ml="md">{label}</Box>
           </Box>
+
           <Button
             disabled={maxTasks}
             onClick={(e) => handleSubTask(e, index)}
@@ -318,7 +334,7 @@ export function LinksGroup({
             color="teal"
             compact
           >
-            Add Task +
+            Add Task ({count})
           </Button>
 
           {hasLinks && (
