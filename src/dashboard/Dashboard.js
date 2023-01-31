@@ -30,7 +30,7 @@ const Dashboard = (props) => {
       <LeftMenuBar handleMenuButton={handleMenuButton}  />
       <div className={classes["dash_main-canva"]}>
       <ProjectSelectionNav placeholderProjects={placeholderProjects} handleProjectSelection={handleProjectSelection} />     
-        <button onClick={() => setDashboardVisible(false)}>Switch to 3D</button>
+      <button onClick={() => props.setDashboardVisible(false)}>Switch to 3D</button>
         {currentMenu === "Project Dashboard" && <ProjectDashboard projectData={SelectedProject} />}
         {currentMenu === "Projects" && <Projects projectData={SelectedProject} />}
         {currentMenu === "Tasks" && <Tasks projectData={SelectedProject} />}

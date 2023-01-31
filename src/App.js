@@ -164,7 +164,7 @@ export default function App() {
 
   if(dashboardVisible == true){
     return(
-      <Dashboard />
+      <Dashboard setDashboardVisible={setDashboardVisible} />
     )
   } else {
     return (
