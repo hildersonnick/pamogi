@@ -31,6 +31,7 @@ const Dashboard = (props) => {
         <div className={classes["dash_main-canva"]}>
           <TopBar
             placeholderProjects={placeholderProjects}
+            setPlaceholderProjects={setPlaceholderProjects}
             handleProjectSelection={handleProjectSelection}
             setDashboardVisible={props.setDashboardVisible}
           />
