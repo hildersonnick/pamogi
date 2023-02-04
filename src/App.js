@@ -153,6 +153,7 @@ export default function App() {
       links: [],
       tasks: [],
       subtasks: [],
+      status: "Initialized",
     };
     setMockData([...mockdata, newTopic]);
     setTopicName("");
@@ -934,31 +935,30 @@ const Scene = (props) => {
   const dummyRef = useRef();
   let vec = new THREE.Vector3();
 
-  useFrame((state, delta) => {
-    if (isMoving) {
-      gsap.to(dummyRef.current.position, {
-        x: targetPosition[0],
-        y: targetPosition[1],
-        z: targetPosition[2],
-        duration: 2,
-      });
-      gsap.to(state.camera.position, {
-        x: dummyRef.current.position.x + 15,
-        y: dummyRef.current.position.y + 15.5,
-        z: dummyRef.current.position.z + 15,
-        duration: 2,
-      });
-      setIsMoving(false);
-    }
-    state.camera.lookAt(dummyRef.current.position);
-  });
+  // useFrame((state, delta) => {
+  //   if (isMoving) {
+  //     gsap.to(dummyRef.current.position, {
+  //       x: targetPosition[0],
+  //       y: targetPosition[1],
+  //       z: targetPosition[2],
+  //       duration: 2,
+  //     });
+  //     gsap.to(state.camera.position, {
+  //       x: dummyRef.current.position.x + 15,
+  //       y: dummyRef.current.position.y + 15.5,
+  //       z: dummyRef.current.position.z + 15,
+  //       duration: 2,
+  //     });
+  //     setIsMoving(false);
+  //   }
+  //   state.camera.lookAt(dummyRef.current.position);
+  // });
 
   const [allText, setAllText] = useState([]);
 
   useEffect(() => {
     let newText = [];
     props.mockdata.forEach((topic, topicIndex) => {
-      console.log(topic);
       newText.push(
         <DreiText
           position={[
@@ -991,6 +991,165 @@ const Scene = (props) => {
             {link.label}
           </DreiText>
         );
+        link.tasks?.forEach((task, taskIndex) => {
+          newText.push(
+            linkIndex === 0 && (
+              <group
+                position={[
+                  topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
+                  0,
+                  0,
+                ]}
+                visible={topicIndex % 2 === 0}
+                rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, 0]}
+              >
+                <DreiText
+                  rotation-x={-Math.PI / 2}
+                  position={[
+                    taskIndex === 4
+                      ? -0.1
+                      : taskIndex < 2
+                      ? -2.4 * (-taskIndex / 2.5) - 2.4
+                      : taskIndex === 2
+                      ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
+                      : taskIndex === 3
+                      ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
+                      : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
+                    -1.84,
+                    taskIndex === 4 ? -2.9 : taskIndex < 2 ? -1.3 : -3.6,
+                  ]}
+                  fontSize={0.2}
+                >
+                  {task.label}
+                </DreiText>
+              </group>
+            ),
+            linkIndex === 1 && (
+              <group
+                visible={topicIndex % 2 === 0}
+                position={[
+                  topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
+                  0,
+                  0,
+                ]}
+                rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, 0]}
+              >
+                <DreiText
+                  rotation-x={-Math.PI / 2}
+                  position={[
+                    taskIndex === 4
+                      ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
+                      : taskIndex < 2
+                      ? -3.8 * (taskIndex / 3.7) - 3.8
+                      : taskIndex === 2
+                      ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8
+                      : taskIndex === 3
+                      ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8
+                      : -3.8 * ((taskIndex - 2) / 3.7) - 3.8,
+                    -1.84,
+                    taskIndex === 4 ? -5 : taskIndex < 2 ? -3.5 : -5.6,
+                  ]}
+                  fontSize={0.2}
+                >
+                  {task.label}
+                </DreiText>
+              </group>
+            ),
+            linkIndex === 2 && (
+              <group
+                visible={topicIndex % 2 === 0}
+                position={[
+                  topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
+                  0,
+                  0,
+                ]}
+                rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, 0]}
+              >
+                <DreiText
+                  rotation-x={-Math.PI / 2}
+                  position={[
+                    taskIndex === 4
+                      ? -0.1
+                      : taskIndex < 2
+                      ? -2.4 * (-taskIndex / 2.5) - 2.4
+                      : taskIndex === 2
+                      ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
+                      : taskIndex === 3
+                      ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
+                      : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
+                    -1.84,
+                    taskIndex === 4 ? -7.2 : taskIndex < 2 ? -5.5 : -7.8,
+                  ]}
+                  fontSize={0.2}
+                >
+                  {task.label}
+                </DreiText>
+              </group>
+            ),
+            linkIndex === 3 && (
+              <group
+                visible={topicIndex % 2 === 0}
+                position={[
+                  topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
+                  0,
+                  0,
+                ]}
+                rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, 0]}
+              >
+                <DreiText
+                  rotation-x={-Math.PI / 2}
+                  position={[
+                    taskIndex === 4
+                      ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
+                      : taskIndex < 2
+                      ? -3.8 * (taskIndex / 3.7) - 3.8
+                      : taskIndex === 2
+                      ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8
+                      : taskIndex === 3
+                      ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8
+                      : -3.8 * ((taskIndex - 2) / 3.7) - 3.8,
+                    -1.84,
+                    taskIndex === 4 ? -9.25 : taskIndex < 2 ? -7.7 : -9.85,
+                  ]}
+                  fontSize={0.2}
+                >
+                  {task.label}
+                </DreiText>
+              </group>
+            ),
+            linkIndex === 4 && (
+              <group
+                visible={topicIndex % 2 === 0}
+                position={[
+                  topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
+                  0,
+                  0,
+                ]}
+                rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, 0]}
+              >
+                <DreiText
+                  rotation-x={-Math.PI / 2}
+                  position={[
+                    taskIndex === 4
+                      ? -0.1
+                      : taskIndex < 2
+                      ? -2.4 * (-taskIndex / 2.5) - 2.4
+                      : taskIndex === 2
+                      ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
+                      : taskIndex === 3
+                      ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
+                      : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
+                    -1.84,
+                    taskIndex === 4 ? -11.3 : taskIndex < 2 ? -9.8 : -11.9,
+                  ]}
+                  fontSize={0.2}
+                >
+                  {task.label}
+                </DreiText>
+              </group>
+            )
+          );
+        });
       });
       topic.tasks.forEach((task, taskIndex) => {
         newText.push(
@@ -1084,7 +1243,7 @@ const Scene = (props) => {
         fadeDistance={80}
       />
       <OrbitControls
-        enablePan={false}
+        enablePan={true}
         zoomSpeed={0.3}
         rotateSpeed={0.4}
         maxPolarAngle={Math.PI / 2}
