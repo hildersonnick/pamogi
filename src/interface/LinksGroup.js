@@ -23,6 +23,14 @@ import { BsPlusSquareDotted } from "react-icons/bs";
 import useStore from "../store";
 import { GiWaterfall } from "react-icons/gi";
 import { Dialog, TextInput } from "@mantine/core";
+import {
+  Avatar,
+  Badge,
+  Table,
+  Select,
+  ScrollArea,
+  SegmentedControl,
+} from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -95,7 +103,6 @@ export function LinksGroup({
     if (tasks) {
       setCount(tasks.length);
     }
-    console.log(links);
   }, [tasks, links]);
 
   const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
@@ -106,14 +113,15 @@ export function LinksGroup({
           className={classes.link}
           href={link.link}
           key={link.label}
-          onClick={(event) => event.preventDefault()}
+          onClick={(event) => handleLabelClick(event, index, subtopicIndex)}
         >
           {link.label}
         </Text>
 
         <Button
           mr={10}
-          disabled={maxSubTasks}
+          disabled={mockData[index]?.links[subtopicIndex]?.tasks?.length === 5}
+          // disabled
           onClick={(e) => handleSubsubTask(e, index, subtopicIndex)}
           size="xs"
           variant="outline"
@@ -213,7 +221,7 @@ export function LinksGroup({
 
   const [maxLinks, setMaxLinks] = useState(false);
   const [maxTasks, setMaxTasks] = useState(false);
-  const [maxSubTasks, setMaxSubTasks] = useState(false);
+  const [maxSubTasks, setMaxSubTasks] = useState(true);
   const [subsubMax, setSubsubMax] = useState(0);
 
   // useEffect(() => {
@@ -243,8 +251,124 @@ export function LinksGroup({
 
   const [taskName, setTaskName] = useState("");
 
+  const [controlTopic, setControlTopic] = useState();
+  const [controlSubTopic, setControlSubTopic] = useState();
+
+  const handleLabelClick = (event, topicIndex, subtopicIndex) => {
+    event.preventDefault();
+    setOpened3(true);
+    // console.log(links);
+
+    setControlTopic(topicIndex);
+    setControlSubTopic(subtopicIndex);
+    // console.log(topicIndex, subtopicIndex);
+    // console.log(mockData[topicIndex].links[subtopicIndex].tasks);
+  };
+
+  // const rolesData = ["Initialized", "In Progress", "Completed"];
+
+  const [value, setValue] = useState("initialized");
+  const [opened3, setOpened3] = useState(false);
+
+  const rows = mockData[controlTopic]?.links[controlSubTopic]?.tasks?.map(
+    (task) => (
+      // console.log(link)
+      // link.tasks?.map((task) => (
+      <tr key={task}>
+        <td>
+          <Group spacing="sm">
+            {/* <Avatar size={40} src={item.avatar} radius={40} /> */}
+            <div>
+              <Text size="sm" weight="bold">
+                {task.label}
+              </Text>
+              {/* <Text size="xs" color="dimmed">
+              {item.email}
+            </Text> */}
+            </div>
+          </Group>
+        </td>
+
+        <td>
+          {/* <Select
+          data={rolesData}
+          defaultValue={link.status}
+          variant="unstyled"
+        /> */}
+          <SegmentedControl
+            value={value}
+            onChange={setValue}
+            data={[
+              { label: "Initialized", value: "initialized" },
+              { label: "In Progress", value: "progress" },
+              { label: "Complete", value: "complete" },
+            ]}
+          />
+        </td>
+        {/* <td>{Math.floor(Math.random() * 6 + 5)} days ago</td> */}
+        {/* <td>
+        {Math.random() > 0.5 ? (
+          <Badge fullWidth>Active</Badge>
+        ) : (
+          <Badge color="gray" fullWidth>
+            Disabled
+          </Badge>
+        )}
+      </td> */}
+      </tr>
+    )
+    // ))
+  );
+
   return (
     <>
+      <Dialog
+        onClose={() => setOpened3(false)}
+        opened={opened3}
+        size="lg"
+        radius="md"
+        position={{ top: 20, right: 20 }}
+        withCloseButton
+      >
+        {/* <Stack>
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Topic: {mockData[controlTopic]?.links[controlSubTopic]?.label}
+          </Text>
+          <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
+            Tasks:
+            {mockData[controlTopic]?.links[controlSubTopic]?.tasks?.map(
+              (task, index) => (
+                <Text key={index}>{task.label}</Text>
+              )
+            )}
+          </Text>
+        </Stack> */}
+        <Center>
+          <Text
+            td="underline"
+            size="sm"
+            style={{ marginBottom: 10 }}
+            weight={500}
+          >
+            {mockData[controlTopic]?.links[controlSubTopic]?.label}
+          </Text>
+        </Center>
+        <ScrollArea>
+          <Table
+            // sx={{ minWidth: 800, minHeight: 300 }}
+            verticalSpacing="sm"
+          >
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+          </Table>
+        </ScrollArea>
+      </Dialog>
+
       <Dialog
         opened={opened2}
         withCloseButton
