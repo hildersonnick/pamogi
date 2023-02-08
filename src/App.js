@@ -63,7 +63,7 @@ import Task113 from "./newerModels/Task113";
 import Task114 from "./newerModels/Task114";
 import Task115 from "./newerModels/Task115";
 import { Dialog, TextInput, Text } from "@mantine/core";
-
+import { createClient } from '@supabase/supabase-js'
 import useStore from "./store";
 
 const useStyles = createStyles((theme) => ({
@@ -125,6 +125,8 @@ export default function App() {
   const mockdata = useStore((state) => state.mockData);
   const setMockData = useStore((state) => state.setMockData);
   const { classes } = useStyles();
+  const supabase = createClient("https://rgcevqebcazzqaumgwnh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnY2V2cWViY2F6enFhdW1nd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzQ5ODkyNjAsImV4cCI6MTk5MDU2NTI2MH0.UjirHUUhj_Y8qaLM41pxPNG49n_jRVst0zDubKG0vEg")
+
   
 
   const [links, setLinks] = useState([]);
@@ -143,6 +145,36 @@ export default function App() {
   const [opened, setOpened] = useState(false);
   const [topicName, setTopicName] = useState("");
 
+  async function addTopic() {
+
+    const current = new Date();
+    let month = `${current.getMonth()+1}`;
+    let day = `${current.getDate()}`;
+    const year = `${current.getFullYear()}`;
+
+    if (month.length < 2) {
+      month = '0' + month;
+}
+  if (day.length < 2) {
+      day = '0' + day;
+  }
+  const date = [day, month, year].join('-');
+
+    await supabase
+      .from("projects_sample")
+      .insert([
+        {
+          id: 6,
+          created_at: date,
+          title: topicName,
+          created_by: "123e4567-e89b-12d3-a456-426614174000"
+        },
+      ]) // Insert the new task
+      .single();
+
+      console.log("added to db")
+  }
+
   const handleAddTopic = () => {
     setOpened(false);
 
@@ -160,6 +192,8 @@ export default function App() {
     };
     setMockData([...mockdata, newTopic]);
     setTopicName("");
+
+    addTopic()
   };
   const [navIndex, setNavIndex] = useState(0);
 

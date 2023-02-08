@@ -19,6 +19,7 @@
     "@react-three/drei": "9.48.4",
     "@react-three/fiber": "8.9.1",
     "@react-three/postprocessing": "2.7.0",
+    "@supabase/supabase-js": "^2.7.1",
     "@tabler/icons": "^1.119.0",
     "@types/three": "0.146.0",
     "@walletconnect/web3-provider": "^1.8.0",

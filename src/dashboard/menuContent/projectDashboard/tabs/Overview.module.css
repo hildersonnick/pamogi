@@ -1,0 +1,50 @@
+.overview_card-container{
+    max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+  padding:0px;
+  margin:0px;
+}
+.overview_card{
+  color: white; 
+  height: 4rem;
+  height: 68vh;
+}
+.overview_card_view{
+    background-color: #3A194D;
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.672);
+    margin-top:10px;
+    height: 30vh;
+}
+.overview_card_view-tall{
+  background-color: #3A194D;
+  border-radius: 20px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.672);
+  margin-top:10px;
+  height: 61vh
+}
+.card-view_section-title{
+  padding: 10px 10px 0px 10px;
+  font-weight: 600;
+}
+
+.overview_card_progress-container{
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+    padding:0px;
+    margin:0px;
+}
+.overview_card_progress-element{
+    background-color: dodgerblue;
+    padding: 1rem;
+    height: 1.5rem;
+}
+@media (min-width: 600px) {
+    .overview_card-container { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .overview_card-container { grid-template-columns: repeat(3, 1fr); }
+  }
