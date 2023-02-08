@@ -178,6 +178,7 @@ export function LinksGroup({
   };
 
   const handleAddSubtopic = () => {
+    
     const updatedTopics = [...mockData];
     updatedTopics[parentIndex] = {
       ...updatedTopics[parentIndex],

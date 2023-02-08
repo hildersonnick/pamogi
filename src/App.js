@@ -1,15 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
-import {
-  useGLTF,
-  Stage,
-  Grid,
-  OrbitControls,
-  Environment,
-  Hud,
-  Text as DreiText,
-} from "@react-three/drei";
+import { useGLTF, Stage, Grid, OrbitControls, Environment, Hud, Text as DreiText } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
 import * as THREE from "three";
@@ -22,24 +14,8 @@ import River4 from "./models/River4";
 import River5 from "./models/River5";
 import River6 from "./models/River6";
 import { OrthographicCamera } from "@react-three/drei";
-import {
-  Navbar,
-  Group,
-  Code,
-  ScrollArea,
-  createStyles,
-  Button,
-  Container,
-} from "@mantine/core";
-import {
-  IconNotes,
-  IconCalendarStats,
-  IconGauge,
-  IconPresentationAnalytics,
-  IconFileAnalytics,
-  IconAdjustments,
-  IconLock,
-} from "@tabler/icons";
+import { Navbar, Group, Code, ScrollArea, createStyles, Button, Container } from "@mantine/core";
+import { IconNotes, IconCalendarStats, IconGauge, IconPresentationAnalytics, IconFileAnalytics, IconAdjustments, IconLock } from "@tabler/icons";
 import { UserButton } from "./interface/UserButton";
 import { LinksGroup } from "./interface/LinksGroup";
 import { GrOverview } from "react-icons/gr";
@@ -65,13 +41,11 @@ import Task115 from "./newerModels/Task115";
 import { Dialog, TextInput, Text } from "@mantine/core";
 
 import useStore from "./store";
+import { socket } from "./index.js";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? "rgba(0,0,0,0.2)"
-        : "rgba(255,255,255,0.05)",
+    backgroundColor: theme.colorScheme === "dark" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.05)",
 
     paddingBottom: 0,
     position: "absolute",
@@ -84,9 +58,7 @@ const useStyles = createStyles((theme) => ({
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     color: theme.colorScheme === "dark" ? theme.white : theme.black,
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
+    borderBottom: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]}`,
   },
 
   links: {
@@ -102,14 +74,12 @@ const useStyles = createStyles((theme) => ({
   footer: {
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
-    borderTop: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
+    borderTop: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]}`,
   },
 }));
 
 export default function App() {
-  const [dashboardVisible, setDashboardVisible] = useState(false)
+  const [dashboardVisible, setDashboardVisible] = useState(false);
   // const [mockdata, setMockdata] = useState([
   //   // { label: "Overview", icon: GrOverview },
   //   // {
@@ -122,12 +92,18 @@ export default function App() {
   //   //   ],
   //   // },
   // ]);
-  const mockdata = useStore((state) => state.mockData);
-  const setMockData = useStore((state) => state.setMockData);
+
+  // const mockdata = useStore((state) => state.mockData);
+  // const setMockData = useStore((state) => state.setMockData);
+  const [mockdata, setMockData] = useState(useStore((state) => state.mockData));
   const { classes } = useStyles();
-  
 
   const [links, setLinks] = useState([]);
+
+  // const a =(newTopic) => {
+  //   console.log("on");
+  //   setMockData([...mockdata, newTopic]);
+  // }
   useEffect(() => {
     setLinks(
       mockdata.map((item, index) => (
@@ -139,6 +115,27 @@ export default function App() {
       ))
     );
   }, [mockdata]);
+
+  useEffect(() => {
+    socket.on("handleAddTopic", function (newTopic) {
+      const topic = {
+        index: mockdata.length,
+        label: newTopic.label,
+        icon: GiWaterfall,
+        initiallyOpened: false,
+        links: [],
+        tasks: [],
+        subtasks: [],
+        status: "Initialized",
+      };
+      // setmockdata2([...mockdata, topic]);
+      setMockData((oldMockdata) => [...oldMockdata, topic]);
+    });
+
+    return () => {
+      socket.off("handleAddTopic");
+    };
+  }, []);
 
   const [opened, setOpened] = useState(false);
   const [topicName, setTopicName] = useState("");
@@ -158,35 +155,27 @@ export default function App() {
       subtasks: [],
       status: "Initialized",
     };
-    setMockData([...mockdata, newTopic]);
+
+    socket.emit("newHandleAddTopic", newTopic);
+
+    // setmockdata2([...mockdata2, newTopic]);
+    setMockData((oldMockdata) => [...oldMockdata, newTopic]);
     setTopicName("");
   };
+
   const [navIndex, setNavIndex] = useState(0);
 
-  if(dashboardVisible == true){
-    return(
-      <Dashboard setDashboardVisible={setDashboardVisible} />
-    )
+  if (dashboardVisible == true) {
+    return <Dashboard setDashboardVisible={setDashboardVisible} />;
   } else {
     return (
       <>
-        <Dialog
-          opened={opened}
-          withCloseButton
-          onClose={() => setOpened(false)}
-          size="lg"
-          radius="md"
-        >
+        <Dialog opened={opened} withCloseButton onClose={() => setOpened(false)} size="lg" radius="md">
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Add Topic
           </Text>
           <Group align="flex-end">
-            <TextInput
-              placeholder="New Topic"
-              style={{ flex: 1 }}
-              onChange={(e) => setTopicName(e.target.value)}
-              value={topicName}
-            />
+            <TextInput placeholder="New Topic" style={{ flex: 1 }} onChange={(e) => setTopicName(e.target.value)} value={topicName} />
             <Button variant="light" color="violet" onClick={handleAddTopic}>
               Submit
             </Button>
@@ -204,40 +193,26 @@ export default function App() {
               <Image src="/pamogi-logo.png" width={100} />
             </Group>
           </Navbar.Section>
-  
+
           <Navbar.Section grow className={classes.links} component={ScrollArea}>
             <div className={classes.linksInner}>{links}</div>
             <Center>
-              <Button
-                onClick={() => setOpened(true)}
-                variant="light"
-                color="violet"
-                rightIcon={<BsPlusSquareDotted color="violet" />}
-                disabled={mockdata.length >= 5}
-              >
+              <Button onClick={() => setOpened(true)} variant="light" color="violet" rightIcon={<BsPlusSquareDotted color="violet" />} disabled={mockdata.length >= 5}>
                 Add Topic
               </Button>
             </Center>
           </Navbar.Section>
-  
+
           <Navbar.Section className={classes.footer}>
-            <UserButton
-              image="/mogi.jpg"
-              name="Pamogi Bot"
-              email="pamogi@pamogi.com"
-            />
+            <UserButton image="/mogi.jpg" name="Pamogi Bot" email="pamogi@pamogi.com" />
             <Center>
-            <Button
-              variant="light"
-              color="violet"
-              onClick={() => setDashboardVisible(true)}
-              >
+              <Button variant="light" color="violet" onClick={() => setDashboardVisible(true)}>
                 Go to Dashboard view
               </Button>
             </Center>
           </Navbar.Section>
         </Navbar>
-        <Canvas 
+        <Canvas
           gl={{ logarithmicDepthBuffer: true }}
           shadows
           camera={{
@@ -254,11 +229,7 @@ export default function App() {
 
 const Scene = (props) => {
   useEffect(() => {
-    setTargetPosition([
-      0 + props.navIndex * 5,
-      -1.85,
-      0 - props.navIndex * 2.5,
-    ]);
+    setTargetPosition([0 + props.navIndex * 5, -1.85, 0 - props.navIndex * 2.5]);
     setIsMoving(true);
   }, [props.navIndex]);
   const [targetPosition, setTargetPosition] = useState([0, -1.85, 0]);
@@ -289,17 +260,10 @@ const Scene = (props) => {
   const [topic3Tasks, setTopic3Tasks] = useState({});
   const [topic4Tasks, setTopic4Tasks] = useState({});
   const [topic5Tasks, setTopic5Tasks] = useState({});
-  const [placeholderProjects, setPlaceholderProjects] = useState(["Equilibrium Project", "Lorem Project", "Ipsum Project"])
-  
+  const [placeholderProjects, setPlaceholderProjects] = useState(["Equilibrium Project", "Lorem Project", "Ipsum Project"]);
 
   useEffect(() => {
-    if (
-      props.mockdata.length === 1 ||
-      props.mockdata.length === 2 ||
-      props.mockdata.length === 3 ||
-      props.mockdata.length === 4 ||
-      props.mockdata.length === 5
-    ) {
+    if (props.mockdata.length === 1 || props.mockdata.length === 2 || props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       let topic1Tasks = {};
       let topic2Tasks = {};
       let topic3Tasks = {};
@@ -311,22 +275,11 @@ const Scene = (props) => {
             topic.links.map((subtopic, subtopicIndex) => {
               if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
                 topic1Tasks[subtopicIndex] = [];
-                for (
-                  let taskIndex = 0;
-                  taskIndex < subtopic.tasks.length;
-                  taskIndex++
-                ) {
+                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic1Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={0}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic1Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
                   }
                 }
               }
@@ -337,22 +290,13 @@ const Scene = (props) => {
             topic.links.map((subtopic, subtopicIndex) => {
               if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
                 topic2Tasks[subtopicIndex] = [];
-                for (
-                  let taskIndex = 0;
-                  taskIndex < subtopic.tasks.length;
-                  taskIndex++
-                ) {
+                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
                     topic2Tasks[subtopicIndex].push(
                       <>
-                        <TaskComponent
-                          key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                          rotate={Math.PI}
-                        />
+                        <TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} />
                       </>
                     );
                   }
@@ -365,22 +309,11 @@ const Scene = (props) => {
             topic.links.map((subtopic, subtopicIndex) => {
               if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
                 topic3Tasks[subtopicIndex] = [];
-                for (
-                  let taskIndex = 0;
-                  taskIndex < subtopic.tasks.length;
-                  taskIndex++
-                ) {
+                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic3Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={0}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic3Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
                   }
                 }
               }
@@ -391,22 +324,11 @@ const Scene = (props) => {
             topic.links.map((subtopic, subtopicIndex) => {
               if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
                 topic4Tasks[subtopicIndex] = [];
-                for (
-                  let taskIndex = 0;
-                  taskIndex < subtopic.tasks.length;
-                  taskIndex++
-                ) {
+                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic4Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={Math.PI}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic4Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} />);
                   }
                 }
               }
@@ -417,22 +339,11 @@ const Scene = (props) => {
             topic.links.map((subtopic, subtopicIndex) => {
               if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
                 topic5Tasks[subtopicIndex] = [];
-                for (
-                  let taskIndex = 0;
-                  taskIndex < subtopic.tasks.length;
-                  taskIndex++
-                ) {
+                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic5Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={0}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic5Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
                   }
                 }
               }
@@ -526,12 +437,7 @@ const Scene = (props) => {
         );
       }
     }
-    if (
-      props.mockdata.length === 2 ||
-      props.mockdata.length === 3 ||
-      props.mockdata.length === 4 ||
-      props.mockdata.length === 5
-    ) {
+    if (props.mockdata.length === 2 || props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       if (props.mockdata[1].tasks.length === 1) {
         setSubTasks2(
           <group position={[14, 0, 0]}>
@@ -636,11 +542,7 @@ const Scene = (props) => {
         );
       }
     }
-    if (
-      props.mockdata.length === 3 ||
-      props.mockdata.length === 4 ||
-      props.mockdata.length === 5
-    ) {
+    if (props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       if (props.mockdata[2].tasks.length === 1) {
         setSubTasks3(
           <group position={[27, 0, 0]}>
@@ -985,259 +887,78 @@ const Scene = (props) => {
     let newText = [];
     props.mockdata.forEach((topic, topicIndex) => {
       newText.push(
-        <DreiText
-          position={[
-            topicIndex > 1 ? 4 * topicIndex - 3.1 : 4.2 * topicIndex - 3.1,
-            -1.84,
-            topicIndex % 2 === 0 ? -1 : 1,
-          ]}
-          rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-          color={"black"}
-          fontSize={0.3}
-        >
+        <DreiText position={[topicIndex > 1 ? 4 * topicIndex - 3.1 : 4.2 * topicIndex - 3.1, -1.84, topicIndex % 2 === 0 ? -1 : 1]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} color={"black"} fontSize={0.3}>
           {topic.label}
         </DreiText>
       );
       topic.links.forEach((link, linkIndex) => {
         newText.push(
-          <DreiText
-            rotation-x={-Math.PI / 2}
-            position={[
-              linkIndex % 2 === 0
-                ? 4 * topicIndex - 1.75
-                : 4 * topicIndex - 4.25,
-              -1.84,
-              topicIndex % 2 === 0
-                ? -2.35 * linkIndex * 0.91 - 2.35
-                : 2.35 * linkIndex * 0.91 + 2.35,
-            ]}
-            fontSize={0.3}
-          >
+          <DreiText rotation-x={-Math.PI / 2} position={[linkIndex % 2 === 0 ? 4 * topicIndex - 1.75 : 4 * topicIndex - 4.25, -1.84, topicIndex % 2 === 0 ? -2.35 * linkIndex * 0.91 - 2.35 : 2.35 * linkIndex * 0.91 + 2.35]} fontSize={0.3}>
             {link.label}
           </DreiText>
         );
         link.tasks?.forEach((task, taskIndex) => {
           newText.push(
             linkIndex === 0 && (
-              <group
-                position={[
-                  topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0,
-                  topicIndex % 2 !== 0 ? -3.7 : 0,
-                  0,
-                ]}
-              >
+              <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
                 <group
-                  position={[
-                    topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
-                    0,
-                    0,
-                  ]}
+                  position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
                   // visible={topicIndex % 2 === 0}
-                  rotation={[
-                    0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                  ]}
+                  rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
                 >
-                  <DreiText
-                    rotation-x={
-                      topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2
-                    }
-                    position={[
-                      taskIndex === 4
-                        ? -0.1
-                        : taskIndex < 2
-                        ? -2.4 * (-taskIndex / 2.5) - 2.4
-                        : taskIndex === 2
-                        ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
-                        : taskIndex === 3
-                        ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
-                        : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
-                      -1.84,
-                      taskIndex === 4 ? -2.9 : taskIndex < 2 ? -1.3 : -3.6,
-                    ]}
-                    fontSize={0.2}
-                  >
+                  <DreiText rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2} position={[taskIndex === 4 ? -0.1 : taskIndex < 2 ? -2.4 * (-taskIndex / 2.5) - 2.4 : taskIndex === 2 ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4 : taskIndex === 3 ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4 : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4, -1.84, taskIndex === 4 ? -2.9 : taskIndex < 2 ? -1.3 : -3.6]} fontSize={0.2}>
                     {task.label}
                   </DreiText>
                 </group>
               </group>
             ),
             linkIndex === 1 && (
-              <group
-                position={[
-                  topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0,
-                  topicIndex % 2 !== 0 ? -3.7 : 0,
-                  0,
-                ]}
-              >
+              <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
                 <group
                   // visible={topicIndex % 2 === 0}
-                  position={[
-                    topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
-                    0,
-                    0,
-                  ]}
-                  rotation={[
-                    0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                  ]}
+                  position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
+                  rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
                 >
-                  <DreiText
-                    rotation-x={
-                      topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2
-                    }
-                    position={[
-                      taskIndex === 4
-                        ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
-                        : taskIndex < 2
-                        ? -3.8 * (taskIndex / 3.7) - 3.8
-                        : taskIndex === 2
-                        ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8
-                        : taskIndex === 3
-                        ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8
-                        : -3.8 * ((taskIndex - 2) / 3.7) - 3.8,
-                      -1.84,
-                      taskIndex === 4 ? -5 : taskIndex < 2 ? -3.5 : -5.6,
-                    ]}
-                    fontSize={0.2}
-                  >
+                  <DreiText rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2} position={[taskIndex === 4 ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2 : taskIndex < 2 ? -3.8 * (taskIndex / 3.7) - 3.8 : taskIndex === 2 ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8 : taskIndex === 3 ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8 : -3.8 * ((taskIndex - 2) / 3.7) - 3.8, -1.84, taskIndex === 4 ? -5 : taskIndex < 2 ? -3.5 : -5.6]} fontSize={0.2}>
                     {task.label}
                   </DreiText>
                 </group>
               </group>
             ),
             linkIndex === 2 && (
-              <group
-                position={[
-                  topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0,
-                  topicIndex % 2 !== 0 ? -3.7 : 0,
-                  0,
-                ]}
-              >
+              <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
                 <group
                   // visible={topicIndex % 2 === 0}
-                  position={[
-                    topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
-                    0,
-                    0,
-                  ]}
-                  rotation={[
-                    0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                  ]}
+                  position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
+                  rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
                 >
-                  <DreiText
-                    rotation-x={
-                      topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2
-                    }
-                    position={[
-                      taskIndex === 4
-                        ? -0.1
-                        : taskIndex < 2
-                        ? -2.4 * (-taskIndex / 2.5) - 2.4
-                        : taskIndex === 2
-                        ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
-                        : taskIndex === 3
-                        ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
-                        : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
-                      -1.84,
-                      taskIndex === 4 ? -7.2 : taskIndex < 2 ? -5.5 : -7.8,
-                    ]}
-                    fontSize={0.2}
-                  >
+                  <DreiText rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2} position={[taskIndex === 4 ? -0.1 : taskIndex < 2 ? -2.4 * (-taskIndex / 2.5) - 2.4 : taskIndex === 2 ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4 : taskIndex === 3 ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4 : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4, -1.84, taskIndex === 4 ? -7.2 : taskIndex < 2 ? -5.5 : -7.8]} fontSize={0.2}>
                     {task.label}
                   </DreiText>
                 </group>
               </group>
             ),
             linkIndex === 3 && (
-              <group
-                position={[
-                  topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0,
-                  topicIndex % 2 !== 0 ? -3.7 : 0,
-                  0,
-                ]}
-              >
+              <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
                 <group
                   // visible={topicIndex % 2 === 0}
-                  position={[
-                    topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
-                    0,
-                    0,
-                  ]}
-                  rotation={[
-                    0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                  ]}
+                  position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
+                  rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
                 >
-                  <DreiText
-                    rotation-x={
-                      topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2
-                    }
-                    position={[
-                      taskIndex === 4
-                        ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
-                        : taskIndex < 2
-                        ? -3.8 * (taskIndex / 3.7) - 3.8
-                        : taskIndex === 2
-                        ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8
-                        : taskIndex === 3
-                        ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8
-                        : -3.8 * ((taskIndex - 2) / 3.7) - 3.8,
-                      -1.84,
-                      taskIndex === 4 ? -9.25 : taskIndex < 2 ? -7.7 : -9.85,
-                    ]}
-                    fontSize={0.2}
-                  >
+                  <DreiText rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2} position={[taskIndex === 4 ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2 : taskIndex < 2 ? -3.8 * (taskIndex / 3.7) - 3.8 : taskIndex === 2 ? -3.8 * ((taskIndex - 1) / 3.7) - 3.8 : taskIndex === 3 ? -3.8 * ((taskIndex - 3) / 3.7) - 3.8 : -3.8 * ((taskIndex - 2) / 3.7) - 3.8, -1.84, taskIndex === 4 ? -9.25 : taskIndex < 2 ? -7.7 : -9.85]} fontSize={0.2}>
                     {task.label}
                   </DreiText>
                 </group>
               </group>
             ),
             linkIndex === 4 && (
-              <group
-                position={[
-                  topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0,
-                  topicIndex % 2 !== 0 ? -3.7 : 0,
-                  0,
-                ]}
-              >
+              <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
                 <group
                   // visible={topicIndex % 2 === 0}
-                  position={[
-                    topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5,
-                    0,
-                    0,
-                  ]}
-                  rotation={[
-                    0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                    topicIndex % 2 !== 0 ? Math.PI : 0,
-                  ]}
+                  position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
+                  rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
                 >
-                  <DreiText
-                    rotation-x={
-                      topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2
-                    }
-                    position={[
-                      taskIndex === 4
-                        ? -0.1
-                        : taskIndex < 2
-                        ? -2.4 * (-taskIndex / 2.5) - 2.4
-                        : taskIndex === 2
-                        ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4
-                        : taskIndex === 3
-                        ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4
-                        : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4,
-                      -1.84,
-                      taskIndex === 4 ? -11.3 : taskIndex < 2 ? -9.8 : -11.9,
-                    ]}
-                    fontSize={0.2}
-                  >
+                  <DreiText rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2} position={[taskIndex === 4 ? -0.1 : taskIndex < 2 ? -2.4 * (-taskIndex / 2.5) - 2.4 : taskIndex === 2 ? -2.4 * (-(taskIndex - 1) / 2.5) - 2.4 : taskIndex === 3 ? -2.4 * (-(taskIndex - 3) / 2.5) - 2.4 : -2.4 * (-(taskIndex - 2) / 2.5) - 2.4, -1.84, taskIndex === 4 ? -11.3 : taskIndex < 2 ? -9.8 : -11.9]} fontSize={0.2}>
                     {task.label}
                   </DreiText>
                 </group>
@@ -1248,17 +969,7 @@ const Scene = (props) => {
       });
       topic.tasks.forEach((task, taskIndex) => {
         newText.push(
-          <DreiText
-            rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-            position={[
-              taskIndex < 2
-                ? taskIndex * 2 - 4 * (-topicIndex + 1)
-                : (taskIndex - 2) * 2 - 4 * (-topicIndex + 1),
-              -1.84,
-              taskIndex < 2 ? -0.55 : 0.55,
-            ]}
-            fontSize={0.2}
-          >
+          <DreiText rotation={[-Math.PI / 2, 0, Math.PI / 2]} position={[taskIndex < 2 ? taskIndex * 2 - 4 * (-topicIndex + 1) : (taskIndex - 2) * 2 - 4 * (-topicIndex + 1), -1.84, taskIndex < 2 ? -0.55 : 0.55]} fontSize={0.2}>
             {task.label}
           </DreiText>
         );
@@ -1267,7 +978,6 @@ const Scene = (props) => {
 
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
-
 
   return (
     <>
@@ -1290,65 +1000,32 @@ const Scene = (props) => {
             (subtopicIndex) => subsubTasks[subtopicIndex]
           )}
         </group> */}
-        <group scale-y={3}>
-          {Object.keys(topic1Tasks).map(
-            (subtopicIndex) => topic1Tasks[subtopicIndex]
-          )}
-        </group>
+        <group scale-y={3}>{Object.keys(topic1Tasks).map((subtopicIndex) => topic1Tasks[subtopicIndex])}</group>
         <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
-          {Object.keys(topic2Tasks).map(
-            (subtopicIndex) => topic2Tasks[subtopicIndex]
-          )}
+          {Object.keys(topic2Tasks).map((subtopicIndex) => topic2Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} position={[27, 0, 0]}>
-          {Object.keys(topic3Tasks).map(
-            (subtopicIndex) => topic3Tasks[subtopicIndex]
-          )}
+          {Object.keys(topic3Tasks).map((subtopicIndex) => topic3Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[40, 0, 0]}>
-          {Object.keys(topic4Tasks).map(
-            (subtopicIndex) => topic4Tasks[subtopicIndex]
-          )}
+          {Object.keys(topic4Tasks).map((subtopicIndex) => topic4Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} position={[54, 0, 0]}>
-          {Object.keys(topic5Tasks).map(
-            (subtopicIndex) => topic5Tasks[subtopicIndex]
-          )}
+          {Object.keys(topic5Tasks).map((subtopicIndex) => topic5Tasks[subtopicIndex])}
         </group>
       </group>
       {/* {waterfalls} */}
       <mesh ref={dummyRef}>
         <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-        <meshBasicMaterial
-          transparent
-          opacity={0}
-          attach="material"
-          color="black"
-        />
+        <meshBasicMaterial transparent opacity={0} attach="material" color="black" />
       </mesh>
       <pointLight position={[0, 10, 0]} intensity={1} />
-      <Grid
-        renderOrder={-1}
-        position={[0, -1.85, 0]}
-        infiniteGrid={true}
-        cellSize={0.5}
-        cellThickness={0.6}
-        sectionSize={2}
-        sectionThickness={1.5}
-        sectionColor={[0.5, 0.5, 10]}
-        fadeDistance={80}
-      />
-      <OrbitControls
-        enablePan={true}
-        zoomSpeed={0.3}
-        rotateSpeed={0.4}
-        maxPolarAngle={Math.PI / 2}
-      />
+      <Grid renderOrder={-1} position={[0, -1.85, 0]} infiniteGrid={true} cellSize={0.5} cellThickness={0.6} sectionSize={2} sectionThickness={1.5} sectionColor={[0.5, 0.5, 10]} fadeDistance={80} />
+      <OrbitControls enablePan={true} zoomSpeed={0.3} rotateSpeed={0.4} maxPolarAngle={Math.PI / 2} />
       <EffectComposer disableNormalPass>
         <Bloom luminanceThreshold={2} mipmapBlur />
       </EffectComposer>
       <Environment background preset="sunset" blur={0.8} />
     </>
   );
-          
 };

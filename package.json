@@ -33,6 +33,7 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.1",
     "simplex-noise": "^4.0.1",
+    "socket.io-client": "^4.6.0",
     "three": "0.148.0",
     "web3modal": "^1.9.12",
     "zustand": "^4.3.2"
