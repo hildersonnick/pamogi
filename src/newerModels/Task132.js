@@ -7,7 +7,7 @@ export default function Model(props) {
     <group {...props} dispose={null}>
       <group
         position={[18.54, 0, -20.06]}
-        rotation={[0, Math.PI / 2, 0]}
+        rotation={[props.rotate, Math.PI / 2, 0]}
         scale={[0.81, 0.79, 0.96]}
       >
         <mesh
