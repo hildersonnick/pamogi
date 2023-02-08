@@ -29,3 +29,5 @@ function Progress({filler, dept, background, fillerColor}) {
 }
 
 export default Progress
+
+
