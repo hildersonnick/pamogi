@@ -272,6 +272,19 @@ const Scene = (props) => {
   const [topic4Tasks, setTopic4Tasks] = useState({});
   const [topic5Tasks, setTopic5Tasks] = useState({});
 
+  const theTopicIndex = useStore((state) => state.topicIndex);
+  const theSubtopicIndex = useStore((state) => state.subtopicIndex);
+  const theTaskIndex = useStore((state) => state.taskIndex);
+  const setTopicIndex = useStore((state) => state.setTopicIndex);
+  const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
+  const setTaskIndex = useStore((state) => state.setTaskIndex);
+
+  const handleTaskIndexer = (topicIndex, subtopicIndex, taskIndex) => {
+    setTopicIndex(topicIndex);
+    setSubtopicIndex(subtopicIndex);
+    setTaskIndex(taskIndex);
+  };
+
   useEffect(() => {
     if (
       props.mockdata.length === 1 ||
@@ -305,6 +318,16 @@ const Scene = (props) => {
                       <TaskComponent
                         key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                         rotate={0}
+                        onClick={
+                          () =>
+                            handleTaskIndexer(
+                              topicIndex,
+                              subtopicIndex,
+                              taskIndex
+                            )
+                          // console.log(topicIndex, subtopicIndex, taskIndex)
+                        }
+                        progress={task.progress}
                       />
                     );
                   }
@@ -332,6 +355,14 @@ const Scene = (props) => {
                         <TaskComponent
                           key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                           rotate={Math.PI}
+                          onClick={() =>
+                            handleTaskIndexer(
+                              topicIndex,
+                              subtopicIndex,
+                              taskIndex
+                            )
+                          }
+                          progress={task.progress}
                         />
                       </>
                     );
@@ -359,6 +390,14 @@ const Scene = (props) => {
                       <TaskComponent
                         key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                         rotate={0}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
                       />
                     );
                   }
@@ -385,6 +424,14 @@ const Scene = (props) => {
                       <TaskComponent
                         key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                         rotate={Math.PI}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
                       />
                     );
                   }
@@ -411,6 +458,14 @@ const Scene = (props) => {
                       <TaskComponent
                         key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                         rotate={0}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
                       />
                     );
                   }
@@ -1247,7 +1302,6 @@ const Scene = (props) => {
 
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
-
   return (
     <>
       {allText}
@@ -1269,7 +1323,7 @@ const Scene = (props) => {
             (subtopicIndex) => subsubTasks[subtopicIndex]
           )}
         </group> */}
-        <group scale-y={3}>
+        <group scale-y={5}>
           {Object.keys(topic1Tasks).map(
             (subtopicIndex) => topic1Tasks[subtopicIndex]
           )}
