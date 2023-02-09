@@ -1,36 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-  Group,
-  Box,
-  Collapse,
-  ThemeIcon,
-  Text,
-  UnstyledButton,
-  createStyles,
-  Button,
-  Stack,
-  Center,
-  Indicator,
-} from "@mantine/core";
-import {
-  TablerIcon,
-  IconCalendarStats,
-  IconChevronLeft,
-  IconChevronRight,
-} from "@tabler/icons";
+import { Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, createStyles, Button, Stack, Center, Indicator } from "@mantine/core";
+import { TablerIcon, IconCalendarStats, IconChevronLeft, IconChevronRight } from "@tabler/icons";
 import "../styles.css";
 import { BsPlusSquareDotted } from "react-icons/bs";
 import useStore from "../store";
 import { GiWaterfall } from "react-icons/gi";
 import { Dialog, TextInput } from "@mantine/core";
-import {
-  Avatar,
-  Badge,
-  Table,
-  Select,
-  ScrollArea,
-  SegmentedControl,
-} from "@mantine/core";
+import { Avatar, Badge, Table, Select, ScrollArea, SegmentedControl } from "@mantine/core";
+import { socket } from "../index.js";
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -45,12 +22,8 @@ const useStyles = createStyles((theme) => ({
     fontSize: theme.fontSizes.sm,
 
     "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? "rgba(47, 17, 56,0.1)"
-          : "rgba(47, 17, 56,0.1)",
-      color:
-        theme.colorScheme === "dark" ? "rgba(47, 17, 56,0.5)" : theme.black,
+      backgroundColor: theme.colorScheme === "dark" ? "rgba(47, 17, 56,0.1)" : "rgba(47, 17, 56,0.1)",
+      color: theme.colorScheme === "dark" ? "rgba(47, 17, 56,0.5)" : theme.black,
     },
   },
 
@@ -63,15 +36,10 @@ const useStyles = createStyles((theme) => ({
     marginLeft: 30,
     fontSize: theme.fontSizes.sm,
     color: theme.colorScheme === "dark" ? "white" : "white",
-    borderLeft: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
+    borderLeft: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]}`,
 
     "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[7]
-          : "rgba(47, 17, 56,0.1)",
+      backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : "rgba(47, 17, 56,0.1)",
       color: theme.colorScheme === "dark" ? theme.white : theme.black,
     },
   },
@@ -81,15 +49,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function LinksGroup({
-  icon: Icon,
-  label,
-  initiallyOpened,
-  links,
-  index,
-  tasks,
-  subtasks,
-}) {
+export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, tasks, subtasks }) {
   const [opened2, setOpened2] = useState(false);
   const mockData = useStore((state) => state.mockData);
   const setMockData = useStore((state) => state.setMockData);
@@ -108,13 +68,7 @@ export function LinksGroup({
   const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
     <>
       <Group position="apart">
-        <Text
-          component="a"
-          className={classes.link}
-          href={link.link}
-          key={link.label}
-          onClick={(event) => handleLabelClick(event, index, subtopicIndex)}
-        >
+        <Text component="a" className={classes.link} href={link.link} key={link.label} onClick={(event) => handleLabelClick(event, index, subtopicIndex)}>
           {link.label}
         </Text>
 
@@ -128,11 +82,7 @@ export function LinksGroup({
           color="teal"
           compact
         >
-          Add Task (
-          {links[subtopicIndex].tasks === undefined
-            ? 0
-            : links[subtopicIndex].tasks?.length}
-          )
+          Add Task ({links[subtopicIndex].tasks === undefined ? 0 : links[subtopicIndex].tasks?.length})
         </Button>
       </Group>
     </>
@@ -140,12 +90,7 @@ export function LinksGroup({
 
   const handleAddSubsubTask = () => {
     setSubsubMax(subsubMax + 1);
-    if (
-      mockData.length > 0 &&
-      mockData[parentIndex] &&
-      mockData[parentIndex].links &&
-      mockData[parentIndex].links.length > 0
-    ) {
+    if (mockData.length > 0 && mockData[parentIndex] && mockData[parentIndex].links && mockData[parentIndex].links.length > 0) {
       const updatedTopics = [...mockData];
       updatedTopics[parentIndex] = {
         ...updatedTopics[parentIndex],
@@ -163,6 +108,7 @@ export function LinksGroup({
           ...updatedTopics[parentIndex].links.slice(subIndex + 1),
         ],
       };
+      socket.emit("newHandleAddSubTask",updatedTopics);
       setMockData(updatedTopics);
       setTaskName("");
       setOpened2(false);
@@ -170,6 +116,7 @@ export function LinksGroup({
   };
   const [subIndex, setSubIndex] = useState(null);
   const handleSubsubTask = (event, topicIndex, subtopicIndex) => {
+
     event.stopPropagation();
     setDialogState("subsubtask");
     setOpened2(true);
@@ -177,16 +124,43 @@ export function LinksGroup({
     setSubIndex(subtopicIndex);
   };
 
+  useEffect(() => {
+    socket.on("handleAddSubtopic", (updatedTopics) => {
+      for(let i =0;i<updatedTopics.length;i++){
+        updatedTopics[i].icon = GiWaterfall;
+      }
+      setMockData(updatedTopics);
+    });
+
+    socket.on("handleAddMainTask", (updatedTopics) => {
+      for(let i =0;i<updatedTopics.length;i++){
+        updatedTopics[i].icon = GiWaterfall;
+      }
+      setMockData(updatedTopics);
+    });
+
+    socket.on("handleAddSubTask", (updatedTopics) => {
+      for(let i =0;i<updatedTopics.length;i++){
+        updatedTopics[i].icon = GiWaterfall;
+      }
+      setMockData(updatedTopics);
+    });
+
+    return () => {
+      socket.off("handleAddSubtopic");
+      socket.off("handleAddMainTask");
+      socket.off("handleAddSubTask");
+    };
+
+  }, [mockData]);
+
   const handleAddSubtopic = () => {
-    
     const updatedTopics = [...mockData];
     updatedTopics[parentIndex] = {
       ...updatedTopics[parentIndex],
-      links: [
-        ...updatedTopics[parentIndex].links,
-        { label: taskName, link: "/" },
-      ],
+      links: [...updatedTopics[parentIndex].links, { label: taskName, link: "/" }],
     };
+    socket.emit("newHandleAddSubtopic", updatedTopics);
     setMockData(updatedTopics);
     setTaskName("");
     setOpened2(false);
@@ -201,14 +175,14 @@ export function LinksGroup({
   const [parentIndex, setParentIndex] = useState(null);
 
   const handleAddSubTask = (event, index) => {
+    console.log("main task")
     const updatedTopics = [...mockData];
     updatedTopics[parentIndex] = {
       ...updatedTopics[parentIndex],
-      tasks: [
-        ...updatedTopics[parentIndex].tasks,
-        { tasks: parentIndex, label: taskName },
-      ],
+      tasks: [...updatedTopics[parentIndex].tasks, { tasks: parentIndex, label: taskName }],
     };
+
+    socket.emit("newHandleAddMainTask",updatedTopics)
     setMockData(updatedTopics);
     setTaskName("");
     setOpened2(false);
@@ -323,14 +297,7 @@ export function LinksGroup({
 
   return (
     <>
-      <Dialog
-        onClose={() => setOpened3(false)}
-        opened={opened3}
-        size="lg"
-        radius="md"
-        position={{ top: 20, right: 20 }}
-        withCloseButton
-      >
+      <Dialog onClose={() => setOpened3(false)} opened={opened3} size="lg" radius="md" position={{ top: 20, right: 20 }} withCloseButton>
         {/* <Stack>
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Topic: {mockData[controlTopic]?.links[controlSubTopic]?.label}
@@ -345,12 +312,7 @@ export function LinksGroup({
           </Text>
         </Stack> */}
         <Center>
-          <Text
-            td="underline"
-            size="sm"
-            style={{ marginBottom: 10 }}
-            weight={500}
-          >
+          <Text td="underline" size="sm" style={{ marginBottom: 10 }} weight={500}>
             {mockData[controlTopic]?.links[controlSubTopic]?.label}
           </Text>
         </Center>
@@ -370,13 +332,7 @@ export function LinksGroup({
         </ScrollArea>
       </Dialog>
 
-      <Dialog
-        opened={opened2}
-        withCloseButton
-        onClose={() => setOpened2(false)}
-        size="lg"
-        radius="md"
-      >
+      <Dialog opened={opened2} withCloseButton onClose={() => setOpened2(false)} size="lg" radius="md">
         {dialogState === "subtask" && (
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Add Task to {label}
@@ -394,30 +350,9 @@ export function LinksGroup({
         )}
 
         <Group align="flex-end">
-          {dialogState === "subtask" && (
-            <TextInput
-              placeholder="New Task"
-              style={{ flex: 1 }}
-              onChange={(e) => setTaskName(e.target.value)}
-              value={taskName}
-            />
-          )}
-          {dialogState === "subtopic" && (
-            <TextInput
-              placeholder="New Subtopic"
-              style={{ flex: 1 }}
-              onChange={(e) => setTaskName(e.target.value)}
-              value={taskName}
-            />
-          )}
-          {dialogState === "subsubtask" && (
-            <TextInput
-              placeholder="New Task"
-              style={{ flex: 1 }}
-              onChange={(e) => setTaskName(e.target.value)}
-              value={taskName}
-            />
-          )}
+          {dialogState === "subtask" && <TextInput placeholder="New Task" style={{ flex: 1 }} onChange={(e) => setTaskName(e.target.value)} value={taskName} />}
+          {dialogState === "subtopic" && <TextInput placeholder="New Subtopic" style={{ flex: 1 }} onChange={(e) => setTaskName(e.target.value)} value={taskName} />}
+          {dialogState === "subsubtask" && <TextInput placeholder="New Task" style={{ flex: 1 }} onChange={(e) => setTaskName(e.target.value)} value={taskName} />}
           {dialogState === "subtask" && (
             <Button variant="light" color="violet" onClick={handleAddSubTask}>
               Submit
@@ -429,20 +364,13 @@ export function LinksGroup({
             </Button>
           )}
           {dialogState === "subsubtask" && (
-            <Button
-              variant="light"
-              color="violet"
-              onClick={handleAddSubsubTask}
-            >
+            <Button variant="light" color="violet" onClick={handleAddSubsubTask}>
               Submit
             </Button>
           )}
         </Group>
       </Dialog>
-      <UnstyledButton
-        onClick={() => setOpened((o) => !o)}
-        className={classes.control}
-      >
+      <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
         <Group position="apart" spacing={0}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThemeIcon color="violet" variant="light" size={30}>
@@ -451,14 +379,7 @@ export function LinksGroup({
             <Box ml="md">{label}</Box>
           </Box>
 
-          <Button
-            disabled={maxTasks}
-            onClick={(e) => handleSubTask(e, index)}
-            size="xs"
-            variant="outline"
-            color="teal"
-            compact
-          >
+          <Button disabled={maxTasks} onClick={(e) => handleSubTask(e, index)} size="xs" variant="outline" color="teal" compact>
             Add Task ({count})
           </Button>
 
@@ -468,9 +389,7 @@ export function LinksGroup({
               size={14}
               stroke={1.5}
               style={{
-                transform: opened
-                  ? `rotate(${theme.dir === "rtl" ? -90 : 90}deg)`
-                  : "none",
+                transform: opened ? `rotate(${theme.dir === "rtl" ? -90 : 90}deg)` : "none",
               }}
             />
           )}
@@ -481,16 +400,7 @@ export function LinksGroup({
           {/* <Stack> */}
           {items}
           <Center>
-            <Button
-              size="xs"
-              disabled={maxLinks}
-              mt={20}
-              mb={20}
-              onClick={() => handleSubtopic(index)}
-              variant="light"
-              color="violet"
-              rightIcon={<BsPlusSquareDotted color="violet" />}
-            >
+            <Button size="xs" disabled={maxLinks} mt={20} mb={20} onClick={() => handleSubtopic(index)} variant="light" color="violet" rightIcon={<BsPlusSquareDotted color="violet" />}>
               Add Subtopic
             </Button>
           </Center>

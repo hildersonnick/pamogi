@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, Stage, Grid, OrbitControls, Environment, Hud, Text as DreiText } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
@@ -33,6 +32,7 @@ import Tree11 from "./newerModels/Tree11";
 import Tree12 from "./newerModels/Tree12";
 import Tree13 from "./newerModels/Tree13";
 import Tree14 from "./newerModels/Tree14";
+import Mogi from "./models/Mogi";
 import Task111 from "./newerModels/Task111";
 import Task112 from "./newerModels/Task112";
 import Task113 from "./newerModels/Task113";
@@ -92,10 +92,26 @@ export default function App() {
   //   //   ],
   //   // },
   // ]);
+  const mockdata = useStore((state) => state.mockData);
 
-  // const mockdata = useStore((state) => state.mockData);
-  // const setMockData = useStore((state) => state.setMockData);
-  const [mockdata, setMockData] = useState(useStore((state) => state.mockData));
+  const setMockData = useStore((state) => state.setMockData);
+  //const [mockdata, setMockData] = useState(useStore((state) => state.mockData));
+
+  useEffect(() => {
+    socket.on("innitMockData", (data) => {
+      for (let i = 0; i < data.length; i++) {
+        data[i].icon = GiWaterfall;
+      }
+      setMockData(data);
+    });
+
+    return () => {
+      socket.off("innitMockData");
+    };
+  }, []);
+
+  // console.log("mockdata is", mockdata);
+
   const { classes } = useStyles();
 
   const [links, setLinks] = useState([]);
@@ -117,25 +133,25 @@ export default function App() {
   }, [mockdata]);
 
   useEffect(() => {
-    socket.on("handleAddTopic", function (newTopic) {
+    socket.on("handleAddTopic", (newTopic) => {
       const topic = {
         index: mockdata.length,
         label: newTopic.label,
         icon: GiWaterfall,
         initiallyOpened: false,
-        links: [],
-        tasks: [],
-        subtasks: [],
+        links: newTopic.links,
+        tasks: newTopic.tasks,
+        subtasks: newTopic.subtasks,
         status: "Initialized",
       };
       // setmockdata2([...mockdata, topic]);
-      setMockData((oldMockdata) => [...oldMockdata, topic]);
+      setMockData([...mockdata, topic]);
     });
 
     return () => {
       socket.off("handleAddTopic");
     };
-  }, []);
+  }, [mockdata]);
 
   const [opened, setOpened] = useState(false);
   const [topicName, setTopicName] = useState("");
@@ -159,11 +175,49 @@ export default function App() {
     socket.emit("newHandleAddTopic", newTopic);
 
     // setmockdata2([...mockdata2, newTopic]);
-    setMockData((oldMockdata) => [...oldMockdata, newTopic]);
+    setMockData([...mockdata, newTopic]);
     setTopicName("");
   };
 
   const [navIndex, setNavIndex] = useState(0);
+  const [cameraPos, setCameraPos] = useState([15, 15, 10]);
+  const [playersPos, setPlayersPosition] = useState([]);
+
+  // useEffect(() => {
+  //   socket.on("receiveNewPos"),
+  //     (value) => {
+  //       console.log("rec");
+  //       setPlayersPosition(value);
+  //     };
+  //   return () => {
+  //     socket.off("receiveNewPos");
+  //   };
+  // }, []);
+
+  function Camera(props) {
+    const camera = useThree((state) => state.camera);
+
+    socket.on("receiveNewPos", (value) => {
+      setPlayersPosition(value);
+      console.log(value);
+    });
+
+    useFrame(() => {
+      let pos = [camera.position.x, camera.position.y, camera.position.z];
+
+      // console.log([pos[0], cameraPos[0]])
+
+      if (Math.abs(pos[0] - cameraPos[0]) > 1 || Math.abs(pos[1] - cameraPos[1]) > 1 || Math.abs(pos[2] - cameraPos[2]) > 1) {
+        if (pos) {
+          socket.emit("handleNewPos", pos);
+          setCameraPos(pos);
+        }
+      }
+
+      //
+    });
+    return <></>;
+  }
 
   if (dashboardVisible == true) {
     return <Dashboard setDashboardVisible={setDashboardVisible} />;
@@ -212,15 +266,10 @@ export default function App() {
             </Center>
           </Navbar.Section>
         </Navbar>
-        <Canvas
-          gl={{ logarithmicDepthBuffer: true }}
-          shadows
-          camera={{
-            position: [15, 15, 10],
-            fov: 25,
-          }}
-        >
-          <Scene navIndex={navIndex} mockdata={mockdata} />
+        <Canvas gl={{ logarithmicDepthBuffer: true }} shadows>
+          <Camera fov={25} position={[15, 15, 10]} />
+
+          <Scene navIndex={navIndex} mockdata={mockdata} playersPos={playersPos} />
         </Canvas>
       </>
     );
@@ -857,7 +906,7 @@ const Scene = (props) => {
         );
       }
     }
-  }, [props.mockdata]);
+  }, [props.mockdata, props.playersPos]);
 
   const dummyRef = useRef();
   let vec = new THREE.Vector3();
@@ -983,8 +1032,17 @@ const Scene = (props) => {
     <>
       {allText}
 
+      {Object.keys(props.playersPos).map((index) => (
+        <Mogi player={props.playersPos[index]} socket={socket} />
+      ))}
       <group position={[-7, -1.85, 0]} scale={0.3}>
         <Waterfall />
+        {/* <Mogi> </Mogi>; */}
+
+        {/* 
+        {props.playersPos.map((player, index) => {
+          console.log("players", props.playersPos);
+        })} */}
         {branchOne}
         {branchTwo}
         {branchThree}
@@ -1019,6 +1077,7 @@ const Scene = (props) => {
         <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
         <meshBasicMaterial transparent opacity={0} attach="material" color="black" />
       </mesh>
+
       <pointLight position={[0, 10, 0]} intensity={1} />
       <Grid renderOrder={-1} position={[0, -1.85, 0]} infiniteGrid={true} cellSize={0.5} cellThickness={0.6} sectionSize={2} sectionThickness={1.5} sectionColor={[0.5, 0.5, 10]} fadeDistance={80} />
       <OrbitControls enablePan={true} zoomSpeed={0.3} rotateSpeed={0.4} maxPolarAngle={Math.PI / 2} />

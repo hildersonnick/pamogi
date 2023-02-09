@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 export let socket = io("ws://localhost:9000");
 socket.emit("connected", socket.id);
 
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
