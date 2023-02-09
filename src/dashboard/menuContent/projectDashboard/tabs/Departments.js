@@ -39,6 +39,3 @@ const dashboardTabDepartments = () => {
 }
 
 export default dashboardTabDepartments
-
-
-
