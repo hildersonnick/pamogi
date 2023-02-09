@@ -1,6 +1,16 @@
 import { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF, Stage, Grid, OrbitControls, Environment, Hud, Text as DreiText } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
+import { v4 as uuidv4 } from 'uuid';
+import {
+  useGLTF,
+  Stage,
+  Grid,
+  OrbitControls,
+  Environment,
+  Hud,
+  Text as DreiText,
+} from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
 import * as THREE from "three";
@@ -39,7 +49,7 @@ import Task113 from "./newerModels/Task113";
 import Task114 from "./newerModels/Task114";
 import Task115 from "./newerModels/Task115";
 import { Dialog, TextInput, Text } from "@mantine/core";
-
+import { createClient } from '@supabase/supabase-js'
 import useStore from "./store";
 import { socket } from "./index.js";
 
@@ -113,6 +123,9 @@ export default function App() {
   // console.log("mockdata is", mockdata);
 
   const { classes } = useStyles();
+  const supabase = createClient("https://rgcevqebcazzqaumgwnh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnY2V2cWViY2F6enFhdW1nd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzQ5ODkyNjAsImV4cCI6MTk5MDU2NTI2MH0.UjirHUUhj_Y8qaLM41pxPNG49n_jRVst0zDubKG0vEg")
+
+  
 
   const [links, setLinks] = useState([]);
 
@@ -156,6 +169,36 @@ export default function App() {
   const [opened, setOpened] = useState(false);
   const [topicName, setTopicName] = useState("");
 
+  async function addTopic() {
+
+    const current = new Date();
+    let month = `${current.getMonth()+1}`;
+    let day = `${current.getDate()}`;
+    const year = `${current.getFullYear()}`;
+
+    if (month.length < 2) {
+      month = '0' + month;
+}
+  if (day.length < 2) {
+      day = '0' + day;
+  }
+  const date = [day, month, year].join('-');
+
+    await supabase
+      .from("projects_sample")
+      .insert([
+        {
+          id: uuidv4(),
+          created_at: date,
+          title: topicName,
+          created_by: "123e4567-e89b-12d3-a456-426614174000"
+        },
+      ]) // Insert the new task
+      .single();
+
+      console.log("added to db")
+  }
+
   const handleAddTopic = () => {
     setOpened(false);
 
@@ -177,6 +220,10 @@ export default function App() {
     // setmockdata2([...mockdata2, newTopic]);
     setMockData([...mockdata, newTopic]);
     setTopicName("");
+
+    console.log("added to mockdata")
+
+    addTopic()
   };
 
   const [navIndex, setNavIndex] = useState(0);
