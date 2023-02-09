@@ -72,7 +72,7 @@ export default function Model(props) {
         <group
           position={[15.2, 0, -5.79]}
           rotation={[props.rotate, Math.PI / 2, 0]}
-          scale={[0.81 / 1.2, 0.79 / 5, 0.96 / 1.2]}
+          scale={[0.81 / 2, 0.79 / 5, 0.96 / 2]}
         >
           <group position={[0, 0.92, 0]}>
             <mesh
@@ -98,7 +98,6 @@ export default function Model(props) {
 
     return (
       <group {...props} dispose={null}>
-        {/* <group scale={[0.5, 1, 1]}> */}
         <group
           position={[15.2, 0, -5.79]}
           rotation={[props.rotate, Math.PI / 2, 0]}
@@ -518,7 +517,6 @@ export default function Model(props) {
             />
           </group>
         </group>
-        {/* </group> */}
       </group>
     );
   }
