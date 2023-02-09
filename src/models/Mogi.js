@@ -7,9 +7,12 @@ export default function Model(props) {
   if (props.socket.id === props.player.socketId) {
     return <></>;
   } else {
+    let rot = [props.player.rotaionX, props.player.rotaionY, props.player.rotaionZ];
+    
+    console.log(props)
     return (
       <group {...props} dispose={null}>
-        <group position={[props.player.positionX, props.player.positionY, props.player.positionZ]}>
+        <group position={[props.player.positionX, props.player.positionY, props.player.positionZ] } rotation={rot}>
           <mesh castShadow receiveShadow geometry={nodes.Cube.geometry} material={materials["Material"]} />
         </group>
       </group>

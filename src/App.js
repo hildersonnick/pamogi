@@ -181,7 +181,9 @@ export default function App() {
 
   const [navIndex, setNavIndex] = useState(0);
   const [cameraPos, setCameraPos] = useState([15, 15, 10]);
+  const [cameraRot, setCameraRot] = useState([0, 0, 0]);
   const [playersPos, setPlayersPosition] = useState([]);
+  const [playersRot, setPlayersRotation] = useState([]);
 
   // useEffect(() => {
   //   socket.on("receiveNewPos"),
@@ -199,11 +201,18 @@ export default function App() {
 
     socket.on("receiveNewPos", (value) => {
       setPlayersPosition(value);
-      console.log(value);
+    });
+
+    socket.on("receiveNewRot", (value) => {
+      setPlayersRotation(value);
+      console.log(" values " + playersRot)
     });
 
     useFrame(() => {
       let pos = [camera.position.x, camera.position.y, camera.position.z];
+      let rot = [camera.rotation.x, camera.rotation.y, camera.rotation.z];
+
+      // console.log(rot, " rotation update")
 
       // console.log([pos[0], cameraPos[0]])
 
@@ -211,6 +220,14 @@ export default function App() {
         if (pos) {
           socket.emit("handleNewPos", pos);
           setCameraPos(pos);
+        }
+      }
+
+      if (Math.abs(rot[0] - cameraRot[0]) > 0.5 || Math.abs(rot[1] - cameraRot[1]) > 0.5 || Math.abs(rot[2] - cameraRot[2]) > 0.5) {
+        if (rot) {
+          console.log("rotation send")
+          socket.emit("handleNewRot", rot);
+          setCameraRot(rot);
         }
       }
 
