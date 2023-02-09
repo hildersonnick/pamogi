@@ -1,0 +1,18 @@
+Read me! 
+
+1) Open the folder localy
+2) Run "cd node_server"
+3) Run "npm i" in terminal
+4) Run "npm start"
+
+- Now the server is running Localy at "ws://localhost:9000"
+
+5) Open new terminal
+6) Run "npm i" in terminal
+7) Run "npm start"
+
+- Now the Client i running at "//localhost:3000"
+
+You can open several tabs on localhost:3000
+
+You can replace the cube with Mogi model, at: r3f-pamogi-new\src\models\Mogi.js
