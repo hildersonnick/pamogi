@@ -194,6 +194,8 @@ export default function App() {
     setMockData([...mockdata, newTopic]);
     setTopicName("");
 
+    console.log("added to mockdata")
+
     addTopic()
   };
   const [navIndex, setNavIndex] = useState(0);

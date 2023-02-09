@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { createClient } from '@supabase/supabase-js'
+import { v4 as uuidv4 } from 'uuid';
 import {
   Group,
   Box,
@@ -99,6 +101,10 @@ export function LinksGroup({
   const ChevronIcon = theme.dir === "ltr" ? IconChevronRight : IconChevronLeft;
   const [count, setCount] = useState(0);
   const [subTaskCount, setSubTaskCount] = useState(0);
+  const supabase = createClient("https://rgcevqebcazzqaumgwnh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnY2V2cWViY2F6enFhdW1nd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzQ5ODkyNjAsImV4cCI6MTk5MDU2NTI2MH0.UjirHUUhj_Y8qaLM41pxPNG49n_jRVst0zDubKG0vEg")
+  const [dbindex, setDbindex] = useState(0);
+
+
   useEffect(() => {
     if (tasks) {
       setCount(tasks.length);
@@ -138,6 +144,71 @@ export function LinksGroup({
     </>
   ));
 
+  async function addSubtopic() {
+    const current = new Date();
+    let month = `${current.getMonth()+1}`;
+    let day = `${current.getDate()}`;
+    const year = `${current.getFullYear()}`;
+    if (month.length < 2) {
+      month = '0' + month;
+    }
+    if (day.length < 2) {
+      day = '0' + day;
+    }
+    const date = [day, month, year].join('-');
+
+    await supabase
+      .from("subproject_sample")
+      .insert([
+        {
+          id: uuidv4(),
+          created_at: date,
+          title: taskName,
+          status: "incomplete",
+          from_project: "123e4567-e89b-12d3-a456-426614174000",
+          index: dbindex + 1,
+        },
+      ])
+      .single();
+
+      setDbindex(dbindex + 1)
+
+      console.log("added sub to db")
+      console.log()
+  }
+
+  async function addTask() {
+    const current = new Date();
+    let month = `${current.getMonth()+1}`;
+    let day = `${current.getDate()}`;
+    const year = `${current.getFullYear()}`;
+    if (month.length < 2) {
+      month = '0' + month;
+    }
+    if (day.length < 2) {
+      day = '0' + day;
+    }
+    const date = [day, month, year].join('-');
+
+    await supabase
+      .from("subsubproject_sample")
+      .insert([
+        {
+          id: uuidv4(),
+          created_at: date,
+          title: taskName,
+          status: "incomplete",
+          from_project: "123e4567-e89b-12d3-a456-426614174000",
+          parent: subIndex + 1
+        },
+      ])
+      .single();
+
+      console.log("added sub to db")
+      console.log(subIndex)
+  }
+
+
   const handleAddSubsubTask = () => {
     setSubsubMax(subsubMax + 1);
     if (
@@ -166,6 +237,7 @@ export function LinksGroup({
       setMockData(updatedTopics);
       setTaskName("");
       setOpened2(false);
+      addTask()
     }
   };
   const [subIndex, setSubIndex] = useState(null);
@@ -189,6 +261,7 @@ export function LinksGroup({
     setMockData(updatedTopics);
     setTaskName("");
     setOpened2(false);
+    addSubtopic()
   };
   const handleSubtopic = (index) => {
     setDialogState("subtopic");
@@ -418,12 +491,12 @@ export function LinksGroup({
             />
           )}
           {dialogState === "subtask" && (
-            <Button variant="light" color="violet" onClick={handleAddSubTask}>
+            <Button variant="light" color="violet" onClick={() => {handleAddSubTask()}}>
               Submit
             </Button>
           )}
           {dialogState === "subtopic" && (
-            <Button variant="light" color="violet" onClick={handleAddSubtopic}>
+            <Button variant="light" color="violet" onClick={() => {handleAddSubtopic()}}>
               Submit
             </Button>
           )}
