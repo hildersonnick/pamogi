@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
+import { v4 as uuidv4 } from 'uuid';
 import {
   useGLTF,
   Stage,
@@ -164,7 +165,7 @@ export default function App() {
       .from("projects_sample")
       .insert([
         {
-          id: 6,
+          id: uuidv4(),
           created_at: date,
           title: topicName,
           created_by: "123e4567-e89b-12d3-a456-426614174000"
