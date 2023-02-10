@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 
 export default function Model(props) {
+  console.log("task Mogel")
   const { nodes, materials } = useGLTF("/newerModels/task114.glb");
   return (
     <group {...props} dispose={null}>
