@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 import { Web3Button } from "./dashboard/UI/Web3Button";
 import 'react-toastify/dist/ReactToastify.css'
 
-export let socket = io("ws://localhost:9000");
+export let socket = io("ws://dev.division5.co:9000");
 socket.emit("connected", socket.id);
 
 
