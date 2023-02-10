@@ -18,7 +18,7 @@ const HeaderBar = (props) => {
     "Dao",
     "Jobs",
     "Introductions",
-    "Mindmap view",
+    "Mindmap",
     "Invite others",
   ];
   const width = 100 / headers.length;

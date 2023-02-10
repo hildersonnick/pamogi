@@ -2,13 +2,28 @@ import classes from './Departments.module.css'
 import { createClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { v4 as uuid } from 'uuid';
+import {Accordion} from '@material-ui/core';
+import {AccordionDetails} from '@material-ui/core';
+import {AccordionSummary} from '@material-ui/core';
+import {Typography} from '@material-ui/core';
+import {ExpandMore} from '@material-ui/icons';
+import {green} from '@material-ui/core/colors/green';
 
 const dashboardTabDepartments = () => {
     const [projects, setProjects] = useState()
     const [subprojects, setSubprojects] = useState()
     const [tasks, setTasks] = useState()
+    const [expanded, setExpanded] = useState(false);
     const unique_id = uuid();
     const small_id = unique_id.slice(0,8)
+    
+   
+
+    const handleChange =
+      (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+      };
+  
 
     useEffect(() => {
         const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY)
@@ -38,8 +53,8 @@ const dashboardTabDepartments = () => {
 
     if(projects != undefined && subprojects != undefined && tasks != undefined){
         return(
-            <div>
-              <div>
+    <div>
+        <div>
               <select className={classes['select']}>
                 {projects.map((projects, i) => {
                     return(
@@ -48,30 +63,40 @@ const dashboardTabDepartments = () => {
                 })}
             </select>
               </div>
-            <div className={classes['list']}>
-              {subprojects.map((subprojects, i) => {
-                  return(
-                      <div key={subprojects.id} className={classes['list-item']}>
-                          <div className={classes['list-item-title']}>
-                              {subprojects.title}
-                              <hr className={classes['hr']} />
-                          </div>
-                          <div className={classes['list-item-tasks']}>
-                              {tasks.map((tasks, i) => {
-                                  if(tasks.parent == subprojects.index){
-                                      return(
-                                          <div key={tasks.id} className={classes['list-item-task']}>
-                                              {tasks.title}
-                                          </div>
-                                      )
-                                  }
-                              })}
-                          </div>
-                      </div>
-                  )
-              })}
-            </div>
-            </div>
+      {subprojects.map((subproject,i)=>{
+
+        return(
+            <Accordion className={classes["accordion"]} expanded={expanded === `panel${i+1}`} onChange={handleChange(`panel${i+1}`)}>
+        <AccordionSummary
+          expandIcon={<ExpandMore style={{ color: 'rgb(171, 145, 187)' }}/>}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+          sx={{ color: '#fff' }}
+          
+          
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }} >
+            {subproject.index}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {tasks.map((task,i)=>{
+            if(task.parent == subproject.index){
+                console.log("SUB: " ,subprojects)
+                return(
+                    <AccordionDetails>
+          <Typography>
+            {task.title}
+          </Typography>
+        </AccordionDetails>
+                )
+            }
+          })}
+        </AccordionDetails>
+      </Accordion>
+        )
+      })}
+    </div>
         )
     }
 
