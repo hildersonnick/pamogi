@@ -15,6 +15,8 @@
     "@emotion/utils": "^1.2.0",
     "@mantine/core": "^5.10.3",
     "@mantine/hooks": "^5.10.3",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
     "@pmndrs/branding": "0.0.8",
     "@react-three/drei": "9.48.4",
     "@react-three/fiber": "8.9.1",
