@@ -7,6 +7,7 @@ import { PlayerData } from "./public/playerData.js";
 
 setServerInstance(new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } }));
 
+let port = process.env.PORT || 9000;
 io.on("connection", (socket) => {
   socket.on("connected", (arg) => {
     socket.join(room);
@@ -90,6 +91,6 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(9000, () => {
-  console.log("listening on *:9000");
+io.listen(port, () => {
+  console.log("listening on port " + port);
 });
