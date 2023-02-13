@@ -375,6 +375,19 @@ const Scene = (props) => {
   const [topic5Tasks, setTopic5Tasks] = useState({});
   const [placeholderProjects, setPlaceholderProjects] = useState(["Equilibrium Project", "Lorem Project", "Ipsum Project"]);
 
+  const theTopicIndex = useStore((state) => state.topicIndex);
+  const theSubtopicIndex = useStore((state) => state.subtopicIndex);
+  const theTaskIndex = useStore((state) => state.taskIndex);
+  const setTopicIndex = useStore((state) => state.setTopicIndex);
+  const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
+  const setTaskIndex = useStore((state) => state.setTaskIndex);
+
+  const handleTaskIndexer = (topicIndex, subtopicIndex, taskIndex) => {
+    setTopicIndex(topicIndex);
+    setSubtopicIndex(subtopicIndex);
+    setTaskIndex(taskIndex);
+  };
+
   useEffect(() => {
     if (props.mockdata.length === 1 || props.mockdata.length === 2 || props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       let topic1Tasks = {};
@@ -391,8 +404,25 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
-                    topic1Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic1Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                        rotate={0}
+                        onClick={
+                          () =>
+                            handleTaskIndexer(
+                              topicIndex,
+                              subtopicIndex,
+                              taskIndex
+                            )
+                          // console.log(topicIndex, subtopicIndex, taskIndex)
+                        }
+                        progress={task.progress}
+                      />
+                    );
                   }
                 }
               }
@@ -409,7 +439,18 @@ const Scene = (props) => {
                     const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
                     topic2Tasks[subtopicIndex].push(
                       <>
-                        <TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} />
+                        <TaskComponent
+                          key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                          rotate={Math.PI}
+                          onClick={() =>
+                            handleTaskIndexer(
+                              topicIndex,
+                              subtopicIndex,
+                              taskIndex
+                            )
+                          }
+                          progress={task.progress}
+                        />
                       </>
                     );
                   }
@@ -425,8 +466,23 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
-                    topic3Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic3Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                        rotate={0}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
+                      />
+                    );
                   }
                 }
               }
@@ -440,8 +496,23 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
-                    topic4Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} />);
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic4Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                        rotate={Math.PI}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
+                      />
+                    );
                   }
                 }
               }
@@ -455,8 +526,23 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
-                    topic5Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} />);
+                    const TaskComponent = require(`./newerModels/Task${1}${
+                      subtopicIndex + 1
+                    }${taskIndex + 1}`).default;
+                    topic5Tasks[subtopicIndex].push(
+                      <TaskComponent
+                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                        rotate={0}
+                        onClick={() =>
+                          handleTaskIndexer(
+                            topicIndex,
+                            subtopicIndex,
+                            taskIndex
+                          )
+                        }
+                        progress={task.progress}
+                      />
+                    );
                   }
                 }
               }
@@ -1091,7 +1177,6 @@ const Scene = (props) => {
 
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
-
   return (
     <>
       {allText}
@@ -1122,7 +1207,11 @@ const Scene = (props) => {
             (subtopicIndex) => subsubTasks[subtopicIndex]
           )}
         </group> */}
-        <group scale-y={3}>{Object.keys(topic1Tasks).map((subtopicIndex) => topic1Tasks[subtopicIndex])}</group>
+        <group scale-y={5}>
+          {Object.keys(topic1Tasks).map(
+            (subtopicIndex) => topic1Tasks[subtopicIndex]
+          )}
+        </group>
         <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
           {Object.keys(topic2Tasks).map((subtopicIndex) => topic2Tasks[subtopicIndex])}
         </group>

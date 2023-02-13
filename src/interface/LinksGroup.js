@@ -91,7 +91,13 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
   const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
     <>
       <Group position="apart">
-        <Text component="a" className={classes.link} href={link.link} key={link.label} onClick={(event) => handleLabelClick(event, index, subtopicIndex)}>
+        <Text
+          component="a"
+          className={classes.link}
+          href={link.link}
+          key={link.label}
+          // onClick={(event) => handleLabelClick(event, index, subtopicIndex)}
+        >
           {link.label}
         </Text>
 
@@ -319,16 +325,16 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
   const [controlTopic, setControlTopic] = useState();
   const [controlSubTopic, setControlSubTopic] = useState();
 
-  const handleLabelClick = (event, topicIndex, subtopicIndex) => {
-    event.preventDefault();
-    setOpened3(true);
-    // console.log(links);
+  // const handleLabelClick = (event, topicIndex, subtopicIndex) => {
+  //   event.preventDefault();
+  //   setOpened3(true);
+  //   // console.log(links);
 
-    setControlTopic(topicIndex);
-    setControlSubTopic(subtopicIndex);
-    // console.log(topicIndex, subtopicIndex);
-    // console.log(mockData[topicIndex].links[subtopicIndex].tasks);
-  };
+  //   setControlTopic(topicIndex);
+  //   setControlSubTopic(subtopicIndex);
+  //   // console.log(topicIndex, subtopicIndex);
+  //   // console.log(mockData[topicIndex].links[subtopicIndex].tasks);
+  // };
 
   // const rolesData = ["Initialized", "In Progress", "Completed"];
 
@@ -384,11 +390,71 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     )
     // ))
   );
+  const theTopicIndex = useStore((state) => state.topicIndex);
+  const theSubtopicIndex = useStore((state) => state.subtopicIndex);
+  const theTaskIndex = useStore((state) => state.taskIndex);
+  const setTopicIndex = useStore((state) => state.setTopicIndex);
+  const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
+  const setTaskIndex = useStore((state) => state.setTaskIndex);
+
+  // const [theTopicIndex] = useStore((state) => state.topicIndex);
+  // const [theSubtopicIndex] = useStore((state) => state.subtopicIndex);
+
+  useEffect(() => {
+    // console.log(theTopicIndex, theSubtopicIndex, theTaskIndex);
+    setOpened3(true);
+    console.log(
+      mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]
+    );
+  }, [theTopicIndex, theSubtopicIndex, theTaskIndex]);
+
+  const [segmentedValue, setSegmentedValue] = useState("initialized");
+  const setSegmentedValueTask = (value) => {
+    setSegmentedValue(value);
+    console.log(value);
+
+    if (
+      mockData.length > 0 &&
+      mockData[theTopicIndex] &&
+      mockData[theTopicIndex].links &&
+      mockData[theTopicIndex].links[theSubtopicIndex] &&
+      mockData[theTopicIndex].links[theSubtopicIndex].tasks &&
+      mockData[theTopicIndex].links[theSubtopicIndex].tasks.length > 0
+    ) {
+      const updatedTopics = [...mockData];
+      updatedTopics[theTopicIndex] = {
+        ...updatedTopics[theTopicIndex],
+        links: [
+          ...updatedTopics[theTopicIndex].links.slice(0, theSubtopicIndex),
+          {
+            ...updatedTopics[theTopicIndex].links[theSubtopicIndex],
+            tasks: [
+              ...updatedTopics[theTopicIndex].links[
+                theSubtopicIndex
+              ].tasks.slice(0, theTaskIndex),
+              {
+                ...updatedTopics[theTopicIndex].links[theSubtopicIndex].tasks[
+                  theTaskIndex
+                ],
+                progress: value,
+              },
+              ...updatedTopics[theTopicIndex].links[
+                theSubtopicIndex
+              ].tasks.slice(theTaskIndex + 1),
+            ],
+          },
+          ...updatedTopics[theTopicIndex].links.slice(theSubtopicIndex + 1),
+        ],
+      };
+      setMockData(updatedTopics);
+    }
+  };
 
   return (
     <>
-      <Dialog onClose={() => setOpened3(false)} opened={opened3} size="lg" radius="md" position={{ top: 20, right: 20 }} withCloseButton>
-        {/* <Stack>
+
+      {/* <Stack>
+
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Topic: {mockData[controlTopic]?.links[controlSubTopic]?.label}
           </Text>
@@ -401,26 +467,47 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
             )}
           </Text>
         </Stack> */}
-        <Center>
-          <Text td="underline" size="sm" style={{ marginBottom: 10 }} weight={500}>
-            {mockData[controlTopic]?.links[controlSubTopic]?.label}
-          </Text>
-        </Center>
-        <ScrollArea>
-          <Table
-            // sx={{ minWidth: 800, minHeight: 300 }}
-            verticalSpacing="sm"
+    
+      {mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks?.length > 0 && (
+        <>
+          <Dialog
+            onClose={() => setOpened3(false)}
+            opened={opened3}
+            size="lg"
+            radius="md"
+            position={{ top: 20, right: 20 }}
+            withCloseButton
           >
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>{rows}</tbody>
-          </Table>
-        </ScrollArea>
-      </Dialog>
+            <Center>
+              <Text
+                td="underline"
+                size="sm"
+                style={{ marginBottom: 10 }}
+                weight={500}
+              >
+                {
+                  mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks[
+                    theTaskIndex
+                  ]?.label
+                }
+              </Text>
+            </Center>
+            <Center>
+              <SegmentedControl
+                value={segmentedValue}
+                onChange={(segmentedValue) =>
+                  setSegmentedValueTask(segmentedValue)
+                }
+                data={[
+                  { label: "Initialized", value: "initialized" },
+                  { label: "In Progress", value: "progress" },
+                  { label: "Complete", value: "complete" },
+                ]}
+              />
+            </Center>
+          </Dialog>
+        </>
+      )}
 
       <Dialog opened={opened2} withCloseButton onClose={() => setOpened2(false)} size="lg" radius="md">
         {dialogState === "subtask" && (
