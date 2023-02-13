@@ -2,10 +2,14 @@ import classes from "./Departments.module.css";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { Accordion } from "@material-ui/core";
-import { AccordionDetails } from "@material-ui/core";
-import { AccordionSummary, Button } from "@material-ui/core";
-import { Typography } from "@material-ui/core";
+import {
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+  Accordion,
+  Button,
+  Card,
+} from "@material-ui/core";
 import { ExpandMore, Add } from "@material-ui/icons";
 
 import { green } from "@material-ui/core/colors/green";
@@ -64,85 +68,94 @@ const dashboardTabDepartments = () => {
             })}
           </select>
         </div>
+        <Card style={{padding:"30px 0px", backgroundColor:"#3A1D51", borderRadius:"15px"}} >
         {subprojects.map((subproject, i) => {
           return (
-            <Accordion
-              className={classes["accordion"]}
-              expanded={expanded === `panel${i + 1}`}
-              onChange={handleChange(`panel${i + 1}`)}
-            >
-              <AccordionSummary
-                expandIcon={
-                  <ExpandMore style={{ color: "rgb(171, 145, 187)" }} />
-                }
-                style={{ padding: "0px" }}
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-                sx={{ color: "#fff" }}
+            
+              <Accordion
+                className={classes["accordion"]}
+                expanded={expanded === `panel${i + 1}`}
+                onChange={handleChange(`panel${i + 1}`)}
               >
-                <Typography style={{ width: "5%", flexShrink: 0 }}>
-                  #{subproject.index}
-                </Typography>
-                <Typography style={{ width: "15%", flexShrink: 0 }}>
-                  Mr Dogi
-                </Typography>
-                <Typography style={{ width: "80%", flexShrink: 0 }}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex,
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails style={{ display: "block", marginTop:"10px", padding:"0px" }}>
-                <div
+                <AccordionSummary
+                  expandIcon={
+                    <ExpandMore style={{ color: "rgb(171, 145, 187)" }} />
+                  }
+                  style={{ padding: "0px" }}
+                  aria-controls="panel1bh-content"
+                  id="panel1bh-header"
+                  sx={{ color: "#fff", }}
+                >
+                  <Typography style={{ width: "5%", flexShrink: 0 }}>
+                    #{subproject.index}
+                  </Typography>
+                  <Typography style={{ width: "15%", flexShrink: 0 }}>
+                    Mr Dogi
+                  </Typography>
+                  <Typography style={{ width: "80%", flexShrink: 0 }}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Suspendisse malesuada lacus ex,
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                   
+                    display: "block",
+                    marginTop: "10px",
+                    padding: "0px",
                   }}
                 >
-                  <Typography style={{}}>Subtopics</Typography>
-                  <Button
-                    startIcon={<Add />}
-                    onClick={addSubtopicHandler}
-                    size="small"
+                  <div
                     style={{
-                      fontSize: "12px",
-                      color: "#ab91bb",
-                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
                     }}
-                    
-                    className={classes.button}
                   >
-                    Add a Subtopic
-                  </Button>
-                </div>
-                <hr
-                  style={{
-                    backgroundColor: "#ab91bb",
-                    height: "1px",
-                    backgroundColor: "#ab91bb",
-                    border: "none",
-                  }}
-                />
+                    <Typography style={{}}>Subtopics</Typography>
+                    <Button
+                      startIcon={<Add />}
+                      onClick={addSubtopicHandler}
+                      size="small"
+                      style={{
+                        fontSize: "12px",
+                        color: "#ab91bb",
+                        cursor: "pointer",
+                      }}
+                      className={classes.button}
+                    >
+                      Add a Subtopic
+                    </Button>
+                  </div>
+                  <hr
+                    style={{
+                      backgroundColor: "#ab91bb",
+                      height: "1px",
+                      backgroundColor: "#ab91bb",
+                      border: "none",
+                    }}
+                  />
 
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  {tasks.map((task, i) => {
-                    if (task.parent == subproject.index) {
-                      console.log("SUB: ", subprojects);
-                      return (
-                        <AccordionDetails style={{padding:"0px"}} >
-                          <Typography>{task.title}</Typography>
-                        </AccordionDetails>
-                      );
-                    }
-                  })}
-                </div>
-              </AccordionDetails>
-            </Accordion>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    {tasks.map((task, i) => {
+                      if (task.parent == subproject.index) {
+                        console.log("SUB: ", subprojects);
+                        return (
+                          <AccordionDetails style={{ padding: "0px" }}>
+                            <Typography>{task.title}</Typography>
+                          </AccordionDetails>
+                        );
+                      }
+                    })}
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            
           );
         })}
+        </Card>
       </div>
+      
     );
   }
 };
