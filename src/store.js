@@ -1,7 +1,9 @@
 import { create } from "zustand";
 
-const useStore = create((set) => ({
+const useStore = create((set) => (
+  {
   mockData: [],
+
   setMockData: (data) => set({ mockData: data }),
   topicIndex: 0,
   setTopicIndex: (index) => set({ topicIndex: index }),
@@ -9,6 +11,7 @@ const useStore = create((set) => ({
   setSubtopicIndex: (index) => set({ subtopicIndex: index }),
   taskIndex: 0,
   setTaskIndex: (index) => set({ taskIndex: index }),
+
 }));
 
 export default useStore;

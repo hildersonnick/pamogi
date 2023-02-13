@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .menuItem {
+    
+    flex: 1;
+    text-align: center;
+    padding: 0px;
+  }
+  .menuItem h4{
+    color: rgb(171,144,185) ;
+    cursor: pointer;
+    font-size: 0.89rem;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .menuBar {
+    height: 2px;
+    width: 100%;
+  }

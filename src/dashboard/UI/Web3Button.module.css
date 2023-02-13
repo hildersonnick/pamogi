@@ -1,0 +1,12 @@
+#connect {
+  position: absolute;
+  left: calc(50% - 50px);
+  top: 0;
+  width: 100px;
+  height: 50px;
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.6);
+  color: white;
+  border-style: none;
+  z-index: 1000;
+}

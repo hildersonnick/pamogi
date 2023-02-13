@@ -1,0 +1,69 @@
+.dash_project-selection_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+  margin-bottom: 40px;
+}
+.dash_project-selection_select {
+  float: left;
+  margin-right: 20px;
+  background-color: #411a53;
+  padding: 12px 20px;
+  border-radius: 20px;
+  color: rgb(231, 206, 254);
+  border: none;
+  cursor: pointer;
+}
+.dash_project-selection_create-button {
+  background-color: #c34594;
+  padding: 13px 20px;
+  border-radius: 20px;
+  color: rgb(231, 206, 254);
+  border: none;
+  cursor: pointer;
+}
+.switch_3d_button{
+  display: flex;
+  align-items: center;
+  background-color: rgb(60, 30, 80);
+  padding: 13px 20px;
+  margin-right: 15px;
+  border-radius: 20px;
+  color: rgb(171,144,185);
+  border: none;
+  cursor: pointer;
+}
+.switch_3d_button:hover{
+  background-color: rgb(50, 23, 69);
+}
+.dash_project-icon {
+  background-color: transparent;
+  fill: none;
+  color: rgb(171,144,185) ;
+  cursor: pointer;
+}
+.dash_project-icon:hover {
+  color: rgb(115, 91, 127) ;
+}
+.top_menu_right_elements{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 250px;
+  
+}
+
+.top_menu_right_elements .dash_project-selection_create-button,
+.top_menu_right_elements .dash_project-icon {
+  margin-right: 15px;
+}
+
+.top_menu_right_elements p{
+  color: #fff;
+  cursor: pointer;
+}
+.top_menu_right_elements p:hover{
+  color: rgb(115, 91, 127) ;
+  cursor: pointer;
+}
