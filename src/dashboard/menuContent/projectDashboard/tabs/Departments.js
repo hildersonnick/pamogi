@@ -6,7 +6,8 @@ import { Accordion } from "@material-ui/core";
 import { AccordionDetails } from "@material-ui/core";
 import { AccordionSummary, Button } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
-import { ExpandMore } from "@material-ui/icons";
+import { ExpandMore, Add } from "@material-ui/icons";
+
 import { green } from "@material-ui/core/colors/green";
 
 const dashboardTabDepartments = () => {
@@ -19,6 +20,9 @@ const dashboardTabDepartments = () => {
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+  const addSubtopicHandler = () => {
+    console.log("Subtopic adding checked");
   };
 
   useEffect(() => {
@@ -71,7 +75,7 @@ const dashboardTabDepartments = () => {
                 expandIcon={
                   <ExpandMore style={{ color: "rgb(171, 145, 187)" }} />
                 }
-                style={{ paddingLeft: "31px" }}
+                style={{ padding: "0px" }}
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
                 sx={{ color: "#fff" }}
@@ -87,35 +91,53 @@ const dashboardTabDepartments = () => {
                   Suspendisse malesuada lacus ex,
                 </Typography>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails style={{ display: "block", marginTop:"10px", padding:"0px" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    padding: "10px",
+                   
                   }}
                 >
-                  <Typography style={{ fontWeight: "bold" }}>
-                    Subtopics
-                  </Typography>
-                  <Button size="small"  color="#ab91bb">
+                  <Typography style={{}}>Subtopics</Typography>
+                  <Button
+                    startIcon={<Add />}
+                    onClick={addSubtopicHandler}
+                    size="small"
+                    style={{
+                      fontSize: "12px",
+                      color: "#ab91bb",
+                      cursor: "pointer",
+                    }}
+                    
+                    className={classes.button}
+                  >
                     Add a Subtopic
                   </Button>
                 </div>
-                <hr style={{ borderTop: "1px solid #e5e5e5" }} />
-                <div style={{display:"flex", justifyContent:"space-between"}} >
-                {tasks.map((task, i) => {
-                  if (task.parent == subproject.index) {
-                    console.log("SUB: ", subprojects);
-                    return (
-                      <AccordionDetails>
+                <hr
+                  style={{
+                    backgroundColor: "#ab91bb",
+                    height: "1px",
+                    backgroundColor: "#ab91bb",
+                    border: "none",
+                  }}
+                />
+
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  {tasks.map((task, i) => {
+                    if (task.parent == subproject.index) {
+                      console.log("SUB: ", subprojects);
+                      return (
+                        <AccordionDetails style={{padding:"0px"}} >
                           <Typography>{task.title}</Typography>
-                      </AccordionDetails>
-                    );
-                  } })}
+                        </AccordionDetails>
+                      );
+                    }
+                  })}
                 </div>
-                
-               
               </AccordionDetails>
             </Accordion>
           );

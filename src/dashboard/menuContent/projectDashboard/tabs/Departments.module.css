@@ -18,7 +18,12 @@
 .accordion{
     background-color:#3A1D51!important;
     color: #ab91bb!important;
+    padding: 10px 20px; 
 
+}
 
+.button:hover{
+    color: rgb(115, 91, 127)!important ;
+    cursor: pointer;
 }
 
