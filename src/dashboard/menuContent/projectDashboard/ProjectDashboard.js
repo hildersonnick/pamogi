@@ -1,4 +1,4 @@
-import HeaderBar from "../../UI/HeaderBar";
+import ProjectDashboardTabBar from "../../UI/ProjectDasboardTabBar";
 import { useEffect, useState } from "react";
 import Overview from './tabs/Overview'
 import Departments from './tabs/Departments'
@@ -14,11 +14,8 @@ const ProjectDashboard = (props) => {
 
   return (
     <>
-      <HeaderBar getHeaderData={handleHeaderData}  />
-      <div>
-        {headerData === "Overview" && <Overview />}
-        {headerData === "Departments" && <Departments />}
-      </div>
+      <ProjectDashboardTabBar   />
+    
     </>
   );
 };
