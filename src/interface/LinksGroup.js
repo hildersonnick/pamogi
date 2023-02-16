@@ -403,9 +403,6 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
   useEffect(() => {
     // console.log(theTopicIndex, theSubtopicIndex, theTaskIndex);
     setOpened3(true);
-    console.log(
-      mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]
-    );
   }, [theTopicIndex, theSubtopicIndex, theTaskIndex]);
 
   const [segmentedValue, setSegmentedValue] = useState("initialized");
