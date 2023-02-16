@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 
 import Overview from "../menuContent/projectDashboard/tabs/Overview";
 import Departments from "../menuContent/projectDashboard/tabs/Departments";
-import { Tabs, Tab, Accordion, Typography, Box } from "@material-ui/core";
+import Description from "../menuContent/projectDashboard/tabs/Description";
+import { Tabs, Tab, Typography, Box } from "@material-ui/core";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -54,7 +55,6 @@ const ProjectDashboardTabBar = (props) => {
           aria-label="project-dashboard-tabs"
           style={{ padding: 0}}
            TabIndicatorProps={{ style: { marginTop:"-5px", background: "#c34594",  height:"3px" } }}
-
         >
           <Tab
             label="Overview"
@@ -77,11 +77,12 @@ const ProjectDashboardTabBar = (props) => {
         <Overview />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <Description />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Departments />
       </TabPanel>
+
     </Box>
   );
 };

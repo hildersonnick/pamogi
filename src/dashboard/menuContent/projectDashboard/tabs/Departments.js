@@ -12,8 +12,6 @@ import {
 } from "@material-ui/core";
 import { ExpandMore, Add } from "@material-ui/icons";
 
-import { green } from "@material-ui/core/colors/green";
-
 const dashboardTabDepartments = () => {
   const [projects, setProjects] = useState();
   const [subprojects, setSubprojects] = useState();
@@ -68,10 +66,15 @@ const dashboardTabDepartments = () => {
             })}
           </select>
         </div>
-        <Card style={{padding:"30px 0px", backgroundColor:"#3A1D51", borderRadius:"15px"}} >
-        {subprojects.map((subproject, i) => {
-          return (
-            
+        <Card
+          style={{
+            padding: "30px 0px",
+            backgroundColor: "#3A1D51",
+            borderRadius: "15px",
+          }}
+        >
+          {subprojects.map((subproject, i) => {
+            return (
               <Accordion
                 className={classes["accordion"]}
                 expanded={expanded === `panel${i + 1}`}
@@ -84,7 +87,7 @@ const dashboardTabDepartments = () => {
                   style={{ padding: "0px" }}
                   aria-controls="panel1bh-content"
                   id="panel1bh-header"
-                  sx={{ color: "#fff", }}
+                  sx={{ color: "#fff" }}
                 >
                   <Typography style={{ width: "5%", flexShrink: 0 }}>
                     #{subproject.index}
@@ -150,12 +153,10 @@ const dashboardTabDepartments = () => {
                   </div>
                 </AccordionDetails>
               </Accordion>
-            
-          );
-        })}
+            );
+          })}
         </Card>
       </div>
-      
     );
   }
 };
