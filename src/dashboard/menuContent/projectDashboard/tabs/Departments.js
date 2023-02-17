@@ -1,16 +1,123 @@
 import classes from "./Departments.module.css";
+import React from "react";
+import PropTypes from "prop-types";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
-  AccordionDetails,
-  AccordionSummary,
+  Box,
+  Collapse,
   Typography,
-  Accordion,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
   Button,
   Card,
 } from "@material-ui/core";
-import { ExpandMore, Add } from "@material-ui/icons";
+import {
+  ExpandMore,
+  Add,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+} from "@material-ui/icons";
+import { MockData } from "./MockData";
+
+function Row(props) {
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <React.Fragment>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell
+          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          component="th"
+          scope="row"
+        >
+          {row.id}
+        </TableCell>
+        <TableCell
+          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          align="right"
+        >
+          {row.user}
+        </TableCell>
+        <TableCell
+          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          align="right"
+        >
+          {row.title}
+        </TableCell>
+        <TableCell  >
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUp style={{color:"white"}} /> : <KeyboardArrowDown style={{color:"white"}} />}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box style={{ margin: 1 }}>
+              <Typography style={{color: "rgb(231, 206, 254)"}} variant="h6" gutterBottom>
+                Subtopics
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  {row.subtopics.map((subTaskRow) => (
+                    <TableRow key={subTaskRow.id}>
+                      <TableCell
+                        style={{
+                          border:"none",
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                        }}
+                        component="th"
+                        scope="row"
+                      >
+                        {subTaskRow.id}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border:"none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                        }}
+                      >
+                        {subTaskRow.user}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border:"none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                        }}
+                        align="right"
+                      >
+                        {subTaskRow.title}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}
 
 const dashboardTabDepartments = () => {
   const [projects, setProjects] = useState();
@@ -56,9 +163,26 @@ const dashboardTabDepartments = () => {
     console.log("tasks->>", tasks);
   }, []);
 
+  Row.propTypes = {
+    row: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      user: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      subtopics: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number.isRequired,
+          user: PropTypes.string.isRequired,
+          title: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+    }).isRequired,
+  };
+
+  const rows = MockData;
+
   if (projects != undefined && subprojects != undefined && tasks != undefined) {
     return (
-      <div>
+      <>
         <div>
           <select className={classes["select"]}>
             {projects.map((projects, i) => {
@@ -66,97 +190,53 @@ const dashboardTabDepartments = () => {
             })}
           </select>
         </div>
-        <Card
-          style={{
-            padding: "30px 0px",
-            backgroundColor: "#3A1D51",
-            borderRadius: "15px",
-          }}
+        <TableContainer
+          style={{ backgroundColor: "#3a194d" }}
+          component={Paper}
         >
-          {subprojects.map((subproject, i) => {
-            return (
-              <Accordion
-                className={classes["accordion"]}
-                expanded={expanded === `panel${i + 1}`}
-                onChange={handleChange(`panel${i + 1}`)}
-              >
-                <AccordionSummary
-                  expandIcon={
-                    <ExpandMore style={{ color: "rgb(171, 145, 187)" }} />
-                  }
-                  style={{ padding: "0px" }}
-                  aria-controls="panel1bh-content"
-                  id="panel1bh-header"
-                  sx={{ color: "#fff" }}
-                >
-                  <Typography style={{ width: "5%", flexShrink: 0 }}>
-                    #{subproject.index}
-                  </Typography>
-                  <Typography style={{ width: "15%", flexShrink: 0 }}>
-                    Mr Dogi
-                  </Typography>
-                  <Typography style={{ width: "80%", flexShrink: 0 }}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Suspendisse malesuada lacus ex,
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell
                   style={{
-                    display: "block",
-                    marginTop: "10px",
-                    padding: "0px",
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
                   }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Typography style={{}}>Subtopics</Typography>
-                    <Button
-                      startIcon={<Add />}
-                      onClick={addSubtopicHandler}
-                      size="small"
-                      style={{
-                        fontSize: "12px",
-                        color: "#ab91bb",
-                        cursor: "pointer",
-                      }}
-                      className={classes.button}
-                    >
-                      Add a Subtopic
-                    </Button>
-                  </div>
-                  <hr
-                    style={{
-                      backgroundColor: "#ab91bb",
-                      height: "1px",
-                      backgroundColor: "#ab91bb",
-                      border: "none",
-                    }}
-                  />
-
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    {tasks.map((task, i) => {
-                      if (task.parent == subproject.index) {
-                        console.log("SUB: ", subprojects);
-                        return (
-                          <AccordionDetails style={{ padding: "0px" }}>
-                            <Typography>{task.title}</Typography>
-                          </AccordionDetails>
-                        );
-                      }
-                    })}
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
-        </Card>
-      </div>
+                  Topic #
+                </TableCell>
+                <TableCell
+                  style={{
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  User
+                </TableCell>
+                <TableCell
+                  style={{
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  Title
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <Row key={row.name} row={row} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
     );
   }
 };
