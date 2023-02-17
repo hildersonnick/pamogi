@@ -237,6 +237,8 @@ export default function App() {
 
     if (!cameraInit) {
       socket.on("receiveNewPos", value => {
+
+        console.log("coming player pos", value);
         setPlayersPosition(value);
       });
 
@@ -379,15 +381,7 @@ const Scene = props => {
   };
 
   useEffect(() => {
-    let x = {};
-    let i = 0;
-    props.playersPos.map(index => {
-      x[i] = [];
-      x[i].push(<Mogi player={index} socket={socket} />);
-      i++;
-    });
-    console.log(i);
-    setMogis(x);
+
 
     if (props.mockdata.length === 1 || props.mockdata.length === 2 || props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       let topic1Tasks = {};
@@ -1115,30 +1109,27 @@ const Scene = props => {
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
 
-  // let x = {};
-  // props.playersPos.map(index => {
-  //   x[index] = (<Mogi player={props.playersPos[index]} socket={socket} />);
-  // });
-  // setMogis(x);
-  // console.log(x);
 
   return (
     <>
       {allText}
 
-      {/* {Object.keys(props.playersPos).map(index => (
-        <Mogi player={props.playersPos[index]} socket={socket} />
-      ))} */}
-      <group>{Object.keys(mogis).map(i => mogis[i])}</group>
+      {
+        props.playersPos.map(index => {
+          console.log("rendering", index.socketId, socket.id);
+          
+          return <Mogi player={index} socket={socket.id} />
 
+        })
+    }
       <group position={[-7, -1.85, 0]} scale={0.3}>
-        <Waterfall />
-        {/* <Mogi> </Mogi>; */}
 
-        {/* 
-        {props.playersPos.map((player, index) => {
-          console.log("players", props.playersPos);
-        })} */}
+        {
+        console.log("another one")
+        }
+
+        <Waterfall />
+
         {branchOne}
         {branchTwo}
         {branchThree}
