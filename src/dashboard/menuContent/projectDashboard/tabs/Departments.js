@@ -30,45 +30,66 @@ import { MockData } from "./MockData";
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
+  const [secondOpen, setSecondOpen] = React.useState(false);
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell
-          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          style={{
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "10%",
+          }}
           component="th"
           scope="row"
         >
           {row.id}
         </TableCell>
         <TableCell
-          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          style={{
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "15%",
+          }}
           align="right"
         >
           {row.user}
         </TableCell>
         <TableCell
-          style={{ textAlign: "left", color: "rgb(231, 206, 254)" }}
+          style={{
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "70%",
+          }}
           align="right"
         >
           {row.title}
         </TableCell>
-        <TableCell  >
+        <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
             onClick={() => setOpen(!open)}
           >
-            {open ? <KeyboardArrowUp style={{color:"white"}} /> : <KeyboardArrowDown style={{color:"white"}} />}
+            {open ? (
+              <KeyboardArrowUp style={{ color: "white" }} />
+            ) : (
+              <KeyboardArrowDown style={{ color: "white" }} />
+            )}
           </IconButton>
         </TableCell>
       </TableRow>
 
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ padding: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
-              <Typography style={{color: "rgb(231, 206, 254)"}} variant="h6" gutterBottom>
+              <Typography
+                style={{ color: "rgb(231, 206, 254)", padding:"16px" }}
+                variant="h6"
+                gutterBottom
+              >
                 Subtopics
               </Typography>
               <Table size="small" aria-label="purchases">
@@ -77,9 +98,10 @@ function Row(props) {
                     <TableRow key={subTaskRow.id}>
                       <TableCell
                         style={{
-                          border:"none",
+                          border: "none",
                           textAlign: "left",
                           color: "rgb(231, 206, 254)",
+                          width: "10%",
                         }}
                         component="th"
                         scope="row"
@@ -88,24 +110,107 @@ function Row(props) {
                       </TableCell>
                       <TableCell
                         style={{
-                          border:"none",
+                          border: "none",
 
                           textAlign: "left",
                           color: "rgb(231, 206, 254)",
+                          width: "15%",
                         }}
                       >
                         {subTaskRow.user}
                       </TableCell>
                       <TableCell
                         style={{
-                          border:"none",
+                          border: "none",
 
                           textAlign: "left",
                           color: "rgb(231, 206, 254)",
+                          width: "70%",
                         }}
                         align="right"
                       >
                         {subTaskRow.title}
+                      </TableCell>
+                      <TableCell style={{borderBottom:"none"}} >
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setSecondOpen(!secondOpen)}
+                        >
+                          {secondOpen ? (
+                            <KeyboardArrowUp style={{ color: "white" }} />
+                          ) : (
+                            <KeyboardArrowDown style={{ color: "white" }} />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell style={{ padding: 0 }} colSpan={6}>
+          <Collapse in={secondOpen} timeout="auto" unmountOnExit>
+            <Box style={{ margin: 1 }}>
+              <Typography
+                style={{ color: "rgb(231, 206, 254)", padding:"16px" }}
+                variant="h6"
+                gutterBottom
+              >
+                Subsubtopics
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  {row.subtopics.map((subTaskRow) => (
+                    <TableRow key={subTaskRow.id}>
+                      <TableCell
+                        style={{
+                          border: "none",
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "10%",
+                        }}
+                        component="th"
+                        scope="row"
+                      >
+                        {subTaskRow.id}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "15%",
+                        }}
+                      >
+                        {subTaskRow.user}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "70%",
+                        }}
+                        align="right"
+                      >
+                        {subTaskRow.title}
+                      </TableCell>
+                      <TableCell style={{borderBottom:"none"}} >
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setSecondOpen(!secondOpen)}
+                        >
+                         
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -125,7 +230,6 @@ const dashboardTabDepartments = () => {
   const [tasks, setTasks] = useState();
   const [expanded, setExpanded] = useState(false);
   const unique_id = uuid();
-  const small_id = unique_id.slice(0, 8);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
