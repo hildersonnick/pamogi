@@ -70,7 +70,7 @@ function Row(props) {
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() => setOpen(!open)}
+            onClick={() => {setOpen(!open); setSecondOpen(false);}}
           >
             {open ? (
               <KeyboardArrowUp style={{ color: "white" }} />
