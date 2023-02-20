@@ -238,7 +238,7 @@ export default function App() {
     if (!cameraInit) {
       socket.on("receiveNewPos", value => {
 
-        console.log("coming player pos", value);
+        // console.log("coming player pos", value);
         setPlayersPosition(value);
       });
 
@@ -1116,7 +1116,7 @@ const Scene = props => {
 
       {
         props.playersPos.map(index => {
-          console.log("rendering", index.socketId, socket.id);
+          // console.log("rendering", index.socketId, socket.id);
           
           return <Mogi player={index} socket={socket.id} />
 
@@ -1125,7 +1125,7 @@ const Scene = props => {
       <group position={[-7, -1.85, 0]} scale={0.3}>
 
         {
-        console.log("another one")
+        // console.log("another one")
         }
 
         <Waterfall />
