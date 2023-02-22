@@ -16,6 +16,7 @@ import {
   TableRow,
   Paper,
   IconButton,
+  Divider,
   Button,
   Card,
 } from "@material-ui/core";
@@ -27,6 +28,13 @@ import {
 } from "@material-ui/icons";
 import { MockData } from "./MockData";
 
+function addSubTopicHandler() {
+  console.log("Add subtopic");
+}
+function addSubSubTopicHandler() {
+  console.log("Add subsubtopic");
+}
+
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
@@ -37,6 +45,7 @@ function Row(props) {
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell
           style={{
+            border: "none",
             textAlign: "left",
             color: "rgb(231, 206, 254)",
             width: "10%",
@@ -48,6 +57,7 @@ function Row(props) {
         </TableCell>
         <TableCell
           style={{
+            border: "none",
             textAlign: "left",
             color: "rgb(231, 206, 254)",
             width: "15%",
@@ -58,6 +68,7 @@ function Row(props) {
         </TableCell>
         <TableCell
           style={{
+            border: "none",
             textAlign: "left",
             color: "rgb(231, 206, 254)",
             width: "70%",
@@ -66,11 +77,14 @@ function Row(props) {
         >
           {row.title}
         </TableCell>
-        <TableCell>
+        <TableCell style={{ border: "none" }}>
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() => {setOpen(!open); setSecondOpen(false);}}
+            onClick={() => {
+              setOpen(!open);
+              setSecondOpen(false);
+            }}
           >
             {open ? (
               <KeyboardArrowUp style={{ color: "white" }} />
@@ -82,16 +96,37 @@ function Row(props) {
       </TableRow>
 
       <TableRow>
-        <TableCell style={{ padding: 0 }} colSpan={6}>
+        <TableCell style={{border:"none", padding: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
-              <Typography
-                style={{ color: "rgb(231, 206, 254)", padding:"16px" }}
-                variant="h6"
-                gutterBottom
-              >
-                Subtopics
-              </Typography>
+              <Box style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  style={{
+                    color: "rgb(231, 206, 254)",
+                    padding: "0px 16px",
+                    fontSize: "0.875rem",
+                  }}
+                  variant="h6"
+                  gutterBottom
+                >
+                  Subtopics
+                </Typography>
+                <Button
+                  startIcon={<Add />}
+                  onClick={addSubTopicHandler}
+                  size="small"
+                  style={{
+                    fontSize: "12px",
+                    color: "#ab91bb",
+                    cursor: "pointer",
+                  }}
+                  className={classes.button}
+                >
+                  Add a Subtopic
+                </Button>
+              </Box>
+
+              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -131,7 +166,7 @@ function Row(props) {
                       >
                         {subTaskRow.title}
                       </TableCell>
-                      <TableCell style={{borderBottom:"none"}} >
+                      <TableCell style={{ borderBottom: "none" }}>
                         <IconButton
                           aria-label="expand row"
                           size="small"
@@ -154,16 +189,36 @@ function Row(props) {
       </TableRow>
 
       <TableRow>
-        <TableCell style={{ padding: 0 }} colSpan={6}>
+        <TableCell style={{ border:"none", padding: 0 }} colSpan={6}>
           <Collapse in={secondOpen} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
-              <Typography
-                style={{ color: "rgb(231, 206, 254)", padding:"16px" }}
-                variant="h6"
-                gutterBottom
-              >
-                Subsubtopics
-              </Typography>
+              <Box style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  style={{
+                    color: "rgb(231, 206, 254)",
+                    padding: "0px 16px",
+                    fontSize: "0.875rem",
+                  }}
+                  variant="h6"
+                  gutterBottom
+                >
+                  Subsubtopics
+                </Typography>
+                <Button
+                  startIcon={<Add />}
+                  onClick={addSubSubTopicHandler}
+                  size="small"
+                  style={{
+                    fontSize: "12px",
+                    color: "#ab91bb",
+                    cursor: "pointer",
+                  }}
+                  className={classes.button}
+                >
+                  Add a Subsubtopic
+                </Button>
+              </Box>
+              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -203,14 +258,12 @@ function Row(props) {
                       >
                         {subTaskRow.title}
                       </TableCell>
-                      <TableCell style={{borderBottom:"none"}} >
+                      <TableCell style={{ borderBottom: "none" }}>
                         <IconButton
                           aria-label="expand row"
                           size="small"
                           onClick={() => setSecondOpen(!secondOpen)}
-                        >
-                         
-                        </IconButton>
+                        ></IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -266,21 +319,6 @@ const dashboardTabDepartments = () => {
     console.log("subprojects->>", subprojects);
     console.log("tasks->>", tasks);
   }, []);
-
-  Row.propTypes = {
-    row: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      user: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      subtopics: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          user: PropTypes.string.isRequired,
-          title: PropTypes.string.isRequired,
-        })
-      ).isRequired,
-    }).isRequired,
-  };
 
   const rows = MockData;
 
