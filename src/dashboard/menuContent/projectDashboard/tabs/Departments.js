@@ -1,13 +1,281 @@
 import classes from "./Departments.module.css";
+import React from "react";
+import PropTypes from "prop-types";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { Accordion } from "@material-ui/core";
-import { AccordionDetails } from "@material-ui/core";
-import { AccordionSummary, Button } from "@material-ui/core";
-import { Typography } from "@material-ui/core";
-import { ExpandMore } from "@material-ui/icons";
-import { green } from "@material-ui/core/colors/green";
+import {
+  Box,
+  Collapse,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Divider,
+  Button,
+  Card,
+} from "@material-ui/core";
+import {
+  ExpandMore,
+  Add,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+} from "@material-ui/icons";
+import { MockData } from "./MockData";
+
+function addSubTopicHandler() {
+  console.log("Add subtopic");
+}
+function addSubSubTopicHandler() {
+  console.log("Add subsubtopic");
+}
+
+function Row(props) {
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+  const [secondOpen, setSecondOpen] = React.useState(false);
+
+  return (
+    <React.Fragment>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell
+          style={{
+            border: "none",
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "10%",
+          }}
+          component="th"
+          scope="row"
+        >
+          {row.id}
+        </TableCell>
+        <TableCell
+          style={{
+            border: "none",
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "15%",
+          }}
+          align="right"
+        >
+          {row.user}
+        </TableCell>
+        <TableCell
+          style={{
+            border: "none",
+            textAlign: "left",
+            color: "rgb(231, 206, 254)",
+            width: "70%",
+          }}
+          align="right"
+        >
+          {row.title}
+        </TableCell>
+        <TableCell style={{ border: "none" }}>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => {
+              setOpen(!open);
+              setSecondOpen(false);
+            }}
+          >
+            {open ? (
+              <KeyboardArrowUp style={{ color: "white" }} />
+            ) : (
+              <KeyboardArrowDown style={{ color: "white" }} />
+            )}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell style={{border:"none", padding: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box style={{ margin: 1 }}>
+              <Box style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  style={{
+                    color: "rgb(231, 206, 254)",
+                    padding: "0px 16px",
+                    fontSize: "0.875rem",
+                  }}
+                  variant="h6"
+                  gutterBottom
+                >
+                  Subtopics
+                </Typography>
+                <Button
+                  startIcon={<Add />}
+                  onClick={addSubTopicHandler}
+                  size="small"
+                  style={{
+                    fontSize: "12px",
+                    color: "#ab91bb",
+                    cursor: "pointer",
+                  }}
+                  className={classes.button}
+                >
+                  Add a Subtopic
+                </Button>
+              </Box>
+
+              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  {row.subtopics.map((subTaskRow) => (
+                    <TableRow key={subTaskRow.id}>
+                      <TableCell
+                        style={{
+                          border: "none",
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "10%",
+                        }}
+                        component="th"
+                        scope="row"
+                      >
+                        {subTaskRow.id}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "15%",
+                        }}
+                      >
+                        {subTaskRow.user}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "70%",
+                        }}
+                        align="right"
+                      >
+                        {subTaskRow.title}
+                      </TableCell>
+                      <TableCell style={{ borderBottom: "none" }}>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setSecondOpen(!secondOpen)}
+                        >
+                          {secondOpen ? (
+                            <KeyboardArrowUp style={{ color: "white" }} />
+                          ) : (
+                            <KeyboardArrowDown style={{ color: "white" }} />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell style={{ border:"none", padding: 0 }} colSpan={6}>
+          <Collapse in={secondOpen} timeout="auto" unmountOnExit>
+            <Box style={{ margin: 1 }}>
+              <Box style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  style={{
+                    color: "rgb(231, 206, 254)",
+                    padding: "0px 16px",
+                    fontSize: "0.875rem",
+                  }}
+                  variant="h6"
+                  gutterBottom
+                >
+                  Subsubtopics
+                </Typography>
+                <Button
+                  startIcon={<Add />}
+                  onClick={addSubSubTopicHandler}
+                  size="small"
+                  style={{
+                    fontSize: "12px",
+                    color: "#ab91bb",
+                    cursor: "pointer",
+                  }}
+                  className={classes.button}
+                >
+                  Add a Subsubtopic
+                </Button>
+              </Box>
+              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  {row.subtopics.map((subTaskRow) => (
+                    <TableRow key={subTaskRow.id}>
+                      <TableCell
+                        style={{
+                          border: "none",
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "10%",
+                        }}
+                        component="th"
+                        scope="row"
+                      >
+                        {subTaskRow.id}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "15%",
+                        }}
+                      >
+                        {subTaskRow.user}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "none",
+
+                          textAlign: "left",
+                          color: "rgb(231, 206, 254)",
+                          width: "70%",
+                        }}
+                        align="right"
+                      >
+                        {subTaskRow.title}
+                      </TableCell>
+                      <TableCell style={{ borderBottom: "none" }}>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setSecondOpen(!secondOpen)}
+                        ></IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}
 
 const dashboardTabDepartments = () => {
   const [projects, setProjects] = useState();
@@ -15,10 +283,12 @@ const dashboardTabDepartments = () => {
   const [tasks, setTasks] = useState();
   const [expanded, setExpanded] = useState(false);
   const unique_id = uuid();
-  const small_id = unique_id.slice(0, 8);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+  const addSubtopicHandler = () => {
+    console.log("Subtopic adding checked");
   };
 
   useEffect(() => {
@@ -50,9 +320,11 @@ const dashboardTabDepartments = () => {
     console.log("tasks->>", tasks);
   }, []);
 
+  const rows = MockData;
+
   if (projects != undefined && subprojects != undefined && tasks != undefined) {
     return (
-      <div>
+      <>
         <div>
           <select className={classes["select"]}>
             {projects.map((projects, i) => {
@@ -60,67 +332,53 @@ const dashboardTabDepartments = () => {
             })}
           </select>
         </div>
-        {subprojects.map((subproject, i) => {
-          return (
-            <Accordion
-              className={classes["accordion"]}
-              expanded={expanded === `panel${i + 1}`}
-              onChange={handleChange(`panel${i + 1}`)}
-            >
-              <AccordionSummary
-                expandIcon={
-                  <ExpandMore style={{ color: "rgb(171, 145, 187)" }} />
-                }
-                style={{ paddingLeft: "31px" }}
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-                sx={{ color: "#fff" }}
-              >
-                <Typography style={{ width: "5%", flexShrink: 0 }}>
-                  #{subproject.index}
-                </Typography>
-                <Typography style={{ width: "15%", flexShrink: 0 }}>
-                  Mr Dogi
-                </Typography>
-                <Typography style={{ width: "80%", flexShrink: 0 }}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex,
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div
+        <TableContainer
+          style={{ backgroundColor: "#3a194d" }}
+          component={Paper}
+        >
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "10px",
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
                   }}
                 >
-                  <Typography style={{ fontWeight: "bold" }}>
-                    Subtopics
-                  </Typography>
-                  <Button size="small"  color="#ab91bb">
-                    Add a Subtopic
-                  </Button>
-                </div>
-                <hr style={{ borderTop: "1px solid #e5e5e5" }} />
-                <div style={{display:"flex", justifyContent:"space-between"}} >
-                {tasks.map((task, i) => {
-                  if (task.parent == subproject.index) {
-                    console.log("SUB: ", subprojects);
-                    return (
-                      <AccordionDetails>
-                          <Typography>{task.title}</Typography>
-                      </AccordionDetails>
-                    );
-                  } })}
-                </div>
-                
-               
-              </AccordionDetails>
-            </Accordion>
-          );
-        })}
-      </div>
+                  Topic #
+                </TableCell>
+                <TableCell
+                  style={{
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  User
+                </TableCell>
+                <TableCell
+                  style={{
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  Title
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <Row key={row.name} row={row} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
     );
   }
 };
