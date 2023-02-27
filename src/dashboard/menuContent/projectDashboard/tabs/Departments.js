@@ -41,8 +41,9 @@ function Row(props) {
   const [secondOpen, setSecondOpen] = React.useState(false);
 
   return (
-    <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+    <>
+
+      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}} sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell
           style={{
             border: "none",
@@ -95,8 +96,8 @@ function Row(props) {
         </TableCell>
       </TableRow>
 
-      <TableRow>
-        <TableCell style={{border:"none", padding: 0 }} colSpan={6}>
+      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}}  >
+        <TableCell style={{ border: "none", padding: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
               <Box style={{ display: "flex", justifyContent: "space-between" }}>
@@ -126,7 +127,7 @@ function Row(props) {
                 </Button>
               </Box>
 
-              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
+              <Divider style={{ backgroundColor: "rgb(125,79,135)", lineHeight: "2px", width:"98%", marginLeft:"1%" }} />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -188,8 +189,8 @@ function Row(props) {
         </TableCell>
       </TableRow>
 
-      <TableRow>
-        <TableCell style={{ border:"none", padding: 0 }} colSpan={6}>
+      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}}>
+        <TableCell style={{ border: "none", padding: 0 }} colSpan={6}>
           <Collapse in={secondOpen} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
               <Box style={{ display: "flex", justifyContent: "space-between" }}>
@@ -218,7 +219,7 @@ function Row(props) {
                   Add a Subsubtopic
                 </Button>
               </Box>
-              <Divider style={{ backgroundColor: "gray", lineHeight: "2px" }} />
+              <Divider style={{ backgroundColor: "rgb(125,79,135)", lineHeight: "2px", width:"98%", marginLeft:"1%" }} />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -273,7 +274,7 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+      </>
   );
 }
 
@@ -332,52 +333,53 @@ const dashboardTabDepartments = () => {
             })}
           </select>
         </div>
-        <TableContainer
-          style={{ backgroundColor: "#3a194d" }}
-          component={Paper}
-        >
-          <Table aria-label="collapsible table">
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  style={{
-                    textAlign: "left",
-                    textAlign: "left",
-                    color: "white",
-                  }}
-                >
-                  Topic #
-                </TableCell>
-                <TableCell
-                  style={{
-                    textAlign: "left",
-                    textAlign: "left",
-                    color: "white",
-                  }}
-                  align="right"
-                >
-                  User
-                </TableCell>
-                <TableCell
-                  style={{
-                    textAlign: "left",
-                    textAlign: "left",
-                    color: "white",
-                  }}
-                  align="right"
-                >
-                  Title
-                </TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <Row key={row.name} row={row} />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        
+          <TableContainer
+            style={{padding:"10px 15px",  backgroundColor: "#3a194d", borderRadius: "25px" }}
+            component={Paper}
+          >
+            <Table aria-label="collapsible table">
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      textAlign: "left",
+                      textAlign: "left",
+                      color: "white",
+                    }}
+                  >
+                    Topic #
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "left",
+                      textAlign: "left",
+                      color: "white",
+                    }}
+                    align="right"
+                  >
+                    User
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "left",
+                      textAlign: "left",
+                      color: "white",
+                    }}
+                    align="right"
+                  >
+                    Title
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <Row key={row.name} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
       </>
     );
   }
