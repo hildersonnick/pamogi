@@ -1,0 +1,36 @@
+.select {
+    margin-top: 30px;
+    width: 200px;
+    background-color: #3a1d51;
+    padding: 8px 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    border: none;
+    color: #ab91bb !important;
+    font-size: 18px;
+  }
+  .option {
+    margin: 30px 0px 0px 30px;
+    width: 200px;
+    background-color: #3a1d51;
+  }
+  .accordion {
+    background-color: #3a1d51 !important;
+    color: #ab91bb !important;
+    padding: 10px 20px;
+    box-shadow: none !important;
+  }
+  .accordion::before {
+    background-color: #3a1d51 !important;
+    box-shadow: none !important;
+  }
+  .accordion::after {
+    background-color: #3a1d51 !important;
+    box-shadow: none !important;
+  }
+  
+  .button:hover {
+    color: rgb(115, 91, 127) !important ;
+    cursor: pointer;
+  }
+  
