@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import Overview from "../menuContent/projectDashboard/tabs/Overview";
 import Departments from "../menuContent/projectDashboard/tabs/Departments";
 import Description from "../menuContent/projectDashboard/tabs/Description";
-import { Tabs, Tab, Typography, Box } from "@material-ui/core";
+import { Tabs, Tab, Typography, Box, Divider } from "@material-ui/core";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -47,14 +47,15 @@ const ProjectDashboardTabBar = (props) => {
 
   return (
     <Box style={{ width: "100%" }}>
-      
-      <Box style={{ marginTop:"2px", borderBottom: "1px solid rgb(231, 206, 254)" }}>
+      <Box style={{ marginTop: "2px" }}>
         <Tabs
           value={value}
           onChange={handleChange}
           aria-label="project-dashboard-tabs"
-          style={{ padding: 0}}
-           TabIndicatorProps={{ style: { marginTop:"-5px", background: "#c34594",  height:"3px" } }}
+          style={{ padding: 0 }}
+          TabIndicatorProps={{
+            style: { marginTop: "-5px", background: "#c34594", height: "3px" },
+          }}
         >
           <Tab
             label="Overview"
@@ -71,7 +72,15 @@ const ProjectDashboardTabBar = (props) => {
             {...a11yProps(2)}
             style={{ color: "rgb(231, 206, 254)" }}
           />
+           
         </Tabs>
+        <Divider
+        style={{
+          backgroundColor: "rgb(125,79,135)",
+          height: "2px",
+          marginTop: "-2px",
+        }}
+      />
       </Box>
       <TabPanel value={value} index={0}>
         <Overview />
@@ -82,7 +91,7 @@ const ProjectDashboardTabBar = (props) => {
       <TabPanel value={value} index={2}>
         <Departments />
       </TabPanel>
-
+     
     </Box>
   );
 };

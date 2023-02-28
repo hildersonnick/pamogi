@@ -1,6 +1,5 @@
 import classes from "./Departments.module.css";
 import React from "react";
-import PropTypes from "prop-types";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -18,14 +17,10 @@ import {
   IconButton,
   Divider,
   Button,
-  Card,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
-import {
-  ExpandMore,
-  Add,
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-} from "@material-ui/icons";
+import { Add, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { MockData } from "./MockData";
 
 function addSubTopicHandler() {
@@ -42,8 +37,10 @@ function Row(props) {
 
   return (
     <>
-
-      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}} sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow
+        style={{ backgroundColor: open ? "rgb(64,32,81)" : "#3a194d" }}
+        sx={{ "& > *": { borderBottom: "unset" } }}
+      >
         <TableCell
           style={{
             border: "none",
@@ -96,7 +93,7 @@ function Row(props) {
         </TableCell>
       </TableRow>
 
-      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}}  >
+      <TableRow style={{ backgroundColor: open ? "rgb(64,32,81)" : "#3a194d" }}>
         <TableCell style={{ border: "none", padding: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
@@ -118,6 +115,7 @@ function Row(props) {
                   size="small"
                   style={{
                     fontSize: "12px",
+                    marginRight: "1%",
                     color: "#ab91bb",
                     cursor: "pointer",
                   }}
@@ -127,7 +125,14 @@ function Row(props) {
                 </Button>
               </Box>
 
-              <Divider style={{ backgroundColor: "rgb(125,79,135)", lineHeight: "2px", width:"98%", marginLeft:"1%" }} />
+              <Divider
+                style={{
+                  backgroundColor: "rgb(125,79,135)",
+                  height: "2px",
+                  width: "98%",
+                  marginLeft: "1%",
+                }}
+              />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -189,7 +194,7 @@ function Row(props) {
         </TableCell>
       </TableRow>
 
-      <TableRow style={{backgroundColor: open ? "rgb(64,32,81)": "#3a194d"}}>
+      <TableRow style={{ backgroundColor: open ? "rgb(64,32,81)" : "#3a194d" }}>
         <TableCell style={{ border: "none", padding: 0 }} colSpan={6}>
           <Collapse in={secondOpen} timeout="auto" unmountOnExit>
             <Box style={{ margin: 1 }}>
@@ -211,6 +216,7 @@ function Row(props) {
                   size="small"
                   style={{
                     fontSize: "12px",
+                    marginRight: "1%",
                     color: "#ab91bb",
                     cursor: "pointer",
                   }}
@@ -219,7 +225,14 @@ function Row(props) {
                   Add a Subsubtopic
                 </Button>
               </Box>
-              <Divider style={{ backgroundColor: "rgb(125,79,135)", lineHeight: "2px", width:"98%", marginLeft:"1%" }} />
+              <Divider
+                style={{
+                  backgroundColor: "rgb(125,79,135)",
+                  height: "2px",
+                  width: "98%",
+                  marginLeft: "1%",
+                }}
+              />
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {row.subtopics.map((subTaskRow) => (
@@ -274,7 +287,7 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
-      </>
+    </>
   );
 }
 
@@ -291,6 +304,9 @@ const dashboardTabDepartments = () => {
   const addSubtopicHandler = () => {
     console.log("Subtopic adding checked");
   };
+  const addTopicHandler = () => {
+    console.log("Topic adding checked");
+  }
 
   useEffect(() => {
     const supabase = createClient(
@@ -326,60 +342,90 @@ const dashboardTabDepartments = () => {
   if (projects != undefined && subprojects != undefined && tasks != undefined) {
     return (
       <>
-        <div>
+        <Box>
           <select className={classes["select"]}>
             {projects.map((projects, i) => {
               return <option key={projects.id}>{projects.title}</option>;
             })}
           </select>
-        </div>
-        
-          <TableContainer
-            style={{padding:"10px 15px",  backgroundColor: "#3a194d", borderRadius: "25px" }}
-            component={Paper}
+          <Button
+            startIcon={<Add />}
+            onClick={addTopicHandler}
+            size="small"
+            style={{
+              borderRadius: "10px",
+              padding: "8px 15px",
+              fontSize: "12px",
+              marginLeft: "20px",
+              backgroundColor: "#3a194d",
+              color: "#ab91bb",
+              cursor: "pointer",
+            }}
+            className={classes.button}
           >
-            <Table aria-label="collapsible table">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      textAlign: "left",
-                      textAlign: "left",
-                      color: "white",
-                    }}
-                  >
-                    Topic #
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      textAlign: "left",
-                      textAlign: "left",
-                      color: "white",
-                    }}
-                    align="right"
-                  >
-                    User
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      textAlign: "left",
-                      textAlign: "left",
-                      color: "white",
-                    }}
-                    align="right"
-                  >
-                    Title
-                  </TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <Row key={row.name} row={row} />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+            Add a Topic
+          </Button>
+        </Box>
+
+        <TableContainer
+          style={{
+            padding: "10px 15px",
+            backgroundColor: "#3a194d",
+            borderRadius: "25px",
+          }}
+          component={Paper}
+        >
+          <Table aria-label="collapsible table">
+            <TableHead style={{ border: "unset" }}>
+              <TableRow>
+                <TableCell
+                  style={{
+                    borderBottom: "2px solid rgba(118, 74, 129, 1)",
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                >
+                  Topic #
+                </TableCell>
+                <TableCell
+                  style={{
+                    borderBottom: "2px solid rgba(118, 74, 129, 1)",
+
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  User
+                </TableCell>
+                <TableCell
+                  style={{
+                    borderBottom: "2px solid rgba(118, 74, 129, 1)",
+
+                    textAlign: "left",
+                    textAlign: "left",
+                    color: "white",
+                  }}
+                  align="right"
+                >
+                  Title
+                </TableCell>
+                <TableCell
+                  style={{
+                    borderBottom: "2px solid rgba(118, 74, 129, 1)",
+                  }}
+                />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <Row key={row.name} row={row} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </>
     );
   }
