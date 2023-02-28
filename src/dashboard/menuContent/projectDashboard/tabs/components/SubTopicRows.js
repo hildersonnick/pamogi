@@ -1,4 +1,5 @@
 import classes from "./TopicRows.module.css";
+import { useState } from "react";
 import {
   Box,
   Collapse,
@@ -14,11 +15,9 @@ import {
 import { Add, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import SubSubTopicRows from "./SubSubTopicRows";
 
-
-
 const SubTopicRows = (props) => {
   const { subtopics } = props;
-
+  const [secondOpen, setSecondOpen] = useState(false);
   function addSubSubTopicHandler() {
     console.log("Add subsubtopic");
   }
@@ -71,78 +70,78 @@ const SubTopicRows = (props) => {
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {subtopics.map((subsubTaskRow) => (
-                    <TableRow key={subsubTaskRow.id}>
-                      <TableCell
-                        style={{
-                          border: "none",
-                          textAlign: "left",
-                          color: "rgb(231, 206, 254)",
-                          width: "10%",
-                        }}
-                        component="th"
-                        scope="row"
-                      >
-                        {subsubTaskRow.id}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "none",
+                    <>
+                      <TableRow key={subsubTaskRow.id}>
+                        <TableCell
+                          style={{
+                            border: "none",
+                            textAlign: "left",
+                            color: "rgb(231, 206, 254)",
+                            width: "10%",
+                          }}
+                          component="th"
+                          scope="row"
+                        >
+                          {subsubTaskRow.id}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "none",
 
-                          textAlign: "left",
-                          color: "rgb(231, 206, 254)",
-                          width: "15%",
-                        }}
-                      >
-                        {subsubTaskRow.user}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "none",
-
-                          textAlign: "left",
-                          color: "rgb(231, 206, 254)",
-                          width: "70%",
-                        }}
-                        align="right"
-                      >
-                        {subsubTaskRow.title}
-                      </TableCell>
-                      <TableCell style={{ border: "none" }}>
-                        <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={() => {
-                            props.setSecondOpen(
-                              props.secondOpen ? false : true
-                            );
+                            textAlign: "left",
+                            color: "rgb(231, 206, 254)",
+                            width: "15%",
                           }}
                         >
-                          {props.secondOpen ? (
-                            <KeyboardArrowUp style={{ color: "white" }} />
-                          ) : (
-                            <KeyboardArrowDown style={{ color: "white" }} />
-                          )}
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
+                          {subsubTaskRow.user}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "none",
+
+                            textAlign: "left",
+                            color: "rgb(231, 206, 254)",
+                            width: "70%",
+                          }}
+                          align="right"
+                        >
+                          {subsubTaskRow.title}
+                        </TableCell>
+                        <TableCell style={{ border: "none" }}>
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => {
+                              setSecondOpen(
+                                secondOpen ? false : true
+                              );
+                            }}
+                          >
+                            {secondOpen ? (
+                              <KeyboardArrowUp style={{ color: "white" }} />
+                            ) : (
+                              <KeyboardArrowDown style={{ color: "white" }} />
+                            )}
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                      <SubSubTopicRows
+                        subtopics={subtopics}
+                        open={props.open}
+                        setOpen={props.setOpen}
+                        secondOpen={secondOpen}
+                        setSecondOpen={setSecondOpen}
+                      />
+                    </>
                   ))}
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
-        <SubSubTopicRows
-        subtopics={subtopics}
-        open={props.open}
-        setOpen={props.setOpen}
-        secondOpen={props.secondOpen}
-        setSecondOpen={props.setSecondOpen}
-      />
       </TableRow>
-
-      
     </>
   );
-}
+};
 
 export default SubTopicRows;

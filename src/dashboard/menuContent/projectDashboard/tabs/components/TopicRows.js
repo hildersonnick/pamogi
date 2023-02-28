@@ -1,27 +1,14 @@
-import React from "react";
-import classes from "./TopicRows.module.css";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
-  Box,
-  Collapse,
-  Typography,
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
-  Paper,
   IconButton,
-  Divider,
-  Button,
-  Select,
-  MenuItem,
 } from "@material-ui/core";
-import { Add, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import SubTopicRows from "./SubTopicRows";
+
 
 function TopicRows(props) {
   function addSubTopicHandler() {
@@ -32,8 +19,8 @@ function TopicRows(props) {
   }
 
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
-  const [secondOpen, setSecondOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  
 
   return (
     <>
@@ -97,8 +84,7 @@ function TopicRows(props) {
         subtopics={row.subtopics}
         open={open}
         setOpen={setOpen}
-        secondOpen={secondOpen}
-        setSecondOpen={setSecondOpen}
+        
       />
     </>
   );

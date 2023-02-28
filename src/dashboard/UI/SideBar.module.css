@@ -1,5 +1,5 @@
 .dash_sidebar-container {
-  position: absolute;
+  position: fixed;
   left: 0;
   background-color: #3a194d;
   padding-top: 30px;

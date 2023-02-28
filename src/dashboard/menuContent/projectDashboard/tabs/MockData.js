@@ -6,7 +6,24 @@ export const MockData = [
         subtopics: [
             {
                 id: 10222,
-                user: "Mr Liogiaaaaaa",
+                user: "Mr Liogi",
+                title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
+                subtopics: [
+                    {
+                        id: 103,
+                        user: "Mr Bobi",
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
+                    },
+                    {
+                        id: 105,
+                        user: "Mr Bobi",
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
+                    }
+                ]
+            },
+            {
+                id: 1022,
+                user: "Mr Dodi",
                 title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
                 subtopics: [
                     {
@@ -17,17 +34,17 @@ export const MockData = [
                 ]
             },
             {
-                id: 10222,
-                user: "Mr Liogiaaaaaa",
+                id: 1022,
+                user: "Mr Funny",
                 title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
                 subtopics: [
                     {
                         id: 103,
-                        user: "Mr Bobi",
+                        user: "Mr Daddy",
                         title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
                     }
                 ]
-            }
+            },
         ],
 
     },
