@@ -18,7 +18,7 @@ const SideBar = (props) => {
   return (
     <div className={classes["dash_sidebar-container"]}>
       <div className={classes["dash_sidebar-container_logo"]}>
-        <img src="/pamogi-logo.png" width={100} />
+        <img src="/pamogi-logo-white.png" width={100} />
       </div>
       <div className={classes.dash_buttons_section}>
         <div className={classes["dash_buttons-container"]}>

@@ -131,6 +131,7 @@ const SubTopicRows = (props) => {
                         setOpen={props.setOpen}
                         secondOpen={secondOpen}
                         setSecondOpen={setSecondOpen}
+                        subtopicId = {subsubTaskRow.id}
                       />
                     </>
                   ))}

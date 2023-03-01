@@ -13,8 +13,8 @@ import {
 import { Add } from "@material-ui/icons";
 
 function SubSubTopicRows(props) {
-  //   const { subsubtopics } = props.subsubtopics;
-  //   console.log(subsubtopics);
+  const currentSubtopicId = props.subtopicId
+  
   function addSubSubTopicHandler() {
     console.log("Add subsubtopic");
   }
