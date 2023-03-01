@@ -68,7 +68,7 @@ const ProjectDashboardTabBar = (props) => {
             style={{ color: "rgb(231, 206, 254)" }}
           />
           <Tab
-            label="Departmants"
+            label="Departments"
             {...a11yProps(2)}
             style={{ color: "rgb(231, 206, 254)" }}
           />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import classes from "./TopicRows.module.css";
 import {
   Box,
@@ -13,8 +14,10 @@ import {
 import { Add } from "@material-ui/icons";
 
 function SubSubTopicRows(props) {
+
+  const { subSubExpand } = props;
   const currentSubtopicId = props.subtopicId
-  
+  // console.log("subtopic ıd ----->", currentSubtopicId);
   function addSubSubTopicHandler() {
     console.log("Add subsubtopic");
   }
@@ -24,7 +27,7 @@ function SubSubTopicRows(props) {
       style={{ backgroundColor: props.open ? "rgb(64,32,81)" : "#3a194d" }}
     >
       <TableCell style={{ border: "none", padding: 0 }} colSpan={6}>
-        <Collapse in={props.secondOpen} timeout="auto" unmountOnExit>
+        <Collapse in={subSubExpand} timeout="auto" unmountOnExit>
           <Box style={{ margin: 1 }}>
             <Box style={{ display: "flex", justifyContent: "space-between" }}>
               <Typography
@@ -63,9 +66,9 @@ function SubSubTopicRows(props) {
             />
             <Table size="small" aria-label="purchases">
               <TableBody>
-                {props.subtopics.map((subTaskRow) =>
-                  subTaskRow.subtopics.map((subsubTaskRow) => (
-                    <TableRow key={subsubTaskRow.id}>
+                {props.subtopics.map((subtopics) =>
+                  subtopics.subtopics.map((subsubtopic) => (
+                    <TableRow key={subsubtopic.id}>
                       <TableCell
                         style={{
                           border: "none",
@@ -76,7 +79,7 @@ function SubSubTopicRows(props) {
                         component="th"
                         scope="row"
                       >
-                        {subsubTaskRow.id}
+                        {subsubtopic.id}
                       </TableCell>
                       <TableCell
                         style={{
@@ -86,7 +89,7 @@ function SubSubTopicRows(props) {
                           width: "15%",
                         }}
                       >
-                        {subsubTaskRow.user}
+                        {subsubtopic.user}
                       </TableCell>
                       <TableCell
                         style={{
@@ -97,7 +100,7 @@ function SubSubTopicRows(props) {
                         }}
                         align="right"
                       >
-                        {subsubTaskRow.title}
+                        {subsubtopic.title}
                       </TableCell>
                       <TableCell style={{ borderBottom: "none" }}></TableCell>
                     </TableRow>

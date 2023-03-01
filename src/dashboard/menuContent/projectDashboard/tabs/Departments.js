@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
   Box,
-  Collapse,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -14,18 +12,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Divider,
   Button,
-  Select,
-  MenuItem,
 } from "@material-ui/core";
-import { Add, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import { Add } from "@material-ui/icons";
 import { MockData } from "./MockData";
 import TopicRows from "./components/TopicRows";
-
-
-
 
 const dashboardTabDepartments = () => {
   const [projects, setProjects] = useState();
@@ -42,7 +33,7 @@ const dashboardTabDepartments = () => {
   };
   const addTopicHandler = () => {
     console.log("Topic adding checked");
-  }
+  };
 
   useEffect(() => {
     const supabase = createClient(
@@ -103,6 +94,7 @@ const dashboardTabDepartments = () => {
           </Button>
         </Box>
 
+
         <TableContainer
           style={{
             padding: "10px 15px",
@@ -155,6 +147,7 @@ const dashboardTabDepartments = () => {
                 />
               </TableRow>
             </TableHead>
+
             <TableBody>
               {rows.map((row) => (
                 <TopicRows key={row.name} row={row} />
