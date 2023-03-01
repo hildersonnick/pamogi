@@ -3,6 +3,7 @@ import { useGLTF } from "@react-three/drei";
 
 export default function Model(props) {
   const { nodes, materials } = useGLTF("/newerModels/waterfall.glb");
+  // console.log("waterfall")
   return (
     <group {...props} dispose={null}>
       <group position={[54.94, 0, -0.05]} rotation={[0, 1.57, 0]}>

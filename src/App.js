@@ -1,16 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
-import { v4 as uuidv4 } from 'uuid';
-import {
-  useGLTF,
-  Stage,
-  Grid,
-  OrbitControls,
-  Environment,
-  Hud,
-  Text as DreiText,
-} from "@react-three/drei";
+import { v4 as uuidv4 } from "uuid";
+import { useGLTF, Stage, Grid, OrbitControls, Environment, Hud, Text as DreiText } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Center, Image } from "@mantine/core";
 import * as THREE from "three";
@@ -49,11 +41,11 @@ import Task113 from "./newerModels/Task113";
 import Task114 from "./newerModels/Task114";
 import Task115 from "./newerModels/Task115";
 import { Dialog, TextInput, Text } from "@mantine/core";
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 import useStore from "./store";
 import { socket } from "./index.js";
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles(theme => ({
   navbar: {
     backgroundColor: theme.colorScheme === "dark" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.05)",
 
@@ -102,13 +94,13 @@ export default function App() {
   //   //   ],
   //   // },
   // ]);
-  const mockdata = useStore((state) => state.mockData);
+  const mockdata = useStore(state => state.mockData);
 
-  const setMockData = useStore((state) => state.setMockData);
+  const setMockData = useStore(state => state.setMockData);
   //const [mockdata, setMockData] = useState(useStore((state) => state.mockData));
 
   useEffect(() => {
-    socket.on("innitMockData", (data) => {
+    socket.on("innitMockData", data => {
       for (let i = 0; i < data.length; i++) {
         data[i].icon = GiWaterfall;
       }
@@ -123,9 +115,7 @@ export default function App() {
   // console.log("mockdata is", mockdata);
 
   const { classes } = useStyles();
-  const supabase = createClient("https://rgcevqebcazzqaumgwnh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnY2V2cWViY2F6enFhdW1nd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzQ5ODkyNjAsImV4cCI6MTk5MDU2NTI2MH0.UjirHUUhj_Y8qaLM41pxPNG49n_jRVst0zDubKG0vEg")
-
-  
+  const supabase = createClient("https://rgcevqebcazzqaumgwnh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnY2V2cWViY2F6enFhdW1nd25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzQ5ODkyNjAsImV4cCI6MTk5MDU2NTI2MH0.UjirHUUhj_Y8qaLM41pxPNG49n_jRVst0zDubKG0vEg");
 
   const [links, setLinks] = useState([]);
 
@@ -146,7 +136,7 @@ export default function App() {
   }, [mockdata]);
 
   useEffect(() => {
-    socket.on("handleAddTopic", (newTopic) => {
+    socket.on("handleAddTopic", newTopic => {
       const topic = {
         index: mockdata.length,
         label: newTopic.label,
@@ -170,19 +160,18 @@ export default function App() {
   const [topicName, setTopicName] = useState("");
 
   async function addTopic() {
-
     const current = new Date();
-    let month = `${current.getMonth()+1}`;
+    let month = `${current.getMonth() + 1}`;
     let day = `${current.getDate()}`;
     const year = `${current.getFullYear()}`;
 
     if (month.length < 2) {
-      month = '0' + month;
-}
-  if (day.length < 2) {
-      day = '0' + day;
-  }
-  const date = [day, month, year].join('-');
+      month = "0" + month;
+    }
+    if (day.length < 2) {
+      day = "0" + day;
+    }
+    const date = [day, month, year].join("-");
 
     await supabase
       .from("projects_sample")
@@ -191,12 +180,12 @@ export default function App() {
           id: uuidv4(),
           created_at: date,
           title: topicName,
-          created_by: "123e4567-e89b-12d3-a456-426614174000"
+          created_by: "123e4567-e89b-12d3-a456-426614174000",
         },
       ]) // Insert the new task
       .single();
 
-      console.log("added to db")
+    console.log("added to db");
   }
 
   const handleAddTopic = () => {
@@ -221,9 +210,7 @@ export default function App() {
     setMockData([...mockdata, newTopic]);
     setTopicName("");
 
-    console.log("added to mockdata")
-
-    addTopic()
+    addTopic();
   };
 
   const [navIndex, setNavIndex] = useState(0);
@@ -231,6 +218,8 @@ export default function App() {
   const [cameraRot, setCameraRot] = useState([0, 0, 0]);
   const [playersPos, setPlayersPosition] = useState([]);
   const [playersRot, setPlayersRotation] = useState([]);
+
+  const [cameraInit, setCameraInit] = useState(false);
 
   // useEffect(() => {
   //   socket.on("receiveNewPos"),
@@ -244,26 +233,27 @@ export default function App() {
   // }, []);
 
   function Camera(props) {
-    const camera = useThree((state) => state.camera);
+    const camera = useThree(state => state.camera);
 
-    socket.on("receiveNewPos", (value) => {
-      setPlayersPosition(value);
-    });
+    if (!cameraInit) {
+      socket.on("receiveNewPos", value => {
 
-    socket.on("receiveNewRot", (value) => {
-      setPlayersRotation(value);
-      console.log(" values " + playersRot)
-    });
+        // console.log("coming player pos", value);
+        setPlayersPosition(value);
+      });
+
+      socket.on("receiveNewRot", value => {
+        setPlayersRotation(value);
+      });
+
+      setCameraInit(true);
+    }
 
     useFrame(() => {
       let pos = [camera.position.x, camera.position.y, camera.position.z];
       let rot = [camera.rotation.x, camera.rotation.y, camera.rotation.z];
 
-      // console.log(rot, " rotation update")
-
-      // console.log([pos[0], cameraPos[0]])
-
-      if (Math.abs(pos[0] - cameraPos[0]) > 1 || Math.abs(pos[1] - cameraPos[1]) > 1 || Math.abs(pos[2] - cameraPos[2]) > 1) {
+      if (Math.abs(pos[0] - cameraPos[0]) > 2 || Math.abs(pos[1] - cameraPos[1]) > 2 || Math.abs(pos[2] - cameraPos[2]) > 2) {
         if (pos) {
           socket.emit("handleNewPos", pos);
           setCameraPos(pos);
@@ -272,7 +262,6 @@ export default function App() {
 
       if (Math.abs(rot[0] - cameraRot[0]) > 0.5 || Math.abs(rot[1] - cameraRot[1]) > 0.5 || Math.abs(rot[2] - cameraRot[2]) > 0.5) {
         if (rot) {
-          console.log("rotation send")
           socket.emit("handleNewRot", rot);
           setCameraRot(rot);
         }
@@ -280,6 +269,7 @@ export default function App() {
 
       //
     });
+
     return <></>;
   }
 
@@ -293,7 +283,7 @@ export default function App() {
             Add Topic
           </Text>
           <Group align="flex-end">
-            <TextInput placeholder="New Topic" style={{ flex: 1 }} onChange={(e) => setTopicName(e.target.value)} value={topicName} />
+            <TextInput placeholder="New Topic" style={{ flex: 1 }} onChange={e => setTopicName(e.target.value)} value={topicName} />
             <Button variant="light" color="violet" onClick={handleAddTopic}>
               Submit
             </Button>
@@ -340,7 +330,7 @@ export default function App() {
   }
 }
 
-const Scene = (props) => {
+const Scene = props => {
   useEffect(() => {
     setTargetPosition([0 + props.navIndex * 5, -1.85, 0 - props.navIndex * 2.5]);
     setIsMoving(true);
@@ -348,7 +338,7 @@ const Scene = (props) => {
   const [targetPosition, setTargetPosition] = useState([0, -1.85, 0]);
   const [waterfalls, setWaterfalls] = useState([]);
   const [isMoving, setIsMoving] = useState(true);
-  const handleClick = (index) => {
+  const handleClick = index => {
     setTargetPosition([0 + index * 5, -1.85, 0 - index * 2.5]);
     setIsMoving(true);
   };
@@ -375,12 +365,14 @@ const Scene = (props) => {
   const [topic5Tasks, setTopic5Tasks] = useState({});
   const [placeholderProjects, setPlaceholderProjects] = useState(["Equilibrium Project", "Lorem Project", "Ipsum Project"]);
 
-  const theTopicIndex = useStore((state) => state.topicIndex);
-  const theSubtopicIndex = useStore((state) => state.subtopicIndex);
-  const theTaskIndex = useStore((state) => state.taskIndex);
-  const setTopicIndex = useStore((state) => state.setTopicIndex);
-  const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
-  const setTaskIndex = useStore((state) => state.setTaskIndex);
+  const [mogis, setMogis] = useState({});
+
+  const theTopicIndex = useStore(state => state.topicIndex);
+  const theSubtopicIndex = useStore(state => state.subtopicIndex);
+  const theTaskIndex = useStore(state => state.taskIndex);
+  const setTopicIndex = useStore(state => state.setTopicIndex);
+  const setSubtopicIndex = useStore(state => state.setSubtopicIndex);
+  const setTaskIndex = useStore(state => state.setTaskIndex);
 
   const handleTaskIndexer = (topicIndex, subtopicIndex, taskIndex) => {
     setTopicIndex(topicIndex);
@@ -389,6 +381,8 @@ const Scene = (props) => {
   };
 
   useEffect(() => {
+
+
     if (props.mockdata.length === 1 || props.mockdata.length === 2 || props.mockdata.length === 3 || props.mockdata.length === 4 || props.mockdata.length === 5) {
       let topic1Tasks = {};
       let topic2Tasks = {};
@@ -404,20 +398,13 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
                     topic1Tasks[subtopicIndex].push(
                       <TaskComponent
                         key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                         rotate={0}
                         onClick={
-                          () =>
-                            handleTaskIndexer(
-                              topicIndex,
-                              subtopicIndex,
-                              taskIndex
-                            )
+                          () => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)
                           // console.log(topicIndex, subtopicIndex, taskIndex)
                         }
                         progress={task.progress}
@@ -439,18 +426,7 @@ const Scene = (props) => {
                     const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
                     topic2Tasks[subtopicIndex].push(
                       <>
-                        <TaskComponent
-                          key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                          rotate={Math.PI}
-                          onClick={() =>
-                            handleTaskIndexer(
-                              topicIndex,
-                              subtopicIndex,
-                              taskIndex
-                            )
-                          }
-                          progress={task.progress}
-                        />
+                        <TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)} progress={task.progress} />
                       </>
                     );
                   }
@@ -466,23 +442,8 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic3Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={0}
-                        onClick={() =>
-                          handleTaskIndexer(
-                            topicIndex,
-                            subtopicIndex,
-                            taskIndex
-                          )
-                        }
-                        progress={task.progress}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic3Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)} progress={task.progress} />);
                   }
                 }
               }
@@ -496,23 +457,8 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic4Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={Math.PI}
-                        onClick={() =>
-                          handleTaskIndexer(
-                            topicIndex,
-                            subtopicIndex,
-                            taskIndex
-                          )
-                        }
-                        progress={task.progress}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic4Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={Math.PI} onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)} progress={task.progress} />);
                   }
                 }
               }
@@ -526,23 +472,8 @@ const Scene = (props) => {
                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                   if (taskIndex < 5) {
                     const task = subtopic.tasks[taskIndex];
-                    const TaskComponent = require(`./newerModels/Task${1}${
-                      subtopicIndex + 1
-                    }${taskIndex + 1}`).default;
-                    topic5Tasks[subtopicIndex].push(
-                      <TaskComponent
-                        key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
-                        rotate={0}
-                        onClick={() =>
-                          handleTaskIndexer(
-                            topicIndex,
-                            subtopicIndex,
-                            taskIndex
-                          )
-                        }
-                        progress={task.progress}
-                      />
-                    );
+                    const TaskComponent = require(`./newerModels/Task${1}${subtopicIndex + 1}${taskIndex + 1}`).default;
+                    topic5Tasks[subtopicIndex].push(<TaskComponent key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`} rotate={0} onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)} progress={task.progress} />);
                   }
                 }
               }
@@ -1177,21 +1108,28 @@ const Scene = (props) => {
 
     setAllText(allText.concat(newText));
   }, [props.mockdata]);
+
+
   return (
     <>
       {allText}
 
-      {Object.keys(props.playersPos).map((index) => (
-        <Mogi player={props.playersPos[index]} socket={socket} />
-      ))}
-      <group position={[-7, -1.85, 0]} scale={0.3}>
-        <Waterfall />
-        {/* <Mogi> </Mogi>; */}
+      {
+        props.playersPos.map(index => {
+          // console.log("rendering", index.socketId, socket.id);
+          
+          return <Mogi player={index} socket={socket.id} />
 
-        {/* 
-        {props.playersPos.map((player, index) => {
-          console.log("players", props.playersPos);
-        })} */}
+        })
+    }
+      <group position={[-7, -1.85, 0]} scale={0.3}>
+
+        {
+        // console.log("another one")
+        }
+
+        <Waterfall />
+
         {branchOne}
         {branchTwo}
         {branchThree}
@@ -1207,22 +1145,18 @@ const Scene = (props) => {
             (subtopicIndex) => subsubTasks[subtopicIndex]
           )}
         </group> */}
-        <group scale-y={5}>
-          {Object.keys(topic1Tasks).map(
-            (subtopicIndex) => topic1Tasks[subtopicIndex]
-          )}
-        </group>
+        <group scale-y={5}>{Object.keys(topic1Tasks).map(subtopicIndex => topic1Tasks[subtopicIndex])}</group>
         <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
-          {Object.keys(topic2Tasks).map((subtopicIndex) => topic2Tasks[subtopicIndex])}
+          {Object.keys(topic2Tasks).map(subtopicIndex => topic2Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} position={[27, 0, 0]}>
-          {Object.keys(topic3Tasks).map((subtopicIndex) => topic3Tasks[subtopicIndex])}
+          {Object.keys(topic3Tasks).map(subtopicIndex => topic3Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[40, 0, 0]}>
-          {Object.keys(topic4Tasks).map((subtopicIndex) => topic4Tasks[subtopicIndex])}
+          {Object.keys(topic4Tasks).map(subtopicIndex => topic4Tasks[subtopicIndex])}
         </group>
         <group scale-y={5} position={[54, 0, 0]}>
-          {Object.keys(topic5Tasks).map((subtopicIndex) => topic5Tasks[subtopicIndex])}
+          {Object.keys(topic5Tasks).map(subtopicIndex => topic5Tasks[subtopicIndex])}
         </group>
       </group>
       {/* {waterfalls} */}
