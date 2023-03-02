@@ -1,6 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { v4 as uuid } from "uuid";
 import {
   TableCell,
   TableRow,
@@ -19,6 +17,7 @@ function TopicRows(props) {
   }
 
   const { row } = props;
+  console.log("first incoming data------->>>", row);
   const [open, setOpen] = useState(false);
   
 

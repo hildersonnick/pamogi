@@ -17,10 +17,17 @@ import SubSubTopicRows from "./SubSubTopicRows";
 
 const SubTopicRows = (props) => {
   const { subtopics } = props;
-  const [secondOpen, setSecondOpen] = useState(false);
+  const [subSubExpand, setSubSubExpand] = useState({});
   function addSubSubTopicHandler() {
     console.log("Add subsubtopic");
   }
+
+  const handleSubSubExpand = (subtopicId) => {
+    setSubSubExpand((prevState) => ({
+      ...prevState,
+      [subtopicId]: !prevState[subtopicId]
+    }));
+  };
 
   return (
     <>
@@ -69,9 +76,9 @@ const SubTopicRows = (props) => {
               />
               <Table size="small" aria-label="purchases">
                 <TableBody>
-                  {subtopics.map((subsubTaskRow) => (
+                  {subtopics.map((subtopic) => (
                     <>
-                      <TableRow key={subsubTaskRow.id}>
+                      <TableRow key={subtopic.id}>
                         <TableCell
                           style={{
                             border: "none",
@@ -82,7 +89,7 @@ const SubTopicRows = (props) => {
                           component="th"
                           scope="row"
                         >
-                          {subsubTaskRow.id}
+                          {subtopic.id}
                         </TableCell>
                         <TableCell
                           style={{
@@ -93,7 +100,7 @@ const SubTopicRows = (props) => {
                             width: "15%",
                           }}
                         >
-                          {subsubTaskRow.user}
+                          {subtopic.user}
                         </TableCell>
                         <TableCell
                           style={{
@@ -105,19 +112,18 @@ const SubTopicRows = (props) => {
                           }}
                           align="right"
                         >
-                          {subsubTaskRow.title}
+                          {subtopic.title}
                         </TableCell>
                         <TableCell style={{ border: "none" }}>
                           <IconButton
                             aria-label="expand row"
                             size="small"
                             onClick={() => {
-                              setSecondOpen(
-                                secondOpen ? false : true
-                              );
+                              handleSubSubExpand(subtopic.id);
+                              console.log(subtopic.id);
                             }}
                           >
-                            {secondOpen ? (
+                            {subSubExpand[subtopic.id] ? (
                               <KeyboardArrowUp style={{ color: "white" }} />
                             ) : (
                               <KeyboardArrowDown style={{ color: "white" }} />
@@ -125,12 +131,13 @@ const SubTopicRows = (props) => {
                           </IconButton>
                         </TableCell>
                       </TableRow>
+
                       <SubSubTopicRows
                         subtopics={subtopics}
                         open={props.open}
                         setOpen={props.setOpen}
-                        secondOpen={secondOpen}
-                        setSecondOpen={setSecondOpen}
+                        subSubExpand={subSubExpand[subtopic.id]}
+                        subtopicId = {subtopic.id}
                       />
                     </>
                   ))}
