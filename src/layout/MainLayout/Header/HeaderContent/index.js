@@ -22,17 +22,6 @@ const HeaderContent = () => {
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
 
-            {/* <IconButton
-                component={Link}
-                href="https://github.com/codedthemes/mantis-free-react-admin-template"
-                target="_blank"
-                disableRipple
-                color="secondary"
-                title="Download Free Version"
-                sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
-            >
-                <GithubOutlined />
-            </IconButton> */}
             <Button onClick={() => navigate('/3d')} variant="light" color="violet" mr={5}>
                 Switch to 3D View
             </Button>
