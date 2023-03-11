@@ -15,7 +15,7 @@ export default function IconButton(theme) {
                 sizeMedium: {
                     width: theme.spacing(4.5),
                     height: theme.spacing(4.5),
-                    fontSize: '1rem'
+                    fontSize: '1'
                 },
                 sizeSmall: {
                     width: theme.spacing(3.75),

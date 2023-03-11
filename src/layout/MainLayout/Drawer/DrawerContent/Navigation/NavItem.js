@@ -33,7 +33,7 @@ const NavItem = ({ item, level }) => {
     };
 
     const Icon = item.icon;
-    const itemIcon = item.icon ? <Icon style={{ fontSize: drawerOpen ? '1rem' : '1.25rem' }} /> : false;
+    const itemIcon = item.icon ? <Icon style={{ fontSize: drawerOpen ? '1' : '1.25rem' }} /> : false;
 
     const isSelected = openItem.findIndex((id) => id === item.id) > -1;
 

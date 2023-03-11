@@ -11,7 +11,7 @@ export default function Chip(theme) {
                     }
                 },
                 sizeLarge: {
-                    fontSize: '1rem',
+                    fontSize: '1',
                     height: 40
                 },
                 light: {

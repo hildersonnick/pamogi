@@ -31,7 +31,7 @@ import { BellOutlined, CloseOutlined, GiftOutlined, MessageOutlined, SettingOutl
 const avatarSX = {
     width: 36,
     height: 36,
-    fontSize: '1rem'
+    fontSize: '1'
 };
 
 const actionSX = {

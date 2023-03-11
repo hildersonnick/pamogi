@@ -42,7 +42,7 @@ import { Container, Title, Accordion, createStyles, rem, ThemeIcon, Progress, Te
 const avatarSX = {
     width: 36,
     height: 36,
-    fontSize: '1rem'
+    fontSize: '1'
 };
 
 // action style
