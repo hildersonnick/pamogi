@@ -27,7 +27,7 @@ const Typography = (fontFamily) => ({
     },
     h5: {
         fontWeight: 600,
-        fontSize: '1',
+        fontSize: '1rem',
         lineHeight: 1.5
     },
     h6: {

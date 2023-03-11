@@ -317,10 +317,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $1,430
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        78%
+                                        + $1,430
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
@@ -343,10 +343,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $302
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        8%
+                                        + $302
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
@@ -366,10 +366,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $682
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        16%
+                                        + $682
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
@@ -389,10 +389,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $1,430
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        78%
+                                        + $1,430
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
@@ -415,10 +415,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $302
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        8%
+                                        + $302
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
@@ -438,10 +438,10 @@ const DashboardDefault = () => {
                             <ListItemSecondaryAction>
                                 <Stack alignItems="flex-end">
                                     <Typography variant="subtitle1" noWrap>
-                                        + $682
+                                        Completed Task
                                     </Typography>
                                     <Typography variant="h6" color="secondary" noWrap>
-                                        16%
+                                        + $682
                                     </Typography>
                                 </Stack>
                             </ListItemSecondaryAction>
