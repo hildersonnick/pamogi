@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import theWaterfall from '../newerModelsGlb/waterfall.glb';
 
 export default function Model(props) {
-    const { nodes, materials } = useGLTF('%PUBLIC_URL%/newermodels/waterfall.glb');
+    const { nodes, materials } = useGLTF(theWaterfall);
     return (
         <group {...props} dispose={null}>
             <group position={[54.94, 0, -0.05]} rotation={[0, 1.57, 0]}>
@@ -14,4 +15,4 @@ export default function Model(props) {
     );
 }
 
-useGLTF.preload(process.env.PUBLIC_URL + '%PUBLIC_URL%/newermodels/waterfall.glb');
+useGLTF.preload(theWaterfall);

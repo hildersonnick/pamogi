@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import theTree from '../newerModelsGlb/tree14.glb';
 
 export default function Model(props) {
-    const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/tree14.glb');
+    const { nodes, materials } = useGLTF(theTree);
     return (
         <group {...props} dispose={null}>
             <group position={[11.16, 0.6, 1.81]}>
@@ -13,4 +14,4 @@ export default function Model(props) {
     );
 }
 
-useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/tree14.glb');
+useGLTF.preload(theTree);

@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import theHook from '../newerModelsGlb/hook1.glb';
 
 export default function Model(props) {
-    const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/hook1.glb');
+    const { nodes, materials } = useGLTF(theHook);
     return (
         <group {...props} dispose={null}>
             <mesh
@@ -17,4 +18,4 @@ export default function Model(props) {
     );
 }
 
-useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/hook1.glb');
+useGLTF.preload(theHook);

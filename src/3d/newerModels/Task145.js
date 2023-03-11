@@ -1,10 +1,13 @@
 /* eslint-disable */
 import React, { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import task from '../newerModelsGlb/task111.glb';
+import complete from '../newerModelsGlb/complete.glb';
+import progress from '../newerModelsGlb/progress.glb';
 
 export default function Model(props) {
     if (props.progress === 'initialized' || props.progress === undefined) {
-        const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/task111.glb');
+        const { nodes, materials } = useGLTF(task);
         return (
             <group {...props} dispose={null}>
                 <group position={[2.62, 0, -29.08]} rotation={[-Math.PI + props.rotate, 0, -Math.PI]} scale={[-0.81, 0.79, 0.96]}>
@@ -22,7 +25,7 @@ export default function Model(props) {
     }
 
     if (props.progress === 'complete') {
-        const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/complete.glb');
+        const { nodes, materials } = useGLTF(complete);
         return (
             <group {...props} dispose={null}>
                 <group
@@ -40,7 +43,7 @@ export default function Model(props) {
     }
 
     if (props.progress === 'progress') {
-        const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/progress.glb');
+        const { nodes, materials } = useGLTF(progress);
 
         return (
             <group {...props} dispose={null}>
@@ -459,5 +462,5 @@ export default function Model(props) {
 }
 
 useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/task145.glb');
-useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/progress.glb');
-useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/complete.glb');
+useGLTF.preload(progress);
+useGLTF.preload(complete);

@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
+import theSub from '../newerModelsGlb/sub11.glb';
 
 export default function Model(props) {
-    const { nodes, materials } = useGLTF(process.env.PUBLIC_URL + '/newermodels/sub11.glb');
+    const { nodes, materials } = useGLTF(theSub);
     return (
         <group {...props} dispose={null}>
             <group position={[14.05, 0, -7.32]}>
@@ -13,4 +14,4 @@ export default function Model(props) {
     );
 }
 
-useGLTF.preload(process.env.PUBLIC_URL + '/newermodels/sub11.glb');
+useGLTF.preload(theSub);
