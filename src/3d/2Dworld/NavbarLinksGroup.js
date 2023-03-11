@@ -71,16 +71,6 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
                         </ThemeIcon>
                         <Box ml="md">{label}</Box>
                     </Box>
-                    {/* {hasLinks && (
-                        <ChevronIcon
-                            className={classes.chevron}
-                            size="1rem"
-                            stroke={1.5}
-                            style={{
-                                transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none'
-                            }}
-                        />
-                    )} */}
                 </Group>
             </UnstyledButton>
             {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
