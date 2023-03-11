@@ -24,8 +24,8 @@ jobs:
 
             - name: 🔨 Build Project
               run: |
-                  npm
-                  npm run build
+                  yarn
+                  yarn build
 
             - name: 📂 Deploy to Server
               uses: easingthemes/ssh-deploy@v2.1.5
