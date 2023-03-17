@@ -23,6 +23,7 @@
         "@testing-library/user-event": "^14.4.3",
         "@types/three": "^0.149.0",
         "apexcharts": "^3.35.5",
+        "dayjs": "^1.11.7",
         "formik": "^2.2.9",
         "framer-motion": "^7.3.6",
         "gsap": "^3.11.4",
