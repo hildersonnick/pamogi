@@ -25,18 +25,18 @@ const dashboard = {
             id: 'dashboard',
             title: 'Project Dashboard',
             type: 'item',
-            url: '/dashboard/default',
+            url: '/',
             icon: icons.DashboardOutlined,
             breadcrumbs: false
         },
-        {
-            id: 'projects',
-            title: 'Projects',
-            type: 'item',
-            url: '/dashboard/projects',
-            icon: icons.UnorderedListOutlined,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'projects',
+        //     title: 'Projects',
+        //     type: 'item',
+        //     url: '/dashboard/projects',
+        //     icon: icons.UnorderedListOutlined,
+        //     breadcrumbs: false
+        // },
         {
             id: 'tasks',
             title: 'Tasks',

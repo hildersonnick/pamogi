@@ -8,6 +8,7 @@ import Search from './Search';
 import Profile from './Profile';
 import Notification from './Notification';
 import MobileSection from './MobileSection';
+import { Select, Group, Text } from '@mantine/core';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -21,10 +22,12 @@ const HeaderContent = () => {
         <>
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
+            {/* <Group> */}
 
             <Button onClick={() => navigate('/3d')} variant="light" color="violet" mr={5}>
                 Switch to 3D View
             </Button>
+            {/* </Group> */}
 
             <Notification />
             {!matchesXs && <Profile />}

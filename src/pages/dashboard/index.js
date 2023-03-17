@@ -35,6 +35,7 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
+import { useParams } from 'react-router-dom';
 
 import { Container, Title, Accordion, createStyles, rem, ThemeIcon, Progress, Text, Group, Badge, Paper } from '@mantine/core';
 
@@ -118,6 +119,7 @@ const placeholder =
 
 const DashboardDefault = () => {
     const { classes } = useStyles();
+    const { projectId } = useParams();
 
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');

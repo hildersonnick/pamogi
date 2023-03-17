@@ -5,6 +5,7 @@ import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import App3d from '3d/App3d';
 import DashboardDefault from 'pages/dashboard/index';
+import CreateProject from 'tal/CreateProject';
 
 // render - dashboard
 // const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -27,6 +28,14 @@ const MainRoutes = {
         {
             path: '/',
             element: <DashboardDefault />
+        },
+        {
+            path: '/project/:projectId',
+            element: <DashboardDefault />
+        },
+        {
+            path: '/create',
+            element: <CreateProject />
         }
 
         // {
