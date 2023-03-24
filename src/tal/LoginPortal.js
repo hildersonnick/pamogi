@@ -18,7 +18,7 @@ import {
 import PocketBase from 'pocketbase';
 
 export default function LoginPortal() {
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     const [type, toggle] = useToggle(['login', 'register']);
     const form = useForm({

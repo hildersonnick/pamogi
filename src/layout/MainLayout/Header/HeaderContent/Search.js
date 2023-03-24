@@ -15,7 +15,7 @@ import { useState } from 'react';
 const Search = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     useEffect(() => {
         const fetchData = async () => {

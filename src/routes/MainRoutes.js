@@ -23,7 +23,7 @@ import LoginPortal from 'tal/LoginPortal';
 
 // ==============================|| MAIN ROUTING ||============================== //
 
-const pb = new PocketBase('http://127.0.0.1:8090');
+const pb = new PocketBase('https://pamogi.pockethost.io');
 
 // console.log(pb.authStore.isValid);
 

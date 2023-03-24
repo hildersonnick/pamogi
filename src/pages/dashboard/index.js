@@ -126,7 +126,7 @@ const DashboardDefault = () => {
 
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     const [projectName, setProjectName] = useState('');
     const [budget, setBudget] = useState('');

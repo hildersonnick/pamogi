@@ -61,7 +61,7 @@ const Profile = () => {
     const [record, setRecord] = useState(null);
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null);
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     useEffect(() => {
         const fetchData = async () => {
