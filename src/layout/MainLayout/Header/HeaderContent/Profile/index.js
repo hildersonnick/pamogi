@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -25,6 +25,7 @@ import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
 import ProfileTab from './ProfileTab';
 import SettingTab from './SettingTab';
+import PocketBase from 'pocketbase';
 
 // assets
 // import avatar1 from 'assets/images/users/avatar-1.png';
@@ -57,9 +58,30 @@ function a11yProps(index) {
 
 const Profile = () => {
     const theme = useTheme();
+    const [record, setRecord] = useState(null);
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const pb = new PocketBase('http://127.0.0.1:8090');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setFirstName(pb.authStore.model.firstName);
+            setLastName(pb.authStore.model.lastName);
+            // const userId = localStorage.getItem('userToken');
+            // console.log(userId);
+            // console.log(pb.authStore.model.firstName);
+            // const record = await pb.collection('users').getOne('RECORD_ID', { expand: 'relField1,relField2.subRelField' });
+            // setRecord(record);
+        };
+
+        fetchData();
+    }, []);
+    // console.log(record);
 
     const handleLogout = async () => {
         // logout
+        pb.authStore.clear();
+        window.location.reload();
     };
 
     const anchorRef = useRef(null);
@@ -99,8 +121,8 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={avatar2} sx={{ width: 32, height: 32 }} />
-                    <Typography variant="subtitle1">Travis Howard</Typography>
+                    <Avatar alt="profile user" sx={{ width: 32, height: 32 }} />
+                    <Typography variant="subtitle1">{firstName + ' ' + lastName}</Typography>
                 </Stack>
             </ButtonBase>
             <Popper
@@ -141,9 +163,9 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        <Avatar alt="profile user" src={avatar2} sx={{ width: 32, height: 32 }} />
+                                                        <Avatar alt="profile user" sx={{ width: 32, height: 32 }} />
                                                         <Stack>
-                                                            <Typography variant="h6">Travis Howard</Typography>
+                                                            <Typography variant="h6"> {firstName + ' ' + lastName} </Typography>
                                                             <Typography variant="body2" color="textSecondary">
                                                                 UI/UX Designer
                                                             </Typography>

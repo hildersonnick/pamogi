@@ -1763,6 +1763,14 @@
   dependencies:
     "@mantine/utils" "6.0.2"
 
+"@mantine/form@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.npmjs.org/@mantine/form/-/form-6.0.2.tgz"
+  integrity sha512-M18h8NBhV3P1iq+A1xS1x4dFN+xREu9k6/NmY5ftwYf4UwhVgiscKQhJ28ZC+m+oAtMZmdBhsHM5LVnFquPQJA==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    klona "^2.0.5"
+
 "@mantine/hooks@^6.0.1", "@mantine/hooks@6.0.2":
   version "6.0.2"
   resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-6.0.2.tgz"
@@ -7750,6 +7758,11 @@ pkg-up@^3.1.0:
   integrity sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==
   dependencies:
     find-up "^3.0.0"
+
+pocketbase@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.npmjs.org/pocketbase/-/pocketbase-0.12.1.tgz"
+  integrity sha512-kihThVla/JontCGA2zVGuxk1vWtz/yt7FqnL241oxd+w7RBVNzLIRKN6GolnY9DGOekNmFRb57CL24sbUm4wJA==
 
 popmotion@11.0.5:
   version "11.0.5"

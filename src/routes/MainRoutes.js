@@ -6,6 +6,8 @@ import MainLayout from 'layout/MainLayout';
 import App3d from '3d/App3d';
 import DashboardDefault from 'pages/dashboard/index';
 import CreateProject from 'tal/CreateProject';
+import PocketBase from 'pocketbase';
+import LoginPortal from 'tal/LoginPortal';
 
 // render - dashboard
 // const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -21,9 +23,13 @@ import CreateProject from 'tal/CreateProject';
 
 // ==============================|| MAIN ROUTING ||============================== //
 
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+// console.log(pb.authStore.isValid);
+
 const MainRoutes = {
     path: '/',
-    element: <MainLayout />,
+    element: pb.authStore.isValid ? <MainLayout /> : <LoginPortal />,
     children: [
         {
             path: '/',

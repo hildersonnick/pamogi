@@ -41,7 +41,7 @@ const dashboard = {
             id: 'tasks',
             title: 'Tasks',
             type: 'item',
-            url: '/dashboard/tasks',
+            url: '/',
             icon: icons.CheckSquareOutlined,
             breadcrumbs: false
         },
@@ -49,7 +49,7 @@ const dashboard = {
             id: 'contributions',
             title: 'Contributions',
             type: 'item',
-            url: '/dashboard/contributions',
+            url: '/',
             icon: icons.BulbOutlined,
             breadcrumbs: false
         },
@@ -57,7 +57,7 @@ const dashboard = {
             id: 'investments',
             title: 'Investments',
             type: 'item',
-            url: '/dashboard/investments',
+            url: '/',
             icon: icons.DollarCircleOutlined,
             breadcrumbs: false
         }

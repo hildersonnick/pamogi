@@ -7,11 +7,26 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import PocketBase from 'pocketbase';
+import { useState } from 'react';
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
 const Search = () => {
     const navigate = useNavigate();
+    const [projects, setProjects] = useState([]);
+    const pb = new PocketBase('http://127.0.0.1:8090');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const records = await pb.collection('projects').getFullList({
+                filter: `email = "${pb.authStore.model.email}"`
+            });
+            setProjects(records.map((record) => ({ value: record.id, label: record.projectName })));
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <>
@@ -41,13 +56,14 @@ const Search = () => {
                         style={{ width: '20%' }}
                         mr={10}
                         // label="Project"
+                        // defaultValue={}
                         placeholder="Select a project"
-                        onChange={(value) => navigate(`/project/${value}`)}
-                        data={[
-                            { value: 'one', label: 'Project 1' },
-                            { value: 'two', label: 'Project 2' },
-                            { value: 'three', label: 'Project 3' }
-                        ]}
+                        onChange={(value) => {
+                            const selectedProject = projects.find((project) => project.value === value);
+                            navigate(`/project/${selectedProject.value}`);
+                            // console.log(selectedProject);
+                        }}
+                        data={projects}
                     />
                     <Button variant="light" color="violet" rightIcon={<AiOutlinePlus />} onClick={() => navigate('/create')}>
                         Create New Project
