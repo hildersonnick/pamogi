@@ -41,7 +41,7 @@ export default function CreateProject() {
         //     nextStep();
         // }
     };
-    const pb = new PocketBase('https://pamogi.pockethost.io0');
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     const addRecord = async () => {
         try {
