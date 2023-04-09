@@ -19,6 +19,8 @@ import {
 } from '@mui/material';
 import { Center } from '@mantine/core';
 import { AiFillProject } from 'react-icons/ai';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { TiDelete } from 'react-icons/ti';
 
 // project import
 import OrdersTable from './OrdersTable';
@@ -40,6 +42,12 @@ import { useParams, useLocation } from 'react-router-dom';
 import { Container, Title, Accordion, createStyles, rem, ThemeIcon, Progress, Text, Group, Badge, Paper } from '@mantine/core';
 import PocketBase from 'pocketbase';
 import { useEffect } from 'react';
+import { Tabs } from '@mantine/core';
+import { IconPhoto, IconMessageCircle, IconSettings } from '@tabler/icons-react';
+import Departments from 'tal/Departments';
+import { Select, Button as ButtonMantine } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { Dialog, TextInput } from '@mantine/core';
 
 // avatar style
 const avatarSX = {
@@ -136,6 +144,8 @@ const DashboardDefault = () => {
     const [location, setLocation] = useState('');
     const [visibility, setVisibility] = useState('');
     const [description, setDescription] = useState('');
+    const [departmentRelations, setDepartmentRelations] = useState([]);
+    const [departments, setDepartments] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -151,24 +161,93 @@ const DashboardDefault = () => {
                 setLocation(record.location);
                 setVisibility(record.visibility);
                 setDescription(record.description);
+                setDepartmentRelations(record.departmentRelations || []);
+                const relatedDepartments = await pb.collection('departments').getFullList({ filter: `projectId="${projectId}"` });
+                setDepartments(relatedDepartments);
             }
         };
 
         fetchData();
     }, [location2]);
 
-    // const formatDate = (dateString) => {
-    //     const date = new Date(dateString);
-    //     const month = date.toLocaleString('default', { month: 'long' });
-    //     const day = date.getDate();
-    //     const year = date.getFullYear();
-    //     return `${month} ${day}, ${year}`;
-    // };
+    const [newDepartmentName, setNewDepartmentName] = useState('');
+    const handleDepartmentNameChange = (event) => {
+        setNewDepartmentName(event.target.value);
+    };
 
-    // const formattedDates = dates?.map((dateString) => formatDate(dateString));
+    const handleAddDepartment = async () => {
+        setLoading(true);
+
+        const projectId = location2.pathname.split('/').pop();
+
+        // Create a new department in the "departments" collection
+        const newDepartment = {
+            label: newDepartmentName,
+            projectId
+        };
+        const createdDepartment = await pb.collection('departments').create(newDepartment);
+
+        // Update the departmentRelations field in the "projects" collection
+        const newDepartmentRelations = [...departmentRelations, createdDepartment.id];
+        const data = { departmentRelations: newDepartmentRelations };
+        const updatedRecord = await pb.collection('projects').update(projectId, data);
+
+        setDepartmentRelations(updatedRecord.departmentRelations);
+        setNewDepartmentName('');
+
+        // Update the local departments state
+        setDepartments((prevDepartments) => [...prevDepartments, createdDepartment]);
+        setLoading(false);
+
+        close();
+    };
+
+    const [opened, { toggle, close }] = useDisclosure(false);
+    const [departmentProp, setDepartmentProp] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const deleteDepartment = async () => {
+        try {
+            // Find the department record based on its label/name
+            const departmentRecord = await pb.collection('departments').getFirstListItem(`label="${departmentProp}"`, {
+                projectId: projectId
+            });
+
+            if (departmentRecord) {
+                // Delete the department using its ID
+                await pb.collection('departments').delete(departmentRecord.id);
+                console.log('Department deleted:', departmentRecord.label);
+
+                // Update the local departments state
+                setDepartments(departments.filter((department) => department.id !== departmentRecord.id));
+
+                // Reset the selected department
+                if (departments.length > 0) {
+                    setDepartmentProp(departments[0].label);
+                } else {
+                    setDepartmentProp(null);
+                }
+            } else {
+                console.log('Department not found');
+            }
+        } catch (error) {
+            console.error('Error deleting department:', error);
+        }
+    };
 
     return (
         <>
+            <Dialog opened={opened} withCloseButton onClose={close} size="lg" radius="md">
+                <Text size="sm" mb="xs" weight={500}>
+                    Name of Department
+                </Text>
+                <Group align="flex-end">
+                    <TextInput placeholder="" sx={{ flex: 1 }} value={newDepartmentName} onChange={handleDepartmentNameChange} />
+                    <ButtonMantine loading={loading} variant="light" color="violet" onClick={handleAddDepartment}>
+                        Confirm
+                    </ButtonMantine>
+                </Group>
+            </Dialog>
             {location2.pathname.includes('project') ? (
                 <Grid container rowSpacing={4.5} columnSpacing={2.75}>
                     {/* row 1 */}
@@ -194,12 +273,34 @@ const DashboardDefault = () => {
                     <Grid item xs={12} md={7} lg={8}>
                         <Grid container alignItems="center" justifyContent="space-between">
                             <Grid item>
-                                <Typography variant="h5">Departments</Typography>
+                                <Group>
+                                    <Typography variant="h5">Departments</Typography>
+                                    <Select
+                                        value={departmentProp}
+                                        placeholder="Select a department"
+                                        data={departments.map((department) => ({ value: department.label, label: department.label }))}
+                                        onChange={setDepartmentProp}
+                                    />
+
+                                    <ButtonMantine variant="light" color="violet" onClick={toggle} rightIcon={<AiOutlinePlus />}>
+                                        Add Department
+                                    </ButtonMantine>
+                                    {departmentProp && (
+                                        <ButtonMantine
+                                            variant="outline"
+                                            color="violet"
+                                            onClick={() => deleteDepartment()}
+                                            // rightIcon={<TiDelete size={20} />}
+                                        >
+                                            Delete Current Department
+                                        </ButtonMantine>
+                                    )}
+                                </Group>
                             </Grid>
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable />
+                            <Departments projectId={projectId} department={departmentProp} />
                         </MainCard>
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
@@ -209,72 +310,155 @@ const DashboardDefault = () => {
                             </Grid>
                             <Grid item />
                         </Grid>
+
                         <MainCard sx={{ mt: 2 }} content={false}>
                             <Container size="sm" className={classes.wrapper}>
                                 {/* <Title align="center" className={classes.title} sx={{ fontSize: 25 }}>
                             Project Name
                         </Title> */}
-                                <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}>
-                                    {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
+                                <Tabs color="grape" defaultValue="gallery">
+                                    <Tabs.List grow>
+                                        <Tabs.Tab
+                                            value="gallery"
+                                            //  icon={<IconPhoto size="0.8rem" />}
+                                        >
+                                            Info
+                                        </Tabs.Tab>
+                                        <Tabs.Tab
+                                            value="messages"
+                                            //  icon={<IconMessageCircle size="0.8rem" />}
+                                        >
+                                            Description
+                                        </Tabs.Tab>
+                                    </Tabs.List>
+
+                                    <Tabs.Panel value="gallery" pt="xs">
+                                        <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}>
+                                            {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
                                 <AiFillProject size="2rem" stroke={1.5} />
                             </ThemeIcon> */}
 
-                                    <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
-                                        {projectName}
-                                    </Text>
-                                    {/* <Text c="dimmed" ta="center" fz="sm">
+                                            <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
+                                                {projectName}
+                                            </Text>
+                                            {/* <Text c="dimmed" ta="center" fz="sm">
                                 32 km / week
                             </Text> */}
 
-                                    <Group position="apart" mt="xs">
-                                        <Text fz="sm" color="dimmed">
-                                            Progress
-                                        </Text>
-                                        <Text fz="sm" color="dimmed">
-                                            0%
-                                        </Text>
-                                    </Group>
+                                            <Group position="apart" mt="xs">
+                                                <Text fz="sm" color="dimmed">
+                                                    Progress
+                                                </Text>
+                                                <Text fz="sm" color="dimmed">
+                                                    0%
+                                                </Text>
+                                            </Group>
 
-                                    <Progress value={0} mt={5} />
+                                            <Progress value={0} mt={5} />
 
-                                    <Group position="apart" mt="md">
-                                        <Text fz="sm">0 / 0 Tasks Completed</Text>
-                                        <Badge color="grape" size="sm">
-                                            4 days left
-                                        </Badge>
-                                    </Group>
-                                </Paper>
+                                            <Group position="apart" mt="md">
+                                                <Text fz="sm">0 / 0 Tasks Completed</Text>
+                                                <Badge color="grape" size="sm">
+                                                    4 days left
+                                                </Badge>
+                                            </Group>
+                                        </Paper>
 
-                                <Accordion variant="separated">
-                                    <Accordion.Item className={classes.item} value="reset-password">
-                                        <Accordion.Control>Budget</Accordion.Control>
-                                        <Accordion.Panel>{budget}</Accordion.Panel>
-                                    </Accordion.Item>
+                                        <Accordion variant="separated">
+                                            <Accordion.Item className={classes.item} value="reset-password">
+                                                <Accordion.Control>Budget</Accordion.Control>
+                                                <Accordion.Panel>{budget}</Accordion.Panel>
+                                            </Accordion.Item>
 
-                                    <Accordion.Item className={classes.item} value="another-account">
-                                        <Accordion.Control>Budget Per Contribution</Accordion.Control>
-                                        <Accordion.Panel>{budgetper}</Accordion.Panel>
-                                    </Accordion.Item>
+                                            <Accordion.Item className={classes.item} value="another-account">
+                                                <Accordion.Control>Budget Per Contribution</Accordion.Control>
+                                                <Accordion.Panel>{budgetper}</Accordion.Panel>
+                                            </Accordion.Item>
 
-                                    <Accordion.Item className={classes.item} value="newsletter">
-                                        <Accordion.Control>Category</Accordion.Control>
-                                        <Accordion.Panel>{category}</Accordion.Panel>
-                                    </Accordion.Item>
+                                            <Accordion.Item className={classes.item} value="newsletter">
+                                                <Accordion.Control>Category</Accordion.Control>
+                                                <Accordion.Panel>{category}</Accordion.Panel>
+                                            </Accordion.Item>
 
-                                    {/* <Accordion.Item className={classes.item} value="credit-card">
+                                            {/* <Accordion.Item className={classes.item} value="credit-card">
                                 <Accordion.Control>Who</Accordion.Control>
                                 <Accordion.Panel>{who}</Accordion.Panel>
                             </Accordion.Item> */}
 
-                                    <Accordion.Item className={classes.item} value="payment">
-                                        <Accordion.Control>Location</Accordion.Control>
-                                        <Accordion.Panel>{location}</Accordion.Panel>
-                                    </Accordion.Item>
-                                    <Accordion.Item className={classes.item} value="payment2">
-                                        <Accordion.Control>Visibility</Accordion.Control>
-                                        <Accordion.Panel>{visibility}</Accordion.Panel>
-                                    </Accordion.Item>
-                                </Accordion>
+                                            <Accordion.Item className={classes.item} value="payment">
+                                                <Accordion.Control>Location</Accordion.Control>
+                                                <Accordion.Panel>{location}</Accordion.Panel>
+                                            </Accordion.Item>
+                                            <Accordion.Item className={classes.item} value="payment2">
+                                                <Accordion.Control>Visibility</Accordion.Control>
+                                                <Accordion.Panel>{visibility}</Accordion.Panel>
+                                            </Accordion.Item>
+                                        </Accordion>
+                                    </Tabs.Panel>
+
+                                    <Tabs.Panel value="messages" pt="xs">
+                                        {/* <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}> */}
+                                        {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
+                                <AiFillProject size="2rem" stroke={1.5} />
+                            </ThemeIcon> */}
+                                        {/* 
+                                            <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
+                                                {projectName}
+                                            </Text> */}
+                                        {/* <Text c="dimmed" ta="center" fz="sm">
+                                32 km / week
+                            </Text> */}
+
+                                        {/* <Group position="apart" mt="xs">
+                                                <Text fz="sm" color="dimmed">
+                                                    Progress
+                                                </Text>
+                                                <Text fz="sm" color="dimmed">
+                                                    0%
+                                                </Text>
+                                            </Group> */}
+
+                                        {/* <Progress value={0} mt={5} /> */}
+
+                                        {/* <Group position="apart" mt="md">
+                                                <Text fz="sm">0 / 0 Tasks Completed</Text>
+                                                <Badge color="grape" size="sm">
+                                                    4 days left
+                                                </Badge>
+                                            </Group>
+                                        </Paper> */}
+
+                                        <Accordion variant="separated">
+                                            <Accordion.Item className={classes.item} value="what">
+                                                <Accordion.Control>What</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+
+                                            <Accordion.Item className={classes.item} value="why">
+                                                <Accordion.Control>Why</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+
+                                            <Accordion.Item className={classes.item} value="how">
+                                                <Accordion.Control>How</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+
+                                            <Accordion.Item className={classes.item} value="who">
+                                                <Accordion.Control>Who</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+                                            <Accordion.Item className={classes.item} value="measurable">
+                                                <Accordion.Control>Measurable Goals</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+                                            <Accordion.Item className={classes.item} value="tags">
+                                                <Accordion.Control>Tags</Accordion.Control>
+                                                <Accordion.Panel></Accordion.Panel>
+                                            </Accordion.Item>
+                                        </Accordion>
+                                    </Tabs.Panel>
+                                </Tabs>
                             </Container>
                             {/* <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
                         <ListItemButton divider>

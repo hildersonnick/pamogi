@@ -28,7 +28,11 @@ body {
   color: black;
   font-family: 'Inter';
 }
-
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 a {
   color: black;
 }

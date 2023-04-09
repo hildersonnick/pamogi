@@ -11,6 +11,8 @@ import NumberFormat from 'react-number-format';
 // project import
 import Dot from 'components/@extended/Dot';
 
+import { Tabs } from '@mantine/core';
+
 function createData(trackingNo, name, fat, carbs, protein) {
     return { trackingNo, name, fat, carbs, protein };
 }
