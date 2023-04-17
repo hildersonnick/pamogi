@@ -1,42 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Select } from '@mantine/core';
 import PocketBase from 'pocketbase';
 
 import TreeMenu, { defaultChildren, ItemComponent } from 'react-simple-tree-menu';
 // import '../../node_modules/react-simple-tree-menu/dist/main.css';
 import './treeStyles.css';
-import { Group, Button, Center, TextInput, Input, Divider, ActionIcon, Tooltip, Dialog, Text, Title } from '@mantine/core';
+import {
+    Group,
+    Button,
+    Center,
+    TextInput,
+    Input,
+    Divider,
+    ActionIcon,
+    Tooltip,
+    Dialog,
+    Text,
+    Title,
+    Modal,
+    Container,
+    Paper,
+    Stack,
+    Accordion,
+    MultiSelect
+} from '@mantine/core';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { TiDelete } from 'react-icons/ti';
 import { useDisclosure } from '@mantine/hooks';
+import { DatePicker } from '@mantine/dates';
 
 export default function Departments(props) {
-    const pb = new PocketBase('https://pamogi.pockethost.io');
     const [topics, setTopics] = useState([]);
-    const [departmentId, setDepartmentId] = useState(null);
+    const pb = new PocketBase('https://pamogi.pockethost.io');
 
     const fetchTopics = async () => {
         try {
             const departmentLabel = props.department;
-            console.log('Department label:', departmentLabel);
+            const projectId = props.projectId; // Add this line
+            const departments = await pb.collection('departments').getFullList();
 
-            const fetchedDepartment = await pb.collection('departments').getFirstListItem(`label="${departmentLabel}"`);
-            console.log('Department:', fetchedDepartment);
+            const fetchedDepartment = departments.find(
+                (department) => department.label === departmentLabel && department.projectId === projectId
+            );
 
             if (fetchedDepartment) {
                 const departmentId = fetchedDepartment.id;
-                console.log('Department ID:', departmentId);
 
                 const fetchedItems = await pb.collection('items').getFullList();
-                console.log(
-                    'Fetched items:',
-                    fetchedItems.map((item) => ({ ...item, parentDepartmentId: item.parentDepartmentId }))
-                );
 
-                const filteredItems = fetchedItems.filter((item) => item.parentDepartmentId.includes(departmentId));
-                console.log('Filtered items:', filteredItems);
+                // Update the filteredItems with an additional filter for projectId
+                const filteredItems = fetchedItems.filter(
+                    (item) => item.parentDepartmentId.includes(departmentId) && item.projectId === projectId
+                );
 
                 const topics = filteredItems
                     .filter((item) => item.type === 'topic')
@@ -77,7 +93,6 @@ export default function Departments(props) {
                     }
                 }
 
-                console.log('Topics:', topics);
                 setTopics(topics); // Add this line to update the state with the fetched topics
 
                 return topics;
@@ -94,7 +109,6 @@ export default function Departments(props) {
     }, [props.department]);
 
     const handleApiCall = async (id, data) => {
-        console.log(data);
         // Ensure parentDepartmentId is an array of strings
         if (data.parentDepartmentId && Array.isArray(data.parentDepartmentId)) {
             data.parentDepartmentId = data.parentDepartmentId.flat();
@@ -105,11 +119,8 @@ export default function Departments(props) {
             data.parentItemId = data.parentItemId.flat();
         }
 
-        console.log('Sending data to API:', data);
-
         try {
             const response = await pb.collection('items').create({ ...data, synced: true });
-            console.log(`Created item with ID: ${response.id} for element with ID: ${id}`);
             return response; // Return the response object
         } catch (error) {
             console.error(`Error creating item for element with ID: ${id}`, error);
@@ -217,8 +228,9 @@ export default function Departments(props) {
     };
 
     useEffect(() => {
-        if (props.department && props.projectId) {
-            fetchDepartmentId(props.department, props.projectId);
+        if (props.department) {
+            fetchTopics();
+            fetchDepartmentId(props.department, props.projectId); // Add this line
         }
     }, [props.department, props.projectId]);
 
@@ -245,12 +257,12 @@ export default function Departments(props) {
                 parentId = null;
             } else if (editItem.level === 1) {
                 itemType = 'subtopic';
-                parentId = topics.find((t) => t.key === editItem.key.split('/')[0]).id;
+                parentId = topics.find((t) => t.key === editItem.key.split('/')[0]).key; // Use key instead of id
             } else if (editItem.level === 2) {
                 itemType = 'subsubtopic';
                 parentId = topics
                     .find((t) => t.key === editItem.key.split('/')[0])
-                    .subtopics.find((st) => st.key === editItem.key.split('/')[1]).id;
+                    .subtopics.find((st) => st.key === editItem.key.split('/')[1]).key; // Use key instead of id
             }
         }
 
@@ -283,6 +295,7 @@ export default function Departments(props) {
         const apiCallData = {
             label: newItem.label,
             type: itemType,
+            projectId: props.projectId, // Add this line
             parentDepartmentId: departmentId ? [departmentId] : [], // Use the departmentId from the state
             parentItemId: parentId ? [parentId] : []
         };
@@ -369,9 +382,234 @@ export default function Departments(props) {
         setNewName(e.target.value);
         setErrorMessage(''); // Reset the error message
     };
+    const [departmentId, setDepartmentId] = useState(null);
+
+    const [opened2, { open: open2, close: close2 }] = useDisclosure(false);
+
+    const [taskTitle, setTaskTitle] = useState('');
+    const [taskDescription, setTaskDescription] = useState('');
+    const [taskTags, setTaskTags] = useState([]);
+    const [taskCompetencies, setTaskCompetencies] = useState([]);
+    const [taskBudget, setTaskBudget] = useState('');
+    const [taskReferralBudget, setTaskReferralBudget] = useState('');
+    const [taskEndDate, setTaskEndDate] = useState();
+    const [taskAssignedTo, setTaskAssignedTo] = useState('');
+    const [taskResult, setTaskResult] = useState('');
+
+    const handleAddTask = (item) => {
+        const itemParts = item.key.split('/');
+        const newItemKey = itemParts[itemParts.length - 1]; // Extract the last part of the key
+        const newItem = { ...item, key: newItemKey };
+        setSelectedItem(newItem);
+        open2();
+    };
+
+    const [selectedItem, setSelectedItem] = useState('');
+
+    const handleSubmitTask = async () => {
+        if (!selectedItem) {
+            console.error('No item selected');
+            return;
+        }
+
+        setSubmitting(true); // Start the loading state
+
+        const taskData = {
+            title: taskTitle,
+            description: taskDescription,
+            assignedTo: taskAssignedTo,
+            status: 'New', // Set an initial status for the task
+            itemId: selectedItem.key, // Update this line, change from array to string
+            tags: JSON.stringify(taskTags.map((tag) => tag.label)),
+            competencies: JSON.stringify(taskCompetencies.map((competency) => competency.label)),
+            budget: taskBudget,
+            referralBudget: taskReferralBudget,
+            endDate: taskEndDate,
+            result: taskResult
+        };
+
+        try {
+            await pb.collection('tasks').create(taskData); // Add this line to create the task in the backend
+
+            close2(); // Close the modal
+            fetchTaskCount(selectedItem.key); // Fetch the new task count for the selected item
+        } catch (error) {
+            console.error('Error creating task:', error);
+        } finally {
+            setSubmitting(false); // End the loading state
+        }
+    };
+
+    const [taskCounts, setTaskCounts] = useState({});
+
+    const fetchTaskCount = async (itemId) => {
+        const tasks = await pb.collection('tasks').getFullList();
+
+        // Filter tasks using Array.prototype.some() method
+        const tasksForItem = tasks.filter((task) => task.itemId.some((id) => id === itemId));
+
+        setTaskCounts((prevTaskCounts) => {
+            const updatedTaskCounts = {
+                ...prevTaskCounts,
+                [itemId]: tasksForItem.length
+            };
+
+            return updatedTaskCounts;
+        });
+    };
+
+    const fetchTaskCountsForItems = async (items) => {
+        for (const item of items) {
+            await fetchTaskCount(item.key);
+            if (item.subtopics) {
+                await fetchTaskCountsForItems(item.subtopics);
+            }
+            if (item.subsubtopics) {
+                await fetchTaskCountsForItems(item.subsubtopics);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (topics) {
+            fetchTaskCountsForItems(topics);
+        }
+    }, [topics]);
+    const [submitting, setSubmitting] = useState(false);
+
+    const [selectedTasks, setSelectedTasks] = useState([]);
+
+    const handleViewTasks = async (itemKey) => {
+        console.log('Original itemKey:', itemKey);
+
+        // Remove the forward slash from the itemKey
+        const filteredItemKey = itemKey.split('/').pop();
+        console.log('Filtered itemKey:', filteredItemKey);
+
+        // Fetch all tasks
+        const allTasks = await pb.collection('tasks').getFullList();
+
+        // Filter tasks with the specified itemKey
+        const tasks = allTasks.filter((task) => task.itemId.includes(filteredItemKey));
+
+        console.log('Tasks:', tasks);
+
+        // Store the fetched tasks in the selectedTasks state
+        setSelectedTasks(tasks);
+
+        // Open the modal
+        open3();
+    };
+
+    const [opened3, { open: open3, close: close3 }] = useDisclosure(false);
 
     return (
         <>
+            <Modal size={800} opened={opened3} onClose={close3} centered>
+                <Container my={40}>
+                    <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
+                        Tasks
+                    </Title>
+                    <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+                        <Stack mt={25} mb={25} spacing="xl">
+                            {selectedTasks.map((task) => (
+                                <div key={task.id}>
+                                    <Center mb={15}>
+                                        <Title order={4}>{task.title}</Title>
+                                    </Center>
+                                    <Accordion>
+                                        <Accordion.Item label="View details">
+                                            <Stack spacing="md">
+                                                <Text>
+                                                    <b>Description:</b> {task.description}
+                                                </Text>
+                                                <Text>
+                                                    <b>Assigned To:</b> {task.assignedTo}
+                                                </Text>
+                                                <Text>
+                                                    <b>Status:</b> {task.status}
+                                                </Text>
+                                                <Text>
+                                                    <b>Tags:</b> {task.tags.map((tag) => tag.label).join(', ')}
+                                                </Text>
+                                                <Text>
+                                                    <b>Competencies:</b> {task.competencies.map((comp) => comp.label).join(', ')}
+                                                </Text>
+                                                <Text>
+                                                    <b>Budget:</b> {task.budget}
+                                                </Text>
+                                                <Text>
+                                                    <b>Referral Budget:</b> {task.referralBudget}
+                                                </Text>
+                                                <Text>
+                                                    <b>End Date:</b> {task.endDate}
+                                                </Text>
+                                                <Text>
+                                                    <b>Result:</b> {task.result}
+                                                </Text>
+                                            </Stack>
+                                        </Accordion.Item>
+                                    </Accordion>
+                                </div>
+                            ))}
+                        </Stack>
+                    </Paper>
+                </Container>
+            </Modal>
+            <Modal size={800} opened={opened2} onClose={close2} centered>
+                <Container my={40}>
+                    <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
+                        Add a Task
+                    </Title>
+                    <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+                        <Stack mt={25} mb={25} spacing="xl">
+                            <TextInput onChange={(event) => setTaskTitle(event.target.value)} label="Title" />
+                            <TextInput onChange={(event) => setTaskDescription(event.target.value)} label="Description" />
+                            <MultiSelect
+                                getCreateLabel={(query) => `+ Add ${query}`}
+                                onCreate={(query) => {
+                                    const item = { value: query, label: query };
+                                    setTaskTags((current) => [...current, item]);
+                                    return item;
+                                }}
+                                data={taskTags}
+                                searchable
+                                creatable
+                                label="Tags"
+                            />
+                            <MultiSelect
+                                getCreateLabel={(query) => `+ Add ${query}`}
+                                onCreate={(query) => {
+                                    const item = { value: query, label: query };
+                                    setTaskCompetencies((current) => [...current, item]);
+                                    return item;
+                                }}
+                                data={taskCompetencies}
+                                searchable
+                                creatable
+                                label="Competencies"
+                            />
+                            <TextInput onChange={(event) => setTaskBudget(event.target.value)} label="Budget" />
+                            <TextInput onChange={(event) => setTaskReferralBudget(event.target.value)} label="Referral Budget" />
+                            <TextInput
+                                onChange={(event) => setTaskAssignedTo(event.target.value)}
+                                label="Assigned To"
+                                placeholder="Enter email"
+                            />
+                            <TextInput onChange={(event) => setTaskResult(event.target.value)} label="Result" />
+                            <Center>
+                                <Stack align={'center'}>
+                                    <Title order={4}>End Date</Title>
+                                    <DatePicker value={taskEndDate} onChange={setTaskEndDate} />
+                                </Stack>
+                            </Center>
+                            <Button loading={submitting} variant="light" color="grape" onClick={handleSubmitTask}>
+                                Submit
+                            </Button>
+                        </Stack>
+                    </Paper>
+                </Container>
+            </Modal>
             <Dialog
                 opened={opened}
                 withCloseButton
@@ -411,7 +649,7 @@ export default function Departments(props) {
                     </Center>
 
                     <TreeMenu
-                        data={topics.map((topic) => ({
+                        data={topics?.map((topic) => ({
                             key: topic.key,
                             label: topic.label,
                             nodes: topic.subtopics.map((subtopic) => ({
@@ -469,17 +707,29 @@ export default function Departments(props) {
                                                     )}
                                                 </Group>
                                                 <Group>
-                                                    <Tooltip label="Add Task">
-                                                        <Button
-                                                            size="sm"
-                                                            compact
-                                                            variant="light"
-                                                            color="violet"
-                                                            rightIcon={<AiOutlinePlus />}
-                                                        >
-                                                            Add Task
-                                                        </Button>
-                                                    </Tooltip>
+                                                    <Button
+                                                        onClick={() => handleViewTasks(item.key)}
+                                                        size="sm"
+                                                        compact
+                                                        variant="light"
+                                                        color="violet"
+                                                    >
+                                                        View Tasks ({taskCounts[item.key.split('/').pop()] || 0})
+                                                    </Button>
+                                                    {/* <Tooltip label="Add Task"> */}
+                                                    <Button
+                                                        onClick={() => {
+                                                            handleAddTask(item);
+                                                        }}
+                                                        size="sm"
+                                                        compact
+                                                        variant="light"
+                                                        color="violet"
+                                                        rightIcon={<AiOutlinePlus />}
+                                                    >
+                                                        Add Task
+                                                    </Button>
+                                                    {/* </Tooltip> */}
                                                     {item.level !== 2 && (
                                                         <Button
                                                             size="sm"
