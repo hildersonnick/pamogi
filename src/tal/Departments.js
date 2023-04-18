@@ -21,7 +21,11 @@ import {
     Paper,
     Stack,
     Accordion,
-    MultiSelect
+    MultiSelect,
+    createStyles,
+    rem,
+    Select,
+    Loader
 } from '@mantine/core';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
@@ -30,11 +34,37 @@ import { TiDelete } from 'react-icons/ti';
 import { useDisclosure } from '@mantine/hooks';
 import { DatePicker } from '@mantine/dates';
 
+const useStyles = createStyles((theme) => ({
+    wrapper: {
+        paddingTop: `calc(${theme.spacing.xl} * 2)`,
+        paddingBottom: `calc(${theme.spacing.xl} * 2)`,
+        minHeight: 650
+    },
+
+    title: {
+        marginBottom: `calc(${theme.spacing.xl} * 1.5)`
+    },
+
+    item: {
+        zIndex: 1,
+
+        borderRadius: theme.radius.md,
+        marginBottom: theme.spacing.lg,
+        border: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]}`
+    }
+}));
+
 export default function Departments(props) {
+    const { classes } = useStyles();
+
     const [topics, setTopics] = useState([]);
     const pb = new PocketBase('https://pamogi.pockethost.io');
 
+    const [loadingTopics, setLoadingTopics] = useState(false);
+
     const fetchTopics = async () => {
+        setLoadingTopics(true); // Set loading state to true before fetching topics
+
         try {
             const departmentLabel = props.department;
             const projectId = props.projectId; // Add this line
@@ -99,6 +129,8 @@ export default function Departments(props) {
             }
         } catch (error) {
             console.error('Error fetching topics:', error);
+        } finally {
+            setLoadingTopics(false); // Set loading state to false after fetching topics
         }
     };
 
@@ -486,6 +518,8 @@ export default function Departments(props) {
         const filteredItemKey = itemKey.split('/').pop();
         console.log('Filtered itemKey:', filteredItemKey);
 
+        setLoadingTasks(true); // Set loading state to true before fetching tasks
+
         // Fetch all tasks
         const allTasks = await pb.collection('tasks').getFullList();
 
@@ -499,61 +533,96 @@ export default function Departments(props) {
 
         // Open the modal
         open3();
+
+        setLoadingTasks(false); // Set loading state to false after the modal is opened
     };
 
     const [opened3, { open: open3, close: close3 }] = useDisclosure(false);
 
+    const [loadingTasks, setLoadingTasks] = useState(false);
+
+    const handleStatusChange = async (taskId, newStatus) => {
+        const data = {
+            status: newStatus
+        };
+
+        try {
+            const updatedTask = await pb.collection('tasks').update(taskId, data);
+            console.log('Task updated:', updatedTask);
+
+            setSelectedTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    };
     return (
         <>
             <Modal size={800} opened={opened3} onClose={close3} centered>
-                <Container my={40}>
-                    <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
+                <Container className={classes.wrapper}>
+                    <Title align="center" className={classes.title}>
                         Tasks
                     </Title>
-                    <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-                        <Stack mt={25} mb={25} spacing="xl">
-                            {selectedTasks.map((task) => (
-                                <div key={task.id}>
-                                    <Center mb={15}>
-                                        <Title order={4}>{task.title}</Title>
-                                    </Center>
-                                    <Accordion>
-                                        <Accordion.Item label="View details">
-                                            <Stack spacing="md">
-                                                <Text>
-                                                    <b>Description:</b> {task.description}
-                                                </Text>
-                                                <Text>
-                                                    <b>Assigned To:</b> {task.assignedTo}
-                                                </Text>
-                                                <Text>
-                                                    <b>Status:</b> {task.status}
-                                                </Text>
-                                                <Text>
-                                                    <b>Tags:</b> {task.tags.map((tag) => tag.label).join(', ')}
-                                                </Text>
-                                                <Text>
-                                                    <b>Competencies:</b> {task.competencies.map((comp) => comp.label).join(', ')}
-                                                </Text>
-                                                <Text>
-                                                    <b>Budget:</b> {task.budget}
-                                                </Text>
-                                                <Text>
-                                                    <b>Referral Budget:</b> {task.referralBudget}
-                                                </Text>
-                                                <Text>
-                                                    <b>End Date:</b> {task.endDate}
-                                                </Text>
-                                                <Text>
-                                                    <b>Result:</b> {task.result}
-                                                </Text>
-                                            </Stack>
-                                        </Accordion.Item>
-                                    </Accordion>
-                                </div>
-                            ))}
-                        </Stack>
-                    </Paper>
+
+                    <Accordion variant="separated">
+                        {selectedTasks.map((task, id) => (
+                            <>
+                                <Accordion.Item className={classes.item} value={id.toString()}>
+                                    <Accordion.Control>
+                                        <Group position="apart">
+                                            {task.title}
+                                            <Group>
+                                                Status:
+                                                <div style={{ maxHeight: '40px', overflow: 'hidden' }}>
+                                                    <Select
+                                                        // label="Status"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        value={task.status}
+                                                        onChange={(value) => handleStatusChange(task.id, value)}
+                                                        data={[
+                                                            { label: 'New', value: 'New' },
+                                                            { label: 'In Progress', value: 'In Progress' },
+                                                            { label: 'Completed', value: 'Completed' }
+                                                        ]}
+                                                    />
+                                                </div>
+                                            </Group>
+                                        </Group>
+                                    </Accordion.Control>
+                                    <Accordion.Panel>
+                                        <Stack spacing="md">
+                                            <Text>
+                                                <b>Description:</b> {task.description}
+                                            </Text>
+                                            <Text>
+                                                <b>Assigned To:</b> {task.assignedTo}
+                                            </Text>
+                                            <Text>
+                                                <b>Status:</b> {task.status}
+                                            </Text>
+                                            <Text>
+                                                <b>Tags:</b> {task.tags.map((tag) => tag.label).join(', ')}
+                                            </Text>
+                                            <Text>
+                                                <b>Competencies:</b> {task.competencies.map((comp) => comp.label).join(', ')}
+                                            </Text>
+                                            <Text>
+                                                <b>Budget:</b> {task.budget}
+                                            </Text>
+                                            <Text>
+                                                <b>Referral Budget:</b> {task.referralBudget}
+                                            </Text>
+                                            <Text>
+                                                <b>End Date:</b> {task.endDate}
+                                            </Text>
+                                            <Text>
+                                                <b>Result:</b> {task.result}
+                                            </Text>
+                                        </Stack>
+                                    </Accordion.Panel>
+                                </Accordion.Item>
+                            </>
+                        ))}
+                    </Accordion>
                 </Container>
             </Modal>
             <Modal size={800} opened={opened2} onClose={close2} centered>
@@ -641,125 +710,132 @@ export default function Departments(props) {
                 </Group>
             </Dialog>
             {props.department ? (
-                <>
+                loadingTopics ? (
                     <Center>
-                        <Title order={3} p={20}>
-                            Department: {props.department}
-                        </Title>
+                        <Loader color="black" m={100} />
                     </Center>
+                ) : (
+                    <>
+                        <Center>
+                            <Title order={3} p={20}>
+                                Department: {props.department}
+                            </Title>
+                        </Center>
 
-                    <TreeMenu
-                        data={topics?.map((topic) => ({
-                            key: topic.key,
-                            label: topic.label,
-                            nodes: topic.subtopics.map((subtopic) => ({
-                                key: subtopic.key,
-                                label: subtopic.label,
-                                nodes: subtopic.subsubtopics.map((subsubtopic) => ({
-                                    key: subsubtopic.key,
-                                    label: subsubtopic.label,
-                                    url: subsubtopic.url
+                        <TreeMenu
+                            data={topics?.map((topic) => ({
+                                key: topic.key,
+                                label: topic.label,
+                                nodes: topic.subtopics.map((subtopic) => ({
+                                    key: subtopic.key,
+                                    label: subtopic.label,
+                                    nodes: subtopic.subsubtopics.map((subsubtopic) => ({
+                                        key: subsubtopic.key,
+                                        label: subsubtopic.label,
+                                        url: subsubtopic.url
+                                    })),
+                                    url: subtopic.url
                                 })),
-                                url: subtopic.url
-                            })),
-                            url: topic.url
-                        }))}
-                        debounceTime={125}
-                        disableKeyboard={false}
-                        hasSearch
-                        resetOpenNodesOnDataUpdate={false}
-                    >
-                        {({ search, items }) => (
-                            <>
-                                <TextInput p={20} type="text" onChange={(e) => search(e.target.value)} placeholder="Search" />
+                                url: topic.url
+                            }))}
+                            debounceTime={125}
+                            disableKeyboard={false}
+                            hasSearch
+                            resetOpenNodesOnDataUpdate={false}
+                        >
+                            {({ search, items }) => (
+                                <>
+                                    <TextInput p={20} type="text" onChange={(e) => search(e.target.value)} placeholder="Search" />
 
-                                <ul>
-                                    {items.map((item) => (
-                                        <>
-                                            <Group grow>
-                                                <Group spacing="xs">
-                                                    <ItemComponent
-                                                        key={item.key}
-                                                        hasNodes={item.hasNodes}
-                                                        isOpen={item.isOpen}
-                                                        level={item.level}
-                                                        label={item.label}
-                                                        active={item.active}
-                                                        focused={item.focused}
-                                                        toggleNode={item.toggleNode}
-                                                    />
+                                    <ul>
+                                        {items.map((item) => (
+                                            <>
+                                                <Group grow>
+                                                    <Group spacing="xs">
+                                                        <ItemComponent
+                                                            key={item.key}
+                                                            hasNodes={item.hasNodes}
+                                                            isOpen={item.isOpen}
+                                                            level={item.level}
+                                                            label={item.label}
+                                                            active={item.active}
+                                                            focused={item.focused}
+                                                            toggleNode={item.toggleNode}
+                                                        />
 
-                                                    <Tooltip label="Edit Name">
-                                                        <ActionIcon
-                                                            onClick={() => {
-                                                                // toggle();
-                                                            }}
-                                                        >
-                                                            <BiEdit size={20} />
-                                                        </ActionIcon>
-                                                    </Tooltip>
-                                                    {item.level === 0 && (
-                                                        <Tooltip label="Delete">
-                                                            <ActionIcon onClick={() => handleDeleteClick(item)}>
-                                                                <TiDelete size={20} />
+                                                        <Tooltip label="Edit Name">
+                                                            <ActionIcon
+                                                                onClick={() => {
+                                                                    // toggle();
+                                                                }}
+                                                            >
+                                                                <BiEdit size={20} />
                                                             </ActionIcon>
                                                         </Tooltip>
-                                                    )}
-                                                </Group>
-                                                <Group>
-                                                    <Button
-                                                        onClick={() => handleViewTasks(item.key)}
-                                                        size="sm"
-                                                        compact
-                                                        variant="light"
-                                                        color="violet"
-                                                    >
-                                                        View Tasks ({taskCounts[item.key.split('/').pop()] || 0})
-                                                    </Button>
-                                                    {/* <Tooltip label="Add Task"> */}
-                                                    <Button
-                                                        onClick={() => {
-                                                            handleAddTask(item);
-                                                        }}
-                                                        size="sm"
-                                                        compact
-                                                        variant="light"
-                                                        color="violet"
-                                                        rightIcon={<AiOutlinePlus />}
-                                                    >
-                                                        Add Task
-                                                    </Button>
-                                                    {/* </Tooltip> */}
-                                                    {item.level !== 2 && (
+                                                        {item.level === 0 && (
+                                                            <Tooltip label="Delete">
+                                                                <ActionIcon onClick={() => handleDeleteClick(item)}>
+                                                                    <TiDelete size={20} />
+                                                                </ActionIcon>
+                                                            </Tooltip>
+                                                        )}
+                                                    </Group>
+                                                    <Group>
                                                         <Button
+                                                            onClick={() => handleViewTasks(item.key)}
+                                                            size="sm"
+                                                            compact
+                                                            variant="light"
+                                                            color="violet"
+                                                            loading={loadingTasks}
+                                                        >
+                                                            View Tasks ({taskCounts[item.key.split('/').pop()] || 0})
+                                                        </Button>
+                                                        {/* <Tooltip label="Add Task"> */}
+                                                        <Button
+                                                            onClick={() => {
+                                                                handleAddTask(item);
+                                                            }}
                                                             size="sm"
                                                             compact
                                                             variant="light"
                                                             color="violet"
                                                             rightIcon={<AiOutlinePlus />}
-                                                            onClick={() => {
-                                                                handleHelloClick(item);
-                                                            }}
                                                         >
-                                                            {item.level === 0 ? 'Add Subtopic' : 'Add Subsubtopic'}
+                                                            Add Task
                                                         </Button>
-                                                    )}
+                                                        {/* </Tooltip> */}
+                                                        {item.level !== 2 && (
+                                                            <Button
+                                                                size="sm"
+                                                                compact
+                                                                variant="light"
+                                                                color="violet"
+                                                                rightIcon={<AiOutlinePlus />}
+                                                                onClick={() => {
+                                                                    handleHelloClick(item);
+                                                                }}
+                                                            >
+                                                                {item.level === 0 ? 'Add Subtopic' : 'Add Subsubtopic'}
+                                                            </Button>
+                                                        )}
+                                                    </Group>
                                                 </Group>
-                                            </Group>
 
-                                            <Divider my="sm" color="black" />
-                                        </>
-                                    ))}
-                                </ul>
-                            </>
-                        )}
-                    </TreeMenu>
-                    <Center p={20}>
-                        <Button variant="light" color="violet" rightIcon={<AiOutlinePlus />} onClick={handleAddTopic}>
-                            Add Topic
-                        </Button>
-                    </Center>
-                </>
+                                                <Divider my="sm" color="black" />
+                                            </>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </TreeMenu>
+                        <Center p={20}>
+                            <Button variant="light" color="violet" rightIcon={<AiOutlinePlus />} onClick={handleAddTopic}>
+                                Add Topic
+                            </Button>
+                        </Center>
+                    </>
+                )
             ) : (
                 <Center>
                     <Title order={3} p={20}>

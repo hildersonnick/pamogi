@@ -27,15 +27,18 @@ export default function CreateProject() {
     const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
     const navigate = useNavigate();
 
-    const handleButtonClick = () => {
+    const handleButtonClick = async () => {
         // if (active === 3) {
         //     // Finish button was clicked
         //     // Navigate to the dashboard
         //     navigate('/');
         // } else if (active === 2) {
-        addRecord();
-        navigate('/');
-        // nextStep();
+        const projectId = await addRecord(); // Get the project id after creating the project
+        if (projectId.error) {
+            // Handle the error, e.g., show a notification or alert
+        } else {
+            navigate(`/project/${projectId}`); // Navigate to the URL with the project id
+        } // nextStep();
         // } else {
         //     // Next step button was clicked
         //     nextStep();
@@ -59,7 +62,7 @@ export default function CreateProject() {
             console.log(data);
 
             const record = await pb.collection('projects').create(data);
-            return record;
+            return record.id;
         } catch (error) {
             return { error: error.message };
         }

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import PocketBase from 'pocketbase';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
@@ -16,6 +17,7 @@ const Search = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const pb = new PocketBase('https://pamogi.pockethost.io');
+    const location = useLocation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,7 +28,12 @@ const Search = () => {
         };
 
         fetchData();
-    }, []);
+    }, [location]);
+
+    const getSelectedProjectId = () => {
+        const match = location.pathname.match(/\/project\/(\w+)/);
+        return match ? match[1] : null;
+    };
 
     return (
         <>
@@ -55,13 +62,11 @@ const Search = () => {
                     <Select
                         style={{ width: '20%' }}
                         mr={10}
-                        // label="Project"
-                        // defaultValue={}
+                        value={getSelectedProjectId()}
                         placeholder="Select a project"
                         onChange={(value) => {
                             const selectedProject = projects.find((project) => project.value === value);
                             navigate(`/project/${selectedProject.value}`);
-                            // console.log(selectedProject);
                         }}
                         data={projects}
                     />
