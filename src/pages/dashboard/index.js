@@ -205,11 +205,14 @@ const DashboardDefault = () => {
 
         const projectId = location2.pathname.split('/').pop();
 
+        const userEmail = pb.authStore.model.email;
+
         // Create a new department in the "departments" collection
         const newDepartment = {
             label: newDepartmentName,
             approved: owner,
-            projectId
+            projectId,
+            creator: userEmail // Add the creator's email to the newDepartment object
         };
         const createdDepartment = await pb.collection('departments').create(newDepartment);
 
@@ -231,6 +234,18 @@ const DashboardDefault = () => {
     const [opened, { toggle, close }] = useDisclosure(false);
     const [departmentProp, setDepartmentProp] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [approving, setApproving] = useState(false);
+
+    const approveDepartment = async () => {
+        const selectedDepartment = departments.find((department) => department.label === departmentProp);
+        if (selectedDepartment && !selectedDepartment.approved) {
+            setApproving(true); // Set approving status to true before making the API call
+
+            const updatedDepartment = await pb.collection('departments').update(selectedDepartment.id, { approved: true });
+            setDepartments(departments.map((department) => (department.id === updatedDepartment.id ? updatedDepartment : department)));
+            setApproving(false); // Set approving status back to false after the API call is complete
+        }
+    };
 
     const deleteDepartment = async () => {
         try {
@@ -307,10 +322,15 @@ const DashboardDefault = () => {
                                             <Select
                                                 value={departmentProp}
                                                 placeholder="Select a department"
-                                                data={departments.map((department) => ({
-                                                    value: department.label,
-                                                    label: department.label
-                                                }))}
+                                                data={departments
+                                                    .filter(
+                                                        (department) =>
+                                                            department.approved || department.creator === pb.authStore.model.email || owner
+                                                    )
+                                                    .map((department) => ({
+                                                        value: department.label,
+                                                        label: department.approved ? department.label : `${department.label} (suggestion)`
+                                                    }))}
                                                 onChange={setDepartmentProp}
                                             />
 
@@ -318,14 +338,28 @@ const DashboardDefault = () => {
                                                 Add Department {!owner && '(Suggestion)'}
                                             </ButtonMantine>
                                             {departmentProp && owner && (
-                                                <ButtonMantine
-                                                    variant="outline"
-                                                    color="violet"
-                                                    onClick={() => deleteDepartment()}
-                                                    // rightIcon={<TiDelete size={20} />}
-                                                >
-                                                    Delete Current Department
-                                                </ButtonMantine>
+                                                <>
+                                                    <ButtonMantine
+                                                        variant="outline"
+                                                        color="violet"
+                                                        onClick={() => deleteDepartment()}
+                                                        // rightIcon={<TiDelete size={20} />}
+                                                    >
+                                                        Delete Current Department
+                                                    </ButtonMantine>
+                                                    {departments.find(
+                                                        (department) => department.label === departmentProp && !department.approved
+                                                    ) && (
+                                                        <ButtonMantine
+                                                            variant="filled"
+                                                            loading={approving}
+                                                            color="violet"
+                                                            onClick={approveDepartment}
+                                                        >
+                                                            Approve Department
+                                                        </ButtonMantine>
+                                                    )}
+                                                </>
                                             )}
                                         </Group>
                                     </Grid>
