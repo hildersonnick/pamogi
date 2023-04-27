@@ -85,7 +85,7 @@ export default function LoginPortal() {
         <Container size={420} my={100}>
             <Paper radius="md" p="xl" withBorder>
                 <Text mb={15} size="lg" weight={500}>
-                    Welcome to Mantine, {type} with
+                    Welcome to Pamogi, {type} with
                 </Text>
 
                 {/* <Divider label="Or continue with email" labelPosition="center" my="lg" /> */}

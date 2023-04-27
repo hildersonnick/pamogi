@@ -8,6 +8,7 @@ import DashboardDefault from 'pages/dashboard/index';
 import CreateProject from 'tal/CreateProject';
 import PocketBase from 'pocketbase';
 import LoginPortal from 'tal/LoginPortal';
+import Invites from 'tal/Invites';
 
 // render - dashboard
 // const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -42,6 +43,10 @@ const MainRoutes = {
         {
             path: '/create',
             element: <CreateProject />
+        },
+        {
+            path: '/invites',
+            element: <Invites />
         }
 
         // {

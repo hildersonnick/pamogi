@@ -146,6 +146,9 @@ const DashboardDefault = () => {
     const [description, setDescription] = useState('');
     const [departmentRelations, setDepartmentRelations] = useState([]);
     const [departments, setDepartments] = useState([]);
+    const [owner, setOwner] = useState();
+    const [hasAccess, setHasAccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // Add this state to track the loading status
 
     useEffect(() => {
         const fetchData = async () => {
@@ -164,10 +167,32 @@ const DashboardDefault = () => {
                 setDepartmentRelations(record.departmentRelations || []);
                 const relatedDepartments = await pb.collection('departments').getFullList({ filter: `projectId="${projectId}"` });
                 setDepartments(relatedDepartments);
+                setIsLoading(false); // Set loading status to false after fetching the data
+            }
+            if (pb.authStore.model.email === record.email) {
+                setOwner(true);
+                setHasAccess(true);
+            } else {
+                setOwner(false);
+                try {
+                    const collaborators = record.collaborators || [];
+                    if (collaborators.includes(pb.authStore.model.email)) {
+                        setHasAccess(true);
+                    } else {
+                        setHasAccess(false);
+                    }
+                } catch (error) {
+                    console.error('Error processing collaborators data:', error);
+                    setHasAccess(false);
+                }
             }
         };
 
-        fetchData();
+        if (location2.pathname.includes('project')) {
+            fetchData();
+        } else {
+            setIsLoading(false);
+        }
     }, [location2]);
 
     const [newDepartmentName, setNewDepartmentName] = useState('');
@@ -183,6 +208,7 @@ const DashboardDefault = () => {
         // Create a new department in the "departments" collection
         const newDepartment = {
             label: newDepartmentName,
+            approved: owner,
             projectId
         };
         const createdDepartment = await pb.collection('departments').create(newDepartment);
@@ -249,167 +275,179 @@ const DashboardDefault = () => {
                 </Group>
             </Dialog>
             {location2.pathname.includes('project') ? (
-                <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-                    {/* row 1 */}
-                    <Grid item xs={12} sx={{ mb: -2.25 }}>
-                        <Typography variant="h5">Dashboard</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <AnalyticEcommerce title="Tasks" count="52" percentage={59.3} extra="35,000" />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <AnalyticEcommerce title="Contributors" count="105" percentage={70.5} extra="8,900" />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <AnalyticEcommerce title="Timeline" count={'placeholder'} />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <AnalyticEcommerce title="Budget" count={budget} extra="$20,395" />
-                    </Grid>
-
-                    <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
-
-                    {/* row 2 */}
-                    <Grid item xs={12} md={7} lg={8}>
-                        <Grid container alignItems="center" justifyContent="space-between">
-                            <Grid item>
-                                <Group>
-                                    <Typography variant="h5">Departments</Typography>
-                                    <Select
-                                        value={departmentProp}
-                                        placeholder="Select a department"
-                                        data={departments.map((department) => ({ value: department.label, label: department.label }))}
-                                        onChange={setDepartmentProp}
-                                    />
-
-                                    <ButtonMantine variant="light" color="violet" onClick={toggle} rightIcon={<AiOutlinePlus />}>
-                                        Add Department
-                                    </ButtonMantine>
-                                    {departmentProp && (
-                                        <ButtonMantine
-                                            variant="outline"
-                                            color="violet"
-                                            onClick={() => deleteDepartment()}
-                                            // rightIcon={<TiDelete size={20} />}
-                                        >
-                                            Delete Current Department
-                                        </ButtonMantine>
-                                    )}
-                                </Group>
+                <>
+                    {' '}
+                    {hasAccess ? (
+                        <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+                            {/* row 1 */}
+                            <Grid item xs={12} sx={{ mb: -2.25 }}>
+                                <Typography variant="h5">Dashboard</Typography>
                             </Grid>
-                            <Grid item />
-                        </Grid>
-                        <MainCard sx={{ mt: 2 }} content={false}>
-                            <Departments projectId={projectId} department={departmentProp} />
-                        </MainCard>
-                    </Grid>
-                    <Grid item xs={12} md={5} lg={4}>
-                        <Grid container alignItems="center" justifyContent="space-between">
-                            <Grid item>
-                                <Typography variant="h5">Project Description</Typography>
+                            <Grid item xs={12} sm={6} md={4} lg={3}>
+                                <AnalyticEcommerce title="Tasks" count="52" percentage={59.3} extra="35,000" />
                             </Grid>
-                            <Grid item />
-                        </Grid>
+                            <Grid item xs={12} sm={6} md={4} lg={3}>
+                                <AnalyticEcommerce title="Contributors" count="105" percentage={70.5} extra="8,900" />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4} lg={3}>
+                                <AnalyticEcommerce title="Timeline" count={'placeholder'} />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4} lg={3}>
+                                <AnalyticEcommerce title="Budget" count={budget} extra="$20,395" />
+                            </Grid>
 
-                        <MainCard sx={{ mt: 2 }} content={false}>
-                            <Container size="sm" className={classes.wrapper}>
-                                {/* <Title align="center" className={classes.title} sx={{ fontSize: 25 }}>
+                            <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+
+                            {/* row 2 */}
+                            <Grid item xs={12} md={7} lg={8}>
+                                <Grid container alignItems="center" justifyContent="space-between">
+                                    <Grid item>
+                                        <Group>
+                                            <Typography variant="h5">Departments</Typography>
+                                            <Select
+                                                value={departmentProp}
+                                                placeholder="Select a department"
+                                                data={departments.map((department) => ({
+                                                    value: department.label,
+                                                    label: department.label
+                                                }))}
+                                                onChange={setDepartmentProp}
+                                            />
+
+                                            <ButtonMantine variant="light" color="violet" onClick={toggle} rightIcon={<AiOutlinePlus />}>
+                                                Add Department {!owner && '(Suggestion)'}
+                                            </ButtonMantine>
+                                            {departmentProp && owner && (
+                                                <ButtonMantine
+                                                    variant="outline"
+                                                    color="violet"
+                                                    onClick={() => deleteDepartment()}
+                                                    // rightIcon={<TiDelete size={20} />}
+                                                >
+                                                    Delete Current Department
+                                                </ButtonMantine>
+                                            )}
+                                        </Group>
+                                    </Grid>
+                                    <Grid item />
+                                </Grid>
+                                <MainCard sx={{ mt: 2 }} content={false}>
+                                    <Departments collaborator={!owner} owner={owner} projectId={projectId} department={departmentProp} />
+                                </MainCard>
+                            </Grid>
+                            <Grid item xs={12} md={5} lg={4}>
+                                <Grid container alignItems="center" justifyContent="space-between">
+                                    <Grid item>
+                                        <Typography variant="h5">Project Description</Typography>
+                                    </Grid>
+                                    <Grid item />
+                                </Grid>
+
+                                <MainCard sx={{ mt: 2 }} content={false}>
+                                    <Container size="sm" className={classes.wrapper}>
+                                        {/* <Title align="center" className={classes.title} sx={{ fontSize: 25 }}>
                             Project Name
                         </Title> */}
-                                <Tabs color="grape" defaultValue="gallery">
-                                    <Tabs.List grow>
-                                        <Tabs.Tab
-                                            value="gallery"
-                                            //  icon={<IconPhoto size="0.8rem" />}
-                                        >
-                                            Info
-                                        </Tabs.Tab>
-                                        <Tabs.Tab
-                                            value="messages"
-                                            //  icon={<IconMessageCircle size="0.8rem" />}
-                                        >
-                                            Description
-                                        </Tabs.Tab>
-                                    </Tabs.List>
+                                        <Tabs color="grape" defaultValue="gallery">
+                                            <Tabs.List grow>
+                                                <Tabs.Tab
+                                                    value="gallery"
+                                                    //  icon={<IconPhoto size="0.8rem" />}
+                                                >
+                                                    Info
+                                                </Tabs.Tab>
+                                                <Tabs.Tab
+                                                    value="messages"
+                                                    //  icon={<IconMessageCircle size="0.8rem" />}
+                                                >
+                                                    Description
+                                                </Tabs.Tab>
+                                            </Tabs.List>
 
-                                    <Tabs.Panel value="gallery" pt="xs">
-                                        <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}>
-                                            {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
+                                            <Tabs.Panel value="gallery" pt="xs">
+                                                <Paper
+                                                    radius="md"
+                                                    withBorder
+                                                    className={classes.card2}
+                                                    mt={`calc(${ICON_SIZE} / 3)`}
+                                                    mb={20}
+                                                >
+                                                    {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
                                 <AiFillProject size="2rem" stroke={1.5} />
                             </ThemeIcon> */}
 
-                                            <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
-                                                {projectName}
-                                            </Text>
-                                            {/* <Text c="dimmed" ta="center" fz="sm">
+                                                    <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
+                                                        {projectName}
+                                                    </Text>
+                                                    {/* <Text c="dimmed" ta="center" fz="sm">
                                 32 km / week
                             </Text> */}
 
-                                            <Group position="apart" mt="xs">
-                                                <Text fz="sm" color="dimmed">
-                                                    Progress
-                                                </Text>
-                                                <Text fz="sm" color="dimmed">
-                                                    0%
-                                                </Text>
-                                            </Group>
+                                                    <Group position="apart" mt="xs">
+                                                        <Text fz="sm" color="dimmed">
+                                                            Progress
+                                                        </Text>
+                                                        <Text fz="sm" color="dimmed">
+                                                            0%
+                                                        </Text>
+                                                    </Group>
 
-                                            <Progress value={0} mt={5} />
+                                                    <Progress value={0} mt={5} />
 
-                                            <Group position="apart" mt="md">
-                                                <Text fz="sm">0 / 0 Tasks Completed</Text>
-                                                <Badge color="grape" size="sm">
-                                                    4 days left
-                                                </Badge>
-                                            </Group>
-                                        </Paper>
+                                                    <Group position="apart" mt="md">
+                                                        <Text fz="sm">0 / 0 Tasks Completed</Text>
+                                                        <Badge color="grape" size="sm">
+                                                            4 days left
+                                                        </Badge>
+                                                    </Group>
+                                                </Paper>
 
-                                        <Accordion variant="separated">
-                                            <Accordion.Item className={classes.item} value="reset-password">
-                                                <Accordion.Control>Budget</Accordion.Control>
-                                                <Accordion.Panel>{budget}</Accordion.Panel>
-                                            </Accordion.Item>
+                                                <Accordion variant="separated">
+                                                    <Accordion.Item className={classes.item} value="reset-password">
+                                                        <Accordion.Control>Budget</Accordion.Control>
+                                                        <Accordion.Panel>{budget}</Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            <Accordion.Item className={classes.item} value="another-account">
-                                                <Accordion.Control>Budget Per Contribution</Accordion.Control>
-                                                <Accordion.Panel>{budgetper}</Accordion.Panel>
-                                            </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="another-account">
+                                                        <Accordion.Control>Budget Per Contribution</Accordion.Control>
+                                                        <Accordion.Panel>{budgetper}</Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            <Accordion.Item className={classes.item} value="newsletter">
-                                                <Accordion.Control>Category</Accordion.Control>
-                                                <Accordion.Panel>{category}</Accordion.Panel>
-                                            </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="newsletter">
+                                                        <Accordion.Control>Category</Accordion.Control>
+                                                        <Accordion.Panel>{category}</Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            {/* <Accordion.Item className={classes.item} value="credit-card">
+                                                    {/* <Accordion.Item className={classes.item} value="credit-card">
                                 <Accordion.Control>Who</Accordion.Control>
                                 <Accordion.Panel>{who}</Accordion.Panel>
                             </Accordion.Item> */}
 
-                                            <Accordion.Item className={classes.item} value="payment">
-                                                <Accordion.Control>Location</Accordion.Control>
-                                                <Accordion.Panel>{location}</Accordion.Panel>
-                                            </Accordion.Item>
-                                            <Accordion.Item className={classes.item} value="payment2">
-                                                <Accordion.Control>Visibility</Accordion.Control>
-                                                <Accordion.Panel>{visibility}</Accordion.Panel>
-                                            </Accordion.Item>
-                                        </Accordion>
-                                    </Tabs.Panel>
+                                                    <Accordion.Item className={classes.item} value="payment">
+                                                        <Accordion.Control>Location</Accordion.Control>
+                                                        <Accordion.Panel>{location}</Accordion.Panel>
+                                                    </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="payment2">
+                                                        <Accordion.Control>Visibility</Accordion.Control>
+                                                        <Accordion.Panel>{visibility}</Accordion.Panel>
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                            </Tabs.Panel>
 
-                                    <Tabs.Panel value="messages" pt="xs">
-                                        {/* <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}> */}
-                                        {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
+                                            <Tabs.Panel value="messages" pt="xs">
+                                                {/* <Paper radius="md" withBorder className={classes.card2} mt={`calc(${ICON_SIZE} / 3)`} mb={20}> */}
+                                                {/* <ThemeIcon className={classes.icon2} size={ICON_SIZE} radius={ICON_SIZE}>
                                 <AiFillProject size="2rem" stroke={1.5} />
                             </ThemeIcon> */}
-                                        {/* 
+                                                {/* 
                                             <Text ta="center" fw={750} sx={{ fontSize: 20 }} className={classes.title2}>
                                                 {projectName}
                                             </Text> */}
-                                        {/* <Text c="dimmed" ta="center" fz="sm">
+                                                {/* <Text c="dimmed" ta="center" fz="sm">
                                 32 km / week
                             </Text> */}
 
-                                        {/* <Group position="apart" mt="xs">
+                                                {/* <Group position="apart" mt="xs">
                                                 <Text fz="sm" color="dimmed">
                                                     Progress
                                                 </Text>
@@ -418,9 +456,9 @@ const DashboardDefault = () => {
                                                 </Text>
                                             </Group> */}
 
-                                        {/* <Progress value={0} mt={5} /> */}
+                                                {/* <Progress value={0} mt={5} /> */}
 
-                                        {/* <Group position="apart" mt="md">
+                                                {/* <Group position="apart" mt="md">
                                                 <Text fz="sm">0 / 0 Tasks Completed</Text>
                                                 <Badge color="grape" size="sm">
                                                     4 days left
@@ -428,39 +466,39 @@ const DashboardDefault = () => {
                                             </Group>
                                         </Paper> */}
 
-                                        <Accordion variant="separated">
-                                            <Accordion.Item className={classes.item} value="what">
-                                                <Accordion.Control>What</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
+                                                <Accordion variant="separated">
+                                                    <Accordion.Item className={classes.item} value="what">
+                                                        <Accordion.Control>What</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            <Accordion.Item className={classes.item} value="why">
-                                                <Accordion.Control>Why</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="why">
+                                                        <Accordion.Control>Why</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            <Accordion.Item className={classes.item} value="how">
-                                                <Accordion.Control>How</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="how">
+                                                        <Accordion.Control>How</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
 
-                                            <Accordion.Item className={classes.item} value="who">
-                                                <Accordion.Control>Who</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
-                                            <Accordion.Item className={classes.item} value="measurable">
-                                                <Accordion.Control>Measurable Goals</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
-                                            <Accordion.Item className={classes.item} value="tags">
-                                                <Accordion.Control>Tags</Accordion.Control>
-                                                <Accordion.Panel></Accordion.Panel>
-                                            </Accordion.Item>
-                                        </Accordion>
-                                    </Tabs.Panel>
-                                </Tabs>
-                            </Container>
-                            {/* <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
+                                                    <Accordion.Item className={classes.item} value="who">
+                                                        <Accordion.Control>Who</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="measurable">
+                                                        <Accordion.Control>Measurable Goals</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
+                                                    <Accordion.Item className={classes.item} value="tags">
+                                                        <Accordion.Control>Tags</Accordion.Control>
+                                                        <Accordion.Panel></Accordion.Panel>
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                            </Tabs.Panel>
+                                        </Tabs>
+                                    </Container>
+                                    {/* <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
                         <ListItemButton divider>
                             <ListItemText primary="Company Finance Growth" />
                             <Typography variant="h5">+45.14%</Typography>
@@ -475,230 +513,230 @@ const DashboardDefault = () => {
                         </ListItemButton>
                     </List>
                     <ReportAreaChart /> */}
-                        </MainCard>
-                    </Grid>
-
-                    {/* row 3 */}
-
-                    <Grid item xs={12} md={7} lg={8}>
-                        <Grid container alignItems="center" justifyContent="space-between">
-                            <Grid item>
-                                <Typography variant="h5">Investments/Contributions</Typography>
+                                </MainCard>
                             </Grid>
-                            <Grid item>
-                                <Stack direction="row" alignItems="center" spacing={0}>
-                                    <Button
-                                        size="small"
-                                        onClick={() => setSlot('month')}
-                                        color={slot === 'month' ? 'primary' : 'secondary'}
-                                        variant={slot === 'month' ? 'outlined' : 'text'}
+
+                            {/* row 3 */}
+
+                            <Grid item xs={12} md={7} lg={8}>
+                                <Grid container alignItems="center" justifyContent="space-between">
+                                    <Grid item>
+                                        <Typography variant="h5">Investments/Contributions</Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Stack direction="row" alignItems="center" spacing={0}>
+                                            <Button
+                                                size="small"
+                                                onClick={() => setSlot('month')}
+                                                color={slot === 'month' ? 'primary' : 'secondary'}
+                                                variant={slot === 'month' ? 'outlined' : 'text'}
+                                            >
+                                                Past Year
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                onClick={() => setSlot('week')}
+                                                color={slot === 'week' ? 'primary' : 'secondary'}
+                                                variant={slot === 'week' ? 'outlined' : 'text'}
+                                            >
+                                                Past Week
+                                            </Button>
+                                        </Stack>
+                                    </Grid>
+                                </Grid>
+                                <MainCard content={false} sx={{ mt: 1.5 }}>
+                                    <Box sx={{ pt: 1, pr: 2 }}>
+                                        <IncomeAreaChart slot={slot} />
+                                    </Box>
+                                </MainCard>
+                            </Grid>
+
+                            <Grid item xs={12} md={5} lg={4}>
+                                <Grid container alignItems="center" justifyContent="space-between">
+                                    <Grid item>
+                                        <Typography variant="h5">Activity</Typography>
+                                    </Grid>
+                                    <Grid item />
+                                </Grid>
+                                <MainCard sx={{ mt: 2 }} content={false}>
+                                    <List
+                                        component="nav"
+                                        sx={{
+                                            px: 0,
+                                            py: 0,
+                                            '& .MuiListItemButton-root': {
+                                                py: 1.5,
+                                                '& .MuiAvatar-root': avatarSX,
+                                                '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
+                                            }
+                                        }}
                                     >
-                                        Past Year
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        onClick={() => setSlot('week')}
-                                        color={slot === 'week' ? 'primary' : 'secondary'}
-                                        variant={slot === 'week' ? 'outlined' : 'text'}
-                                    >
-                                        Past Week
-                                    </Button>
-                                </Stack>
-                            </Grid>
-                        </Grid>
-                        <MainCard content={false} sx={{ mt: 1.5 }}>
-                            <Box sx={{ pt: 1, pr: 2 }}>
-                                <IncomeAreaChart slot={slot} />
-                            </Box>
-                        </MainCard>
-                    </Grid>
-
-                    <Grid item xs={12} md={5} lg={4}>
-                        <Grid container alignItems="center" justifyContent="space-between">
-                            <Grid item>
-                                <Typography variant="h5">Activity</Typography>
-                            </Grid>
-                            <Grid item />
-                        </Grid>
-                        <MainCard sx={{ mt: 2 }} content={false}>
-                            <List
-                                component="nav"
-                                sx={{
-                                    px: 0,
-                                    py: 0,
-                                    '& .MuiListItemButton-root': {
-                                        py: 1.5,
-                                        '& .MuiAvatar-root': avatarSX,
-                                        '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-                                    }
-                                }}
-                            >
-                                <ListItemButton divider>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'success.main',
-                                                bgcolor: 'success.lighter'
-                                            }}
-                                        >
-                                            {/* <GiftOutlined /> */}
-                                            {/* <Avatar alt="Remy Sharp" src={avatar1} /> */}
-                                            <Avatar alt="Travis Howard" src={avatar2} />
-                                            {/* <Avatar alt="Cindy Baker" src={avatar3} />
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'success.main',
+                                                        bgcolor: 'success.lighter'
+                                                    }}
+                                                >
+                                                    {/* <GiftOutlined /> */}
+                                                    {/* <Avatar alt="Remy Sharp" src={avatar1} /> */}
+                                                    <Avatar alt="Travis Howard" src={avatar2} />
+                                                    {/* <Avatar alt="Cindy Baker" src={avatar3} />
                                     <Avatar alt="Agnes Walker" src={avatar4} /> */}
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Travis Howard</Typography>}
-                                        secondary="Today, 2:00 AM"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $1,430
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                                <ListItemButton divider>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'primary.main',
-                                                bgcolor: 'primary.lighter'
-                                            }}
-                                        >
-                                            <Avatar alt="Agnes Walker" src={avatar4} />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Agnes Walker</Typography>}
-                                        secondary="August 5th, 1:45 PM"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $302
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                                <ListItemButton divider>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'error.main',
-                                                bgcolor: 'error.lighter'
-                                            }}
-                                        >
-                                            <Avatar alt="Cindy Baker" src={avatar3} />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Cindy Baker</Typography>}
-                                        secondary="7 hours ago"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $682
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                                <ListItemButton divider>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'success.main',
-                                                bgcolor: 'success.lighter'
-                                            }}
-                                        >
-                                            <Avatar alt="Travis Howard" src={avatar2} />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Travis Howard</Typography>}
-                                        secondary="Today, 2:00 AM"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $1,430
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                                <ListItemButton divider>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'primary.main',
-                                                bgcolor: 'primary.lighter'
-                                            }}
-                                        >
-                                            <Avatar alt="Agnes Walker" src={avatar4} />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Agnes Walker</Typography>}
-                                        secondary="August 5th, 1:45 PM"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $302
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                                <ListItemButton>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            sx={{
-                                                color: 'error.main',
-                                                bgcolor: 'error.lighter'
-                                            }}
-                                        >
-                                            <Avatar alt="Travis Howard" src={avatar2} />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<Typography variant="subtitle1">Travis Howard</Typography>}
-                                        secondary="7 hours ago"
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Stack alignItems="flex-end">
-                                            <Typography variant="subtitle1" noWrap>
-                                                Completed Task
-                                            </Typography>
-                                            <Typography variant="h6" color="secondary" noWrap>
-                                                + $682
-                                            </Typography>
-                                        </Stack>
-                                    </ListItemSecondaryAction>
-                                </ListItemButton>
-                            </List>
-                        </MainCard>
-                    </Grid>
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Travis Howard</Typography>}
+                                                secondary="Today, 2:00 AM"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $1,430
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'primary.main',
+                                                        bgcolor: 'primary.lighter'
+                                                    }}
+                                                >
+                                                    <Avatar alt="Agnes Walker" src={avatar4} />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Agnes Walker</Typography>}
+                                                secondary="August 5th, 1:45 PM"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $302
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'error.main',
+                                                        bgcolor: 'error.lighter'
+                                                    }}
+                                                >
+                                                    <Avatar alt="Cindy Baker" src={avatar3} />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Cindy Baker</Typography>}
+                                                secondary="7 hours ago"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $682
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'success.main',
+                                                        bgcolor: 'success.lighter'
+                                                    }}
+                                                >
+                                                    <Avatar alt="Travis Howard" src={avatar2} />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Travis Howard</Typography>}
+                                                secondary="Today, 2:00 AM"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $1,430
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'primary.main',
+                                                        bgcolor: 'primary.lighter'
+                                                    }}
+                                                >
+                                                    <Avatar alt="Agnes Walker" src={avatar4} />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Agnes Walker</Typography>}
+                                                secondary="August 5th, 1:45 PM"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $302
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                        <ListItemButton>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'error.main',
+                                                        bgcolor: 'error.lighter'
+                                                    }}
+                                                >
+                                                    <Avatar alt="Travis Howard" src={avatar2} />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">Travis Howard</Typography>}
+                                                secondary="7 hours ago"
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="subtitle1" noWrap>
+                                                        Completed Task
+                                                    </Typography>
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        + $682
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                    </List>
+                                </MainCard>
+                            </Grid>
 
-                    {/* row 4 */}
-                    {/* <Grid item xs={12} md={7} lg={8}>
+                            {/* row 4 */}
+                            {/* <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Sales Report</Typography>
@@ -776,9 +814,23 @@ const DashboardDefault = () => {
                     </Stack>
                 </MainCard>
             </Grid> */}
-                </Grid>
+                        </Grid>
+                    ) : (
+                        <>
+                            {!isLoading && (
+                                <Center>
+                                    <Stack mt={10} align="center">
+                                        <Title>You do not have access to this project</Title>
+                                        <Text>Please request access from the project owner</Text>
+                                    </Stack>
+                                </Center>
+                            )}
+                        </>
+                    )}{' '}
+                </>
             ) : (
                 <>
+                    {' '}
                     <Center>
                         <Title>Select Project Above</Title>
                     </Center>

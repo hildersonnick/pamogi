@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PocketBase from 'pocketbase';
 
 import TreeMenu, { defaultChildren, ItemComponent } from 'react-simple-tree-menu';
-// import '../../node_modules/react-simple-tree-menu/dist/main.css';
 import './treeStyles.css';
 import {
     Group,
@@ -87,11 +86,12 @@ export default function Departments(props) {
                 const topics = filteredItems
                     .filter((item) => item.type === 'topic')
                     .map((topic) => ({
+                        id: topic.id, // Add this line
                         key: topic.id,
                         label: topic.label,
                         url: '',
                         subtopics: [],
-                        synced: topic.synced // Add this line
+                        synced: topic.synced
                     }));
 
                 const subtopics = filteredItems.filter((item) => item.type === 'subtopic');
@@ -139,6 +139,10 @@ export default function Departments(props) {
             fetchTopics().then((fetchedTopics) => setTopics(fetchedTopics));
         }
     }, [props.department]);
+
+    useEffect(() => {
+        setOwner(props.owner);
+    }, [props.owner]);
 
     const handleApiCall = async (id, data) => {
         // Ensure parentDepartmentId is an array of strings
@@ -266,6 +270,8 @@ export default function Departments(props) {
         }
     }, [props.department, props.projectId]);
 
+    const [owner, setOwner] = useState();
+
     const handleConfirm = async () => {
         setLoading(true);
 
@@ -289,12 +295,13 @@ export default function Departments(props) {
                 parentId = null;
             } else if (editItem.level === 1) {
                 itemType = 'subtopic';
-                parentId = topics.find((t) => t.key === editItem.key.split('/')[0]).key; // Use key instead of id
+                const parentTopic = topics.find((t) => t.key === editItem.key.split('/')[0]);
+                parentId = parentTopic.id; // This should now work correctly
             } else if (editItem.level === 2) {
                 itemType = 'subsubtopic';
-                parentId = topics
-                    .find((t) => t.key === editItem.key.split('/')[0])
-                    .subtopics.find((st) => st.key === editItem.key.split('/')[1]).key; // Use key instead of id
+                const parentTopic = topics.find((t) => t.key === editItem.key.split('/')[0]);
+                const parentSubtopic = parentTopic.subtopics.find((st) => st.key === editItem.key.split('/')[1]);
+                parentId = parentSubtopic.id; // This should now work correctly
             }
         }
 
@@ -327,15 +334,15 @@ export default function Departments(props) {
         const apiCallData = {
             label: newItem.label,
             type: itemType,
-            projectId: props.projectId, // Add this line
-            parentDepartmentId: departmentId ? [departmentId] : [], // Use the departmentId from the state
-            parentItemId: parentId ? [parentId] : []
+            projectId: props.projectId,
+            parentDepartmentId: departmentId ? [departmentId] : [],
+            parentItemId: parentId ? [parentId] : [],
+            approved: owner
         };
 
         const response = await handleApiCall(newItem.key, apiCallData);
 
         if (response) {
-            // Set the new item's ID and synced status
             const setItemData = (item) => {
                 if (item.key === newItem.key) {
                     return { ...item, id: response.id, synced: true };
@@ -457,7 +464,8 @@ export default function Departments(props) {
             budget: taskBudget,
             referralBudget: taskReferralBudget,
             endDate: taskEndDate,
-            result: taskResult
+            result: taskResult,
+            approved: owner
         };
 
         try {
@@ -512,11 +520,8 @@ export default function Departments(props) {
     const [selectedTasks, setSelectedTasks] = useState([]);
 
     const handleViewTasks = async (itemKey) => {
-        console.log('Original itemKey:', itemKey);
-
         // Remove the forward slash from the itemKey
         const filteredItemKey = itemKey.split('/').pop();
-        console.log('Filtered itemKey:', filteredItemKey);
 
         setLoadingTasks(true); // Set loading state to true before fetching tasks
 
@@ -525,8 +530,6 @@ export default function Departments(props) {
 
         // Filter tasks with the specified itemKey
         const tasks = allTasks.filter((task) => task.itemId.includes(filteredItemKey));
-
-        console.log('Tasks:', tasks);
 
         // Store the fetched tasks in the selectedTasks state
         setSelectedTasks(tasks);
@@ -547,9 +550,6 @@ export default function Departments(props) {
         };
 
         try {
-            const updatedTask = await pb.collection('tasks').update(taskId, data);
-            console.log('Task updated:', updatedTask);
-
             setSelectedTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
         } catch (error) {
             console.error('Error updating task:', error);
@@ -762,22 +762,24 @@ export default function Departments(props) {
                                                             focused={item.focused}
                                                             toggleNode={item.toggleNode}
                                                         />
-
-                                                        <Tooltip label="Edit Name">
-                                                            <ActionIcon
-                                                                onClick={() => {
-                                                                    // toggle();
-                                                                }}
-                                                            >
-                                                                <BiEdit size={20} />
-                                                            </ActionIcon>
-                                                        </Tooltip>
-                                                        {item.level === 0 && (
-                                                            <Tooltip label="Delete">
-                                                                <ActionIcon onClick={() => handleDeleteClick(item)}>
-                                                                    <TiDelete size={20} />
-                                                                </ActionIcon>
-                                                            </Tooltip>
+                                                        {!props.collaborator && (
+                                                            <>
+                                                                {' '}
+                                                                <Tooltip label="Edit Name">
+                                                                    <ActionIcon
+                                                                        onClick={() => {
+                                                                            // toggle();
+                                                                        }}
+                                                                    >
+                                                                        <BiEdit size={20} />
+                                                                    </ActionIcon>
+                                                                </Tooltip>
+                                                                <Tooltip label="Delete">
+                                                                    <ActionIcon onClick={() => handleDeleteClick(item)}>
+                                                                        <TiDelete size={20} />
+                                                                    </ActionIcon>
+                                                                </Tooltip>
+                                                            </>
                                                         )}
                                                     </Group>
                                                     <Group>
@@ -802,7 +804,7 @@ export default function Departments(props) {
                                                             color="violet"
                                                             rightIcon={<AiOutlinePlus />}
                                                         >
-                                                            Add Task
+                                                            Add Task {props.collaborator && '(Suggestion)'}
                                                         </Button>
                                                         {/* </Tooltip> */}
                                                         {item.level !== 2 && (
@@ -817,6 +819,7 @@ export default function Departments(props) {
                                                                 }}
                                                             >
                                                                 {item.level === 0 ? 'Add Subtopic' : 'Add Subsubtopic'}
+                                                                {props.collaborator && ' (Suggestion)'}
                                                             </Button>
                                                         )}
                                                     </Group>
@@ -831,7 +834,7 @@ export default function Departments(props) {
                         </TreeMenu>
                         <Center p={20}>
                             <Button variant="light" color="violet" rightIcon={<AiOutlinePlus />} onClick={handleAddTopic}>
-                                Add Topic
+                                Add Topic {props.collaborator && '(Suggestion)'}
                             </Button>
                         </Center>
                     </>

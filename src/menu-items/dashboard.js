@@ -37,30 +37,30 @@ const dashboard = {
         //     icon: icons.UnorderedListOutlined,
         //     breadcrumbs: false
         // },
-        {
-            id: 'tasks',
-            title: 'Tasks',
-            type: 'item',
-            url: '/',
-            icon: icons.CheckSquareOutlined,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'tasks',
+        //     title: 'Tasks',
+        //     type: 'item',
+        //     url: '/',
+        //     icon: icons.CheckSquareOutlined,
+        //     breadcrumbs: false
+        // },
         {
             id: 'contributions',
-            title: 'Contributions',
+            title: 'Collaboration Invites',
             type: 'item',
-            url: '/',
+            url: '/invites',
             icon: icons.BulbOutlined,
             breadcrumbs: false
-        },
-        {
-            id: 'investments',
-            title: 'Investments',
-            type: 'item',
-            url: '/',
-            icon: icons.DollarCircleOutlined,
-            breadcrumbs: false
         }
+        // {
+        //     id: 'investments',
+        //     title: 'Investments',
+        //     type: 'item',
+        //     url: '/',
+        //     icon: icons.DollarCircleOutlined,
+        //     breadcrumbs: false
+        // }
     ]
 };
 
