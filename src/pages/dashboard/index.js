@@ -366,7 +366,13 @@ const DashboardDefault = () => {
                                     <Grid item />
                                 </Grid>
                                 <MainCard sx={{ mt: 2 }} content={false}>
-                                    <Departments collaborator={!owner} owner={owner} projectId={projectId} department={departmentProp} />
+                                    <Departments
+                                        collaborator={!owner}
+                                        owner={owner}
+                                        projectId={projectId}
+                                        department={departmentProp}
+                                        creatorEmail={pb.authStore.model.email} // Pass the creator's email as a prop
+                                    />
                                 </MainCard>
                             </Grid>
                             <Grid item xs={12} md={5} lg={4}>

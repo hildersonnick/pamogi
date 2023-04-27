@@ -80,7 +80,10 @@ export default function Departments(props) {
 
                 // Update the filteredItems with an additional filter for projectId
                 const filteredItems = fetchedItems.filter(
-                    (item) => item.parentDepartmentId.includes(departmentId) && item.projectId === projectId
+                    (item) =>
+                        item.parentDepartmentId.includes(departmentId) &&
+                        item.projectId === projectId &&
+                        (item.approved || item.creator === pb.authStore.model.email || props.owner)
                 );
 
                 const topics = filteredItems
@@ -91,7 +94,8 @@ export default function Departments(props) {
                         label: topic.label,
                         url: '',
                         subtopics: [],
-                        synced: topic.synced
+                        synced: topic.synced,
+                        approved: topic.approved
                     }));
 
                 const subtopics = filteredItems.filter((item) => item.type === 'subtopic');
@@ -103,6 +107,7 @@ export default function Departments(props) {
                         parentTopic.subtopics.push({
                             key: subtopic.id,
                             label: subtopic.label,
+                            approved: subtopic.approved,
                             url: '',
                             subsubtopics: []
                         });
@@ -116,6 +121,7 @@ export default function Departments(props) {
                             parentSubtopic.subsubtopics.push({
                                 key: subsubtopic.id,
                                 label: subsubtopic.label,
+                                approved: subsubtopic.approved,
                                 url: ''
                             });
                             break;
@@ -337,7 +343,8 @@ export default function Departments(props) {
             projectId: props.projectId,
             parentDepartmentId: departmentId ? [departmentId] : [],
             parentItemId: parentId ? [parentId] : [],
-            approved: owner
+            approved: owner,
+            creator: props.creatorEmail // Add the creator's ID or username here
         };
 
         const response = await handleApiCall(newItem.key, apiCallData);
@@ -465,7 +472,8 @@ export default function Departments(props) {
             referralBudget: taskReferralBudget,
             endDate: taskEndDate,
             result: taskResult,
-            approved: owner
+            approved: owner,
+            creator: props.creatorEmail // Add the creator's ID or username here
         };
 
         try {
@@ -529,7 +537,12 @@ export default function Departments(props) {
         const allTasks = await pb.collection('tasks').getFullList();
 
         // Filter tasks with the specified itemKey
-        const tasks = allTasks.filter((task) => task.itemId.includes(filteredItemKey));
+        const tasks = allTasks.filter((task) => {
+            return (
+                task.itemId.includes(filteredItemKey) &&
+                (props.owner || task.approved || (task.creator && task.creator === props.creatorEmail))
+            );
+        });
 
         // Store the fetched tasks in the selectedTasks state
         setSelectedTasks(tasks);
@@ -555,6 +568,54 @@ export default function Departments(props) {
             console.error('Error updating task:', error);
         }
     };
+
+    const handleApproveClick = async (item) => {
+        setApprovingItem(true);
+
+        const data = {
+            ...item,
+            approved: true
+        };
+
+        try {
+            // Get the last part of the item key after the last forward slash
+            const recordId = item.key.split('/').pop();
+            const updatedRecord = await pb.collection('items').update(recordId, data);
+            console.log('Item approved', updatedRecord);
+
+            // Refresh the topics
+            await fetchTopics();
+        } catch (error) {
+            console.error('Failed to approve item', error);
+        } finally {
+            setApprovingItem(false);
+        }
+    };
+
+    const [approvingItem, setApprovingItem] = useState(false);
+
+    const [approvingTask, setApprovingTask] = useState(false);
+    const handleTaskApproveClick = async (task) => {
+        setApprovingTask(true);
+
+        const data = {
+            ...task,
+            approved: true
+        };
+
+        try {
+            const updatedRecord = await pb.collection('tasks').update(task.id, data);
+            console.log('Task approved', updatedRecord);
+
+            // Update the local state or refetch the data
+            const updatedTasks = selectedTasks.map((t) => (t.id === task.id ? updatedRecord : t));
+            setSelectedTasks(updatedTasks);
+        } catch (error) {
+            console.error('Failed to approve task', error);
+        } finally {
+            setApprovingTask(false);
+        }
+    };
     return (
         <>
             <Modal size={800} opened={opened3} onClose={close3} centered>
@@ -569,7 +630,21 @@ export default function Departments(props) {
                                 <Accordion.Item className={classes.item} value={id.toString()}>
                                     <Accordion.Control>
                                         <Group position="apart">
-                                            {task.title}
+                                            {props.owner && !task.approved && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="light"
+                                                    color="violet"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleTaskApproveClick(task);
+                                                    }}
+                                                    loading={approvingTask}
+                                                >
+                                                    Approve
+                                                </Button>
+                                            )}
+                                            {`${task.title}${!task.approved ? ' (suggestion)' : ''}`}
                                             <Group>
                                                 Status:
                                                 <div style={{ maxHeight: '40px', overflow: 'hidden' }}>
@@ -726,12 +801,17 @@ export default function Departments(props) {
                             data={topics?.map((topic) => ({
                                 key: topic.key,
                                 label: topic.label,
+                                approved: topic.approved,
                                 nodes: topic.subtopics.map((subtopic) => ({
                                     key: subtopic.key,
                                     label: subtopic.label,
+                                    approved: subtopic.approved,
+
                                     nodes: subtopic.subsubtopics.map((subsubtopic) => ({
                                         key: subsubtopic.key,
                                         label: subsubtopic.label,
+                                        approved: subsubtopic.approved,
+
                                         url: subsubtopic.url
                                     })),
                                     url: subtopic.url
@@ -757,7 +837,7 @@ export default function Departments(props) {
                                                             hasNodes={item.hasNodes}
                                                             isOpen={item.isOpen}
                                                             level={item.level}
-                                                            label={item.label}
+                                                            label={`${item.label}${!item.approved ? ' (suggestion)' : ''}`}
                                                             active={item.active}
                                                             focused={item.focused}
                                                             toggleNode={item.toggleNode}
@@ -783,6 +863,18 @@ export default function Departments(props) {
                                                         )}
                                                     </Group>
                                                     <Group>
+                                                        {owner && !item.approved && (
+                                                            <Button
+                                                                loading={approvingItem}
+                                                                onClick={() => handleApproveClick(item)}
+                                                                size="sm"
+                                                                compact
+                                                                variant="filled"
+                                                                color="violet"
+                                                            >
+                                                                Approve Item
+                                                            </Button>
+                                                        )}
                                                         <Button
                                                             onClick={() => handleViewTasks(item.key)}
                                                             size="sm"
