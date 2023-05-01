@@ -32,6 +32,7 @@ import { TiDeleteOutline } from 'react-icons/ti';
 import { TiDelete } from 'react-icons/ti';
 import { useDisclosure } from '@mantine/hooks';
 import { DatePicker } from '@mantine/dates';
+import { BiErrorAlt } from 'react-icons/bi';
 
 const useStyles = createStyles((theme) => ({
     wrapper: {
@@ -189,8 +190,15 @@ export default function Departments(props) {
         }
     };
 
+    const extractKey = (key) => {
+        const keyParts = key.split('/');
+        return keyParts[keyParts.length - 1];
+    };
     const handleDeleteClick = async (item) => {
+        console.log('item', item);
         const [topicKey, subtopicKey, subsubtopicKey] = item.key.split('/');
+
+        const itemKeyToDelete = extractKey(item.key);
 
         if (subsubtopicKey) {
             // We're on the subsubtopic level, delete the subsubtopic from its parent subtopic
@@ -198,7 +206,7 @@ export default function Departments(props) {
                 ...topic,
                 subtopics: topic.subtopics.map((subtopic) => ({
                     ...subtopic,
-                    subsubtopics: subtopic.subsubtopics.filter((subsubtopic) => subsubtopic.key !== item.key)
+                    subsubtopics: subtopic.subsubtopics.filter((subsubtopic) => extractKey(subsubtopic.key) !== itemKeyToDelete)
                 }))
             }));
             setTopics(newTopics);
@@ -206,24 +214,25 @@ export default function Departments(props) {
             // We're on the subtopic level, delete only the subtopic and its children (subsubtopics)
             const newTopics = topics.map((topic) => ({
                 ...topic,
-                subtopics: topic.subtopics.filter((subtopic) => subtopic.key !== item.key)
+                subtopics: topic.subtopics.filter((subtopic) => extractKey(subtopic.key) !== itemKeyToDelete)
             }));
             setTopics(newTopics);
         } else {
             // We're on the topic level, delete the entire topic and all its children (subtopics and subsubtopics)
-            const newTopics = topics.filter((topic) => topic.key !== item.key);
+            const newTopics = topics.filter((topic) => extractKey(topic.key) !== itemKeyToDelete);
             setTopics(newTopics);
         }
+
         if (topicKey) {
             if (subsubtopicKey) {
                 // We're on the subsubtopic level
-                await deleteItemAndChildren(item.key, 2);
+                await deleteItemAndChildren(itemKeyToDelete, 2);
             } else if (subtopicKey) {
                 // We're on the subtopic level
-                await deleteItemAndChildren(item.key, 1);
+                await deleteItemAndChildren(itemKeyToDelete, 1);
             } else {
                 // We're on the topic level
-                await deleteItemAndChildren(item.key, 0);
+                await deleteItemAndChildren(itemKeyToDelete, 0);
             }
         }
     };
@@ -315,7 +324,8 @@ export default function Departments(props) {
             key: `${itemType}-${newTopics.filter((t) => !t.synced).length + 1}`,
             label: newName,
             url: '',
-            synced: false
+            synced: false,
+            approved: props.owner // Set approved status to true if the user is an owner
         };
 
         if (itemType === 'topic') {
@@ -493,8 +503,8 @@ export default function Departments(props) {
     const fetchTaskCount = async (itemId) => {
         const tasks = await pb.collection('tasks').getFullList();
 
-        // Filter tasks using Array.prototype.some() method
-        const tasksForItem = tasks.filter((task) => task.itemId.some((id) => id === itemId));
+        // Filter tasks using Array.prototype.some() method and only include approved tasks
+        const tasksForItem = tasks.filter((task) => task.itemId.some((id) => id === itemId) && task.approved);
 
         setTaskCounts((prevTaskCounts) => {
             const updatedTaskCounts = {
@@ -595,6 +605,7 @@ export default function Departments(props) {
     const [approvingItem, setApprovingItem] = useState(false);
 
     const [approvingTask, setApprovingTask] = useState(false);
+
     const handleTaskApproveClick = async (task) => {
         setApprovingTask(true);
 
@@ -616,6 +627,91 @@ export default function Departments(props) {
             setApprovingTask(false);
         }
     };
+
+    const [editingItem, setEditingItem] = useState(null);
+
+    const handleEditClick = (item) => {
+        setEditingItem(item);
+        console.log(item);
+        toggle(); // This should open the modal for editing the name
+    };
+
+    const handleUpdateLabel = async () => {
+        if (editingItem) {
+            const updatedData = {
+                label: newName
+            };
+
+            const itemKey = editingItem.key.split('/').pop();
+            console.log('Updating item with key:', itemKey);
+
+            const record = await pb.collection('items').update(itemKey, updatedData);
+
+            if (record) {
+                console.log('Record updated:', record);
+
+                setTopics((prevTopics) => {
+                    const updateItemRecursively = (items, parentKey = '') => {
+                        return items.map((item) => {
+                            const currentItemKey = parentKey ? `${parentKey}/${item.key}` : item.key;
+                            if (currentItemKey === editingItem.key) {
+                                return { ...item, label: newName };
+                            } else if (item.subtopics) {
+                                return { ...item, subtopics: updateItemRecursively(item.subtopics, currentItemKey) };
+                            } else if (item.subsubtopics) {
+                                return { ...item, subsubtopics: updateItemRecursively(item.subsubtopics, currentItemKey) };
+                            } else {
+                                return item;
+                            }
+                        });
+                    };
+
+                    return updateItemRecursively(prevTopics);
+                });
+
+                setEditingItem(null);
+                setNewName('');
+                toggle();
+            } else {
+                console.error('Failed to update the record in the database.');
+            }
+        }
+    };
+
+    const handleTaskDeleteClick = async (task, e) => {
+        e.stopPropagation();
+
+        // Remove the task from the selectedTasks state
+        const newSelectedTasks = selectedTasks.filter((t) => t.id !== task.id);
+        setSelectedTasks(newSelectedTasks);
+
+        // Delete the task from the database
+        await pb.collection('tasks').delete(task.id);
+    };
+
+    const [editingTask, setEditingTask] = useState(null);
+
+    const handleTaskEditClick = (task, e) => {
+        e.stopPropagation();
+        setEditingTask(task);
+    };
+
+    const handleTaskTitleChange = async () => {
+        try {
+            setLoading(true);
+            const updatedTask = await pb.collection('tasks').update(editingTask.id, { title: newName });
+            const updatedTasks = selectedTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task));
+            setSelectedTasks(updatedTasks);
+            setLoading(false);
+            setNewName('');
+            setEditingTask(null);
+            close();
+        } catch (error) {
+            setLoading(false);
+            setErrorMessage('An error occurred while updating the task title. Please try again.');
+        }
+    };
+
     return (
         <>
             <Modal size={800} opened={opened3} onClose={close3} centered>
@@ -644,7 +740,17 @@ export default function Departments(props) {
                                                     Approve
                                                 </Button>
                                             )}
-                                            {`${task.title}${!task.approved ? ' (suggestion)' : ''}`}
+                                            <Group>
+                                                {`${task.title}${!task.approved ? ' (suggestion)' : ''}`}
+                                                <ActionIcon onClick={(e) => handleTaskEditClick(task, e)}>
+                                                    <BiEdit size={20} />
+                                                </ActionIcon>
+
+                                                <Tooltip label="Delete Task">
+                                                    <TiDelete onClick={(e) => handleTaskDeleteClick(task, e)} size={20} />
+                                                </Tooltip>
+                                            </Group>
+
                                             <Group>
                                                 Status:
                                                 <div style={{ maxHeight: '40px', overflow: 'hidden' }}>
@@ -755,18 +861,21 @@ export default function Departments(props) {
                 </Container>
             </Modal>
             <Dialog
-                opened={opened}
+                opened={opened || editingTask !== null}
                 withCloseButton
                 onClose={() => {
                     setNewName('');
                     setEditItem(null);
+                    setEditingItem(null); // Update this line
+                    setEditingTask(null);
+
                     close();
                 }}
                 size="lg"
                 radius="md"
             >
                 <Text size="sm" mb="xs" weight={500}>
-                    {getDialogTitle()}
+                    {editingItem ? 'Edit Name' : getDialogTitle()}
                 </Text>
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
@@ -775,12 +884,10 @@ export default function Departments(props) {
                     <Button
                         variant="light"
                         color="violet"
-                        onClick={() => {
-                            handleConfirm();
-                        }}
+                        onClick={editingTask ? handleTaskTitleChange : editingItem ? handleUpdateLabel : handleConfirm}
                         loading={loading}
                     >
-                        Confirm
+                        {editingTask ? 'Update Task Name' : editingItem ? 'Update Name' : 'Confirm'}
                     </Button>
                 </Group>
             </Dialog>
@@ -846,11 +953,7 @@ export default function Departments(props) {
                                                             <>
                                                                 {' '}
                                                                 <Tooltip label="Edit Name">
-                                                                    <ActionIcon
-                                                                        onClick={() => {
-                                                                            // toggle();
-                                                                        }}
-                                                                    >
+                                                                    <ActionIcon onClick={() => handleEditClick(item)}>
                                                                         <BiEdit size={20} />
                                                                     </ActionIcon>
                                                                 </Tooltip>
