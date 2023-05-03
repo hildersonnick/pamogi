@@ -463,39 +463,87 @@ export default function Departments(props) {
     const [selectedItem, setSelectedItem] = useState('');
 
     const handleSubmitTask = async () => {
-        if (!selectedItem) {
-            console.error('No item selected');
-            return;
+        if (formMode === 'create') {
+            if (!selectedItem) {
+                console.error('No item selected');
+                return;
+            }
+
+            setSubmitting(true); // Start the loading state
+
+            const taskData = {
+                title: taskTitle,
+                description: taskDescription,
+                assignedTo: taskAssignedTo,
+                status: 'New', // Set an initial status for the task
+                itemId: selectedItem.key, // Update this line, change from array to string
+                tags: JSON.stringify(taskTags.map((tag) => tag.label)),
+                competencies: JSON.stringify(taskCompetencies.map((competency) => competency.label)),
+                budget: taskBudget,
+                referralBudget: taskReferralBudget,
+                endDate: taskEndDate,
+                result: taskResult,
+                approved: owner,
+                creator: props.creatorEmail // Add the creator's ID or username here
+            };
+
+            try {
+                await pb.collection('tasks').create(taskData); // Add this line to create the task in the backend
+
+                close2(); // Close the modal
+                fetchTaskCount(selectedItem.key); // Fetch the new task count for the selected item
+            } catch (error) {
+                console.error('Error creating task:', error);
+            } finally {
+                setSubmitting(false); // End the loading state
+            }
+        } else if (formMode === 'edit') {
+            const data = {
+                title: taskTitle,
+                description: taskDescription,
+                assignedTo: taskAssignedTo,
+                tags: JSON.stringify(taskTags),
+                competencies: JSON.stringify(taskCompetencies),
+                budget: taskBudget,
+                referralBudget: taskReferralBudget,
+                endDate: taskEndDate,
+                result: taskResult
+            };
+            console.log(editingTaskDetails);
+
+            await pb.collection('tasks').update(editingTaskDetails.id, data); // Use editingTaskDetails here
+            // Update the task in the `selectedTasks` list
+            // Reset form state
+            resetForm();
+            // Close the form
+            close2();
+            close3();
         }
+    };
 
-        setSubmitting(true); // Start the loading state
-
-        const taskData = {
-            title: taskTitle,
-            description: taskDescription,
-            assignedTo: taskAssignedTo,
-            status: 'New', // Set an initial status for the task
-            itemId: selectedItem.key, // Update this line, change from array to string
-            tags: JSON.stringify(taskTags.map((tag) => tag.label)),
-            competencies: JSON.stringify(taskCompetencies.map((competency) => competency.label)),
-            budget: taskBudget,
-            referralBudget: taskReferralBudget,
-            endDate: taskEndDate,
-            result: taskResult,
-            approved: owner,
-            creator: props.creatorEmail // Add the creator's ID or username here
-        };
-
-        try {
-            await pb.collection('tasks').create(taskData); // Add this line to create the task in the backend
-
-            close2(); // Close the modal
-            fetchTaskCount(selectedItem.key); // Fetch the new task count for the selected item
-        } catch (error) {
-            console.error('Error creating task:', error);
-        } finally {
-            setSubmitting(false); // End the loading state
-        }
+    const handleFormClose = () => {
+        close2();
+        setFormMode('create');
+        setTaskTitle('');
+        setTaskDescription('');
+        setTaskAssignedTo('');
+        setTaskTags([]);
+        setTaskCompetencies([]);
+        setTaskBudget('');
+        setTaskReferralBudget('');
+        setTaskEndDate(null);
+        setTaskResult('');
+    };
+    const resetForm = () => {
+        setTaskTitle('');
+        setTaskDescription('');
+        setTaskAssignedTo('');
+        setTaskTags([]);
+        setTaskCompetencies([]);
+        setTaskBudget('');
+        setTaskReferralBudget('');
+        setTaskEndDate('');
+        setTaskResult('');
     };
 
     const [taskCounts, setTaskCounts] = useState({});
@@ -712,6 +760,26 @@ export default function Departments(props) {
         }
     };
 
+    const [formMode, setFormMode] = useState('create');
+
+    const handleTaskEditFormOpen = (task, e) => {
+        e.stopPropagation();
+        setFormMode('edit');
+        setEditingTaskDetails(task); // Set the editingTaskDetails state with the task object
+        setTaskTitle(task.title);
+        setTaskDescription(task.description);
+        setTaskAssignedTo(task.assignedTo);
+        setTaskTags(task.tags); // Directly use the tags array
+        setTaskCompetencies(task.competencies); // Directly use the competencies array
+        setTaskBudget(task.budget);
+        setTaskReferralBudget(task.referralBudget);
+        setTaskEndDate(task.endDate);
+        setTaskResult(task.result);
+        open2();
+    };
+
+    const [editingTaskDetails, setEditingTaskDetails] = useState(null);
+
     return (
         <>
             <Modal size={800} opened={opened3} onClose={close3} centered>
@@ -777,27 +845,39 @@ export default function Departments(props) {
                                             <Text>
                                                 <b>Assigned To:</b> {task.assignedTo}
                                             </Text>
+
                                             <Text>
                                                 <b>Status:</b> {task.status}
                                             </Text>
+
                                             <Text>
                                                 <b>Tags:</b> {task.tags.map((tag) => tag.label).join(', ')}
                                             </Text>
+
                                             <Text>
                                                 <b>Competencies:</b> {task.competencies.map((comp) => comp.label).join(', ')}
                                             </Text>
+
                                             <Text>
                                                 <b>Budget:</b> {task.budget}
                                             </Text>
+
                                             <Text>
                                                 <b>Referral Budget:</b> {task.referralBudget}
                                             </Text>
+
                                             <Text>
                                                 <b>End Date:</b> {task.endDate}
                                             </Text>
+
                                             <Text>
                                                 <b>Result:</b> {task.result}
                                             </Text>
+                                            <Center>
+                                                <Button variant="light" color="violet" onClick={(e) => handleTaskEditFormOpen(task, e)}>
+                                                    Edit Task Details
+                                                </Button>
+                                            </Center>
                                         </Stack>
                                     </Accordion.Panel>
                                 </Accordion.Item>
@@ -806,10 +886,10 @@ export default function Departments(props) {
                     </Accordion>
                 </Container>
             </Modal>
-            <Modal size={800} opened={opened2} onClose={close2} centered>
+            <Modal size={800} opened={opened2} onClose={handleFormClose} centered>
                 <Container my={40}>
                     <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
-                        Add a Task
+                        {formMode === 'create' ? 'Add a Task' : `Edit Task Details for: ${taskTitle}`}
                     </Title>
                     <Paper withBorder shadow="md" p={30} mt={30} radius="md">
                         <Stack mt={25} mb={25} spacing="xl">
@@ -860,37 +940,41 @@ export default function Departments(props) {
                     </Paper>
                 </Container>
             </Modal>
-            <Dialog
-                opened={opened || editingTask !== null}
-                withCloseButton
-                onClose={() => {
-                    setNewName('');
-                    setEditItem(null);
-                    setEditingItem(null); // Update this line
-                    setEditingTask(null);
+            <div style={{ zIndex: 1500, position: 'relative' }}>
+                <Dialog
+                    zIndex={1500}
+                    style={{ zIndex: 1000 }}
+                    opened={opened || editingTask !== null}
+                    withCloseButton
+                    onClose={() => {
+                        setNewName('');
+                        setEditItem(null);
+                        setEditingItem(null); // Update this line
+                        setEditingTask(null);
 
-                    close();
-                }}
-                size="lg"
-                radius="md"
-            >
-                <Text size="sm" mb="xs" weight={500}>
-                    {editingItem ? 'Edit Name' : getDialogTitle()}
-                </Text>
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                        close();
+                    }}
+                    size="lg"
+                    radius="md"
+                >
+                    <Text size="sm" mb="xs" weight={500}>
+                        {editingItem ? 'Edit Name' : getDialogTitle()}
+                    </Text>
+                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
-                <Group align="flex-end">
-                    <TextInput sx={{ flex: 1 }} value={newName} onChange={(e) => handleInputChange(e)} />
-                    <Button
-                        variant="light"
-                        color="violet"
-                        onClick={editingTask ? handleTaskTitleChange : editingItem ? handleUpdateLabel : handleConfirm}
-                        loading={loading}
-                    >
-                        {editingTask ? 'Update Task Name' : editingItem ? 'Update Name' : 'Confirm'}
-                    </Button>
-                </Group>
-            </Dialog>
+                    <Group align="flex-end">
+                        <TextInput sx={{ flex: 1 }} value={newName} onChange={(e) => handleInputChange(e)} />
+                        <Button
+                            variant="light"
+                            color="violet"
+                            onClick={editingTask ? handleTaskTitleChange : editingItem ? handleUpdateLabel : handleConfirm}
+                            loading={loading}
+                        >
+                            {editingTask ? 'Update Task Name' : editingItem ? 'Update Name' : 'Confirm'}
+                        </Button>
+                    </Group>
+                </Dialog>
+            </div>
             {props.department ? (
                 loadingTopics ? (
                     <Center>
