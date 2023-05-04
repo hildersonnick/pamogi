@@ -129,7 +129,7 @@ export default function Departments(props) {
                         }
                     }
                 }
-
+                console.log(topics);
                 setTopics(topics); // Add this line to update the state with the fetched topics
 
                 return topics;
@@ -195,7 +195,6 @@ export default function Departments(props) {
         return keyParts[keyParts.length - 1];
     };
     const handleDeleteClick = async (item) => {
-        console.log('item', item);
         const [topicKey, subtopicKey, subsubtopicKey] = item.key.split('/');
 
         const itemKeyToDelete = extractKey(item.key);
@@ -316,7 +315,8 @@ export default function Departments(props) {
                 itemType = 'subsubtopic';
                 const parentTopic = topics.find((t) => t.key === editItem.key.split('/')[0]);
                 const parentSubtopic = parentTopic.subtopics.find((st) => st.key === editItem.key.split('/')[1]);
-                parentId = parentSubtopic.id; // This should now work correctly
+                parentId = parentSubtopic.id || parentSubtopic.key; // Use id if available, else use key
+                console.log(parentSubtopic);
             }
         }
 
@@ -509,7 +509,6 @@ export default function Departments(props) {
                 endDate: taskEndDate,
                 result: taskResult
             };
-            console.log(editingTaskDetails);
 
             await pb.collection('tasks').update(editingTaskDetails.id, data); // Use editingTaskDetails here
             // Update the task in the `selectedTasks` list
@@ -639,7 +638,6 @@ export default function Departments(props) {
             // Get the last part of the item key after the last forward slash
             const recordId = item.key.split('/').pop();
             const updatedRecord = await pb.collection('items').update(recordId, data);
-            console.log('Item approved', updatedRecord);
 
             // Refresh the topics
             await fetchTopics();
@@ -664,7 +662,6 @@ export default function Departments(props) {
 
         try {
             const updatedRecord = await pb.collection('tasks').update(task.id, data);
-            console.log('Task approved', updatedRecord);
 
             // Update the local state or refetch the data
             const updatedTasks = selectedTasks.map((t) => (t.id === task.id ? updatedRecord : t));
@@ -680,7 +677,6 @@ export default function Departments(props) {
 
     const handleEditClick = (item) => {
         setEditingItem(item);
-        console.log(item);
         toggle(); // This should open the modal for editing the name
     };
 
@@ -691,13 +687,10 @@ export default function Departments(props) {
             };
 
             const itemKey = editingItem.key.split('/').pop();
-            console.log('Updating item with key:', itemKey);
 
             const record = await pb.collection('items').update(itemKey, updatedData);
 
             if (record) {
-                console.log('Record updated:', record);
-
                 setTopics((prevTopics) => {
                     const updateItemRecursively = (items, parentKey = '') => {
                         return items.map((item) => {
