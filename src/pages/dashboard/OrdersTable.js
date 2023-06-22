@@ -63,13 +63,13 @@ const headCells = [
         id: 'trackingNo',
         align: 'left',
         disablePadding: false,
-        label: 'Topic No.'
+        label: 'Challenge No.'
     },
     {
         id: 'name',
         align: 'left',
         disablePadding: true,
-        label: 'Topic Name'
+        label: 'Challenge Name'
     },
     {
         id: 'fat',

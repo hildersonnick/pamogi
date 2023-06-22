@@ -101,44 +101,44 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     const handleAddSubsubTask = () => {
         setSubsubMax(subsubMax + 1);
         if (mockData.length > 0 && mockData[parentIndex] && mockData[parentIndex].links && mockData[parentIndex].links.length > 0) {
-            const updatedTopics = [...mockData];
-            updatedTopics[parentIndex] = {
-                ...updatedTopics[parentIndex],
+            const updatedChallenges = [...mockData];
+            updatedChallenges[parentIndex] = {
+                ...updatedChallenges[parentIndex],
                 links: [
-                    ...updatedTopics[parentIndex].links.slice(0, subIndex),
+                    ...updatedChallenges[parentIndex].links.slice(0, subIndex),
                     {
-                        ...updatedTopics[parentIndex].links[subIndex],
+                        ...updatedChallenges[parentIndex].links[subIndex],
                         tasks: [
-                            ...(updatedTopics[parentIndex].links[subIndex].tasks || []),
+                            ...(updatedChallenges[parentIndex].links[subIndex].tasks || []),
                             {
                                 label: taskName
                             }
                         ]
                     },
-                    ...updatedTopics[parentIndex].links.slice(subIndex + 1)
+                    ...updatedChallenges[parentIndex].links.slice(subIndex + 1)
                 ]
             };
-            setMockData(updatedTopics);
+            setMockData(updatedChallenges);
             setTaskName('');
             setOpened2(false);
         }
     };
     const [subIndex, setSubIndex] = useState(null);
-    const handleSubsubTask = (event, topicIndex, subtopicIndex) => {
+    const handleSubsubTask = (event, challengeIndex, subtopicIndex) => {
         event.stopPropagation();
         setDialogState('subsubtask');
         setOpened2(true);
-        setParentIndex(topicIndex);
+        setParentIndex(challengeIndex);
         setSubIndex(subtopicIndex);
     };
 
     const handleAddSubtopic = () => {
-        const updatedTopics = [...mockData];
-        updatedTopics[parentIndex] = {
-            ...updatedTopics[parentIndex],
-            links: [...updatedTopics[parentIndex].links, { label: taskName, link: '/' }]
+        const updatedChallenges = [...mockData];
+        updatedChallenges[parentIndex] = {
+            ...updatedChallenges[parentIndex],
+            links: [...updatedChallenges[parentIndex].links, { label: taskName, link: '/' }]
         };
-        setMockData(updatedTopics);
+        setMockData(updatedChallenges);
         setTaskName('');
         setOpened2(false);
     };
@@ -152,12 +152,12 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     const [parentIndex, setParentIndex] = useState(null);
 
     const handleAddSubTask = (event, index) => {
-        const updatedTopics = [...mockData];
-        updatedTopics[parentIndex] = {
-            ...updatedTopics[parentIndex],
-            tasks: [...updatedTopics[parentIndex].tasks, { tasks: parentIndex, label: taskName }]
+        const updatedChallenges = [...mockData];
+        updatedChallenges[parentIndex] = {
+            ...updatedChallenges[parentIndex],
+            tasks: [...updatedChallenges[parentIndex].tasks, { tasks: parentIndex, label: taskName }]
         };
-        setMockData(updatedTopics);
+        setMockData(updatedChallenges);
         setTaskName('');
         setOpened2(false);
     };
@@ -200,7 +200,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
 
     const [taskName, setTaskName] = useState('');
 
-    const [controlTopic, setControlTopic] = useState();
+    const [controlChallenge, setControlChallenge] = useState();
     const [controlSubTopic, setControlSubTopic] = useState();
 
     // const handleLabelClick = (event, topicIndex, subtopicIndex) => {
@@ -219,7 +219,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     const [value, setValue] = useState('initialized');
     const [opened3, setOpened3] = useState(false);
 
-    const rows = mockData[controlTopic]?.links[controlSubTopic]?.tasks?.map(
+    const rows = mockData[controlChallenge]?.links[controlSubTopic]?.tasks?.map(
         (task) => (
             // console.log(link)
             // link.tasks?.map((task) => (
@@ -268,21 +268,21 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         )
         // ))
     );
-    const theTopicIndex = useStore((state) => state.topicIndex);
+    const theChallengeIndex = useStore((state) => state.challengeIndex);
     const theSubtopicIndex = useStore((state) => state.subtopicIndex);
     const theTaskIndex = useStore((state) => state.taskIndex);
-    const setTopicIndex = useStore((state) => state.setTopicIndex);
+    const setChallengeIndex = useStore((state) => state.setChallengeIndex);
     const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
     const setTaskIndex = useStore((state) => state.setTaskIndex);
 
-    // const [theTopicIndex] = useStore((state) => state.topicIndex);
+    // const [theChallengeIndex] = useStore((state) => state.topicIndex);
     // const [theSubtopicIndex] = useStore((state) => state.subtopicIndex);
 
     useEffect(() => {
-        // console.log(theTopicIndex, theSubtopicIndex, theTaskIndex);
+        // console.log(theChallengeIndex, theSubtopicIndex, theTaskIndex);
         setOpened3(true);
-        console.log(mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]);
-    }, [theTopicIndex, theSubtopicIndex, theTaskIndex]);
+        console.log(mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]);
+    }, [theChallengeIndex, theSubtopicIndex, theTaskIndex]);
 
     const [segmentedValue, setSegmentedValue] = useState('initialized');
     const setSegmentedValueTask = (value) => {
@@ -291,32 +291,32 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
 
         if (
             mockData.length > 0 &&
-            mockData[theTopicIndex] &&
-            mockData[theTopicIndex].links &&
-            mockData[theTopicIndex].links[theSubtopicIndex] &&
-            mockData[theTopicIndex].links[theSubtopicIndex].tasks &&
-            mockData[theTopicIndex].links[theSubtopicIndex].tasks.length > 0
+            mockData[theChallengeIndex] &&
+            mockData[theChallengeIndex].links &&
+            mockData[theChallengeIndex].links[theSubtopicIndex] &&
+            mockData[theChallengeIndex].links[theSubtopicIndex].tasks &&
+            mockData[theChallengeIndex].links[theSubtopicIndex].tasks.length > 0
         ) {
-            const updatedTopics = [...mockData];
-            updatedTopics[theTopicIndex] = {
-                ...updatedTopics[theTopicIndex],
+            const updatedChallenges = [...mockData];
+            updatedChallenges[theChallengeIndex] = {
+                ...updatedChallenges[theChallengeIndex],
                 links: [
-                    ...updatedTopics[theTopicIndex].links.slice(0, theSubtopicIndex),
+                    ...updatedChallenges[theChallengeIndex].links.slice(0, theSubtopicIndex),
                     {
-                        ...updatedTopics[theTopicIndex].links[theSubtopicIndex],
+                        ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex],
                         tasks: [
-                            ...updatedTopics[theTopicIndex].links[theSubtopicIndex].tasks.slice(0, theTaskIndex),
+                            ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks.slice(0, theTaskIndex),
                             {
-                                ...updatedTopics[theTopicIndex].links[theSubtopicIndex].tasks[theTaskIndex],
+                                ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks[theTaskIndex],
                                 progress: value
                             },
-                            ...updatedTopics[theTopicIndex].links[theSubtopicIndex].tasks.slice(theTaskIndex + 1)
+                            ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks.slice(theTaskIndex + 1)
                         ]
                     },
-                    ...updatedTopics[theTopicIndex].links.slice(theSubtopicIndex + 1)
+                    ...updatedChallenges[theChallengeIndex].links.slice(theSubtopicIndex + 1)
                 ]
             };
-            setMockData(updatedTopics);
+            setMockData(updatedChallenges);
         }
     };
 
@@ -324,18 +324,18 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         <>
             {/* <Stack>
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
-            Topic: {mockData[controlTopic]?.links[controlSubTopic]?.label}
+            Topic: {mockData[controlChallenge]?.links[controlSubTopic]?.label}
           </Text>
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Tasks:
-            {mockData[controlTopic]?.links[controlSubTopic]?.tasks?.map(
+            {mockData[controlChallenge]?.links[controlSubTopic]?.tasks?.map(
               (task, index) => (
                 <Text key={index}>{task.label}</Text>
               )
             )}
           </Text>
         </Stack> */}
-            {mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks?.length > 0 && (
+            {mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks?.length > 0 && (
                 <>
                     <Dialog
                         onClose={() => setOpened3(false)}
@@ -347,7 +347,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                     >
                         <Center>
                             <Text td="underline" size="sm" style={{ marginBottom: 10 }} weight={500}>
-                                {mockData[theTopicIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]?.label}
+                                {mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]?.label}
                             </Text>
                         </Center>
                         <Center>

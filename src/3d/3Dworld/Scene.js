@@ -85,21 +85,21 @@ export default function Scene(props) {
     const [subsubTasks4, setSubsubTasks4] = useState();
     const [subsubTasks5, setSubsubTasks5] = useState();
     const [subsubTasks, setSubsubTasks] = useState({});
-    const [topic1Tasks, setTopic1Tasks] = useState({});
-    const [topic2Tasks, setTopic2Tasks] = useState({});
-    const [topic3Tasks, setTopic3Tasks] = useState({});
-    const [topic4Tasks, setTopic4Tasks] = useState({});
-    const [topic5Tasks, setTopic5Tasks] = useState({});
+    const [challenge1Tasks, setChallenge1Tasks] = useState({});
+    const [challenge2Tasks, setChallenge2Tasks] = useState({});
+    const [challenge3Tasks, setChallenge3Tasks] = useState({});
+    const [challenge4Tasks, setChallenge4Tasks] = useState({});
+    const [challenge5Tasks, setChallenge5Tasks] = useState({});
 
-    const theTopicIndex = useStore((state) => state.topicIndex);
+    const theChallengeIndex = useStore((state) => state.challengeIndex);
     const theSubtopicIndex = useStore((state) => state.subtopicIndex);
     const theTaskIndex = useStore((state) => state.taskIndex);
-    const setTopicIndex = useStore((state) => state.setTopicIndex);
+    const setChallengeIndex = useStore((state) => state.setChallengeIndex);
     const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
     const setTaskIndex = useStore((state) => state.setTaskIndex);
 
-    const handleTaskIndexer = (topicIndex, subtopicIndex, taskIndex) => {
-        setTopicIndex(topicIndex);
+    const handleTaskIndexer = (challengeIndex, subtopicIndex, taskIndex) => {
+        setChallengeIndex(challengeIndex);
         setSubtopicIndex(subtopicIndex);
         setTaskIndex(taskIndex);
     };
@@ -112,30 +112,30 @@ export default function Scene(props) {
             props.mockdata.length === 4 ||
             props.mockdata.length === 5
         ) {
-            let topic1Tasks = {};
-            let topic2Tasks = {};
-            let topic3Tasks = {};
-            let topic4Tasks = {};
-            let topic5Tasks = {};
+            let challenge1Tasks = {};
+            let challenge2Tasks = {};
+            let challenge3Tasks = {};
+            let challenge4Tasks = {};
+            let challenge5Tasks = {};
             if (props.mockdata.length > 0) {
-                props.mockdata.map((topic, topicIndex) => {
-                    if (topicIndex === 0) {
-                        topic.links.map((subtopic, subtopicIndex) => {
+                props.mockdata.map((challenge, challengeIndex) => {
+                    if (challengeIndex === 0) {
+                        challenge.links.map((subtopic, subtopicIndex) => {
                             if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                topic1Tasks[subtopicIndex] = [];
+                                challenge1Tasks[subtopicIndex] = [];
                                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
                                         const task = subtopic.tasks[taskIndex];
                                         const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        topic1Tasks[subtopicIndex].push(
+                                        challenge1Tasks[subtopicIndex].push(
                                             <TaskComponent
                                                 key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
                                                 onClick={
-                                                    () => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)
-                                                    // console.log(topicIndex, subtopicIndex, taskIndex)
+                                                    () => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)
+                                                    // console.log(challengeIndex, subtopicIndex, taskIndex)
                                                 }
                                                 progress={task.progress}
                                             />
@@ -144,24 +144,24 @@ export default function Scene(props) {
                                 }
                             }
                         });
-                        setTopic1Tasks(topic1Tasks);
+                        setChallenge1Tasks(challenge1Tasks);
                     }
-                    if (topicIndex === 1) {
-                        topic.links.map((subtopic, subtopicIndex) => {
+                    if (challengeIndex === 1) {
+                        challenge.links.map((subtopic, subtopicIndex) => {
                             if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                topic2Tasks[subtopicIndex] = [];
+                                challenge2Tasks[subtopicIndex] = [];
                                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
                                         const task = subtopic.tasks[taskIndex];
                                         const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        topic2Tasks[subtopicIndex].push(
+                                        challenge2Tasks[subtopicIndex].push(
                                             <>
                                                 <TaskComponent
                                                     key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                                                     rotate={Math.PI}
-                                                    onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)}
+                                                    onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
                                                     progress={task.progress}
                                                 />
                                             </>
@@ -170,23 +170,23 @@ export default function Scene(props) {
                                 }
                             }
                         });
-                        setTopic2Tasks(topic2Tasks);
+                        setChallenge2Tasks(challenge2Tasks);
                     }
-                    if (topicIndex === 2) {
-                        topic.links.map((subtopic, subtopicIndex) => {
+                    if (challengeIndex === 2) {
+                        challenge.links.map((subtopic, subtopicIndex) => {
                             if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                topic3Tasks[subtopicIndex] = [];
+                                challenge3Tasks[subtopicIndex] = [];
                                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
                                         const task = subtopic.tasks[taskIndex];
                                         const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        topic3Tasks[subtopicIndex].push(
+                                        challenge3Tasks[subtopicIndex].push(
                                             <TaskComponent
                                                 key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
-                                                onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
@@ -194,54 +194,54 @@ export default function Scene(props) {
                                 }
                             }
                         });
-                        setTopic3Tasks(topic3Tasks);
+                        setChallenge3Tasks(challenge3Tasks);
                     }
-                    if (topicIndex === 3) {
-                        topic.links.map((subtopic, subtopicIndex) => {
+                    if (challengeIndex === 3) {
+                        challenge.links.map((subtopic, subtopicIndex) => {
                             if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                topic4Tasks[subtopicIndex] = [];
+                                challenge4Tasks[subtopicIndex] = [];
                                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
                                         const task = subtopic.tasks[taskIndex];
                                         const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        topic4Tasks[subtopicIndex].push(
+                                        challenge4Tasks[subtopicIndex].push(
                                             <TaskComponent
                                                 key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                                                 rotate={Math.PI}
-                                                onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
                                     }
                                 }
                             }
-                            setTopic4Tasks(topic4Tasks);
+                            setChallenge4Tasks(challenge4Tasks);
                         });
                     }
-                    if (topicIndex === 4) {
-                        topic.links.map((subtopic, subtopicIndex) => {
+                    if (challengeIndex === 4) {
+                        challenge.links.map((subtopic, subtopicIndex) => {
                             if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                topic5Tasks[subtopicIndex] = [];
+                                challenge5Tasks[subtopicIndex] = [];
                                 for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
                                         const task = subtopic.tasks[taskIndex];
                                         const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        topic5Tasks[subtopicIndex].push(
+                                        challenge5Tasks[subtopicIndex].push(
                                             <TaskComponent
                                                 key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
-                                                onClick={() => handleTaskIndexer(topicIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
                                     }
                                 }
                             }
-                            setTopic5Tasks(topic5Tasks);
+                            setChallenge5Tasks(challenge5Tasks);
                         });
                     }
                 });
@@ -779,25 +779,29 @@ export default function Scene(props) {
 
     useEffect(() => {
         let newText = [];
-        props.mockdata.forEach((topic, topicIndex) => {
+        props.mockdata.forEach((challenge, challengeIndex) => {
             newText.push(
                 <DreiText
-                    position={[topicIndex > 1 ? 4 * topicIndex - 3.1 : 4.2 * topicIndex - 3.1, -1.84, topicIndex % 2 === 0 ? -1 : 1]}
+                    position={[
+                        challengeIndex > 1 ? 4 * challengeIndex - 3.1 : 4.2 * challengeIndex - 3.1,
+                        -1.84,
+                        challengeIndex % 2 === 0 ? -1 : 1
+                    ]}
                     rotation={[-Math.PI / 2, 0, Math.PI / 2]}
                     color={'black'}
                     fontSize={0.3}
                 >
-                    {topic.label}
+                    {challenge.label}
                 </DreiText>
             );
-            topic.links.forEach((link, linkIndex) => {
+            challenge.links.forEach((link, linkIndex) => {
                 newText.push(
                     <DreiText
                         rotation-x={-Math.PI / 2}
                         position={[
-                            linkIndex % 2 === 0 ? 4 * topicIndex - 1.75 : 4 * topicIndex - 4.25,
+                            linkIndex % 2 === 0 ? 4 * challengeIndex - 1.75 : 4 * challengeIndex - 4.25,
                             -1.84,
-                            topicIndex % 2 === 0 ? -2.35 * linkIndex * 0.91 - 2.35 : 2.35 * linkIndex * 0.91 + 2.35
+                            challengeIndex % 2 === 0 ? -2.35 * linkIndex * 0.91 - 2.35 : 2.35 * linkIndex * 0.91 + 2.35
                         ]}
                         fontSize={0.3}
                     >
@@ -807,14 +811,20 @@ export default function Scene(props) {
                 link.tasks?.forEach((task, taskIndex) => {
                     newText.push(
                         linkIndex === 0 && (
-                            <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
+                            <group
+                                position={[
+                                    challengeIndex === 1 ? 3.7 : challengeIndex === 3 ? 10.5 : 0,
+                                    challengeIndex % 2 !== 0 ? -3.7 : 0,
+                                    0
+                                ]}
+                            >
                                 <group
-                                    position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
+                                    position={[challengeIndex % 2 === 0 ? challengeIndex * 4.1 : challengeIndex * 0.5, 0, 0]}
                                     // visible={topicIndex % 2 === 0}
-                                    rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
+                                    rotation={[0, challengeIndex % 2 !== 0 ? Math.PI : 0, challengeIndex % 2 !== 0 ? Math.PI : 0]}
                                 >
                                     <DreiText
-                                        rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
+                                        rotation-x={challengeIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
                                         position={[
                                             taskIndex === 4
                                                 ? -0.1
@@ -836,14 +846,20 @@ export default function Scene(props) {
                             </group>
                         ),
                         linkIndex === 1 && (
-                            <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
+                            <group
+                                position={[
+                                    challengeIndex === 1 ? 3.7 : challengeIndex === 3 ? 10.5 : 0,
+                                    challengeIndex % 2 !== 0 ? -3.7 : 0,
+                                    0
+                                ]}
+                            >
                                 <group
                                     // visible={topicIndex % 2 === 0}
-                                    position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
-                                    rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
+                                    position={[challengeIndex % 2 === 0 ? challengeIndex * 4.1 : challengeIndex * 0.5, 0, 0]}
+                                    rotation={[0, challengeIndex % 2 !== 0 ? Math.PI : 0, challengeIndex % 2 !== 0 ? Math.PI : 0]}
                                 >
                                     <DreiText
-                                        rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
+                                        rotation-x={challengeIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
                                         position={[
                                             taskIndex === 4
                                                 ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
@@ -865,14 +881,20 @@ export default function Scene(props) {
                             </group>
                         ),
                         linkIndex === 2 && (
-                            <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
+                            <group
+                                position={[
+                                    challengeIndex === 1 ? 3.7 : challengeIndex === 3 ? 10.5 : 0,
+                                    challengeIndex % 2 !== 0 ? -3.7 : 0,
+                                    0
+                                ]}
+                            >
                                 <group
                                     // visible={topicIndex % 2 === 0}
-                                    position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
-                                    rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
+                                    position={[challengeIndex % 2 === 0 ? challengeIndex * 4.1 : challengeIndex * 0.5, 0, 0]}
+                                    rotation={[0, challengeIndex % 2 !== 0 ? Math.PI : 0, challengeIndex % 2 !== 0 ? Math.PI : 0]}
                                 >
                                     <DreiText
-                                        rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
+                                        rotation-x={challengeIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
                                         position={[
                                             taskIndex === 4
                                                 ? -0.1
@@ -894,14 +916,20 @@ export default function Scene(props) {
                             </group>
                         ),
                         linkIndex === 3 && (
-                            <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
+                            <group
+                                position={[
+                                    challengeIndex === 1 ? 3.7 : challengeIndex === 3 ? 10.5 : 0,
+                                    challengeIndex % 2 !== 0 ? -3.7 : 0,
+                                    0
+                                ]}
+                            >
                                 <group
                                     // visible={topicIndex % 2 === 0}
-                                    position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
-                                    rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
+                                    position={[challengeIndex % 2 === 0 ? challengeIndex * 4.1 : challengeIndex * 0.5, 0, 0]}
+                                    rotation={[0, challengeIndex % 2 !== 0 ? Math.PI : 0, challengeIndex % 2 !== 0 ? Math.PI : 0]}
                                 >
                                     <DreiText
-                                        rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
+                                        rotation-x={challengeIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
                                         position={[
                                             taskIndex === 4
                                                 ? -3.8 * ((taskIndex - 2) / 3.7) - 4.2
@@ -923,14 +951,20 @@ export default function Scene(props) {
                             </group>
                         ),
                         linkIndex === 4 && (
-                            <group position={[topicIndex === 1 ? 3.7 : topicIndex === 3 ? 10.5 : 0, topicIndex % 2 !== 0 ? -3.7 : 0, 0]}>
+                            <group
+                                position={[
+                                    challengeIndex === 1 ? 3.7 : challengeIndex === 3 ? 10.5 : 0,
+                                    challengeIndex % 2 !== 0 ? -3.7 : 0,
+                                    0
+                                ]}
+                            >
                                 <group
                                     // visible={topicIndex % 2 === 0}
-                                    position={[topicIndex % 2 === 0 ? topicIndex * 4.1 : topicIndex * 0.5, 0, 0]}
-                                    rotation={[0, topicIndex % 2 !== 0 ? Math.PI : 0, topicIndex % 2 !== 0 ? Math.PI : 0]}
+                                    position={[challengeIndex % 2 === 0 ? challengeIndex * 4.1 : challengeIndex * 0.5, 0, 0]}
+                                    rotation={[0, challengeIndex % 2 !== 0 ? Math.PI : 0, challengeIndex % 2 !== 0 ? Math.PI : 0]}
                                 >
                                     <DreiText
-                                        rotation-x={topicIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
+                                        rotation-x={challengeIndex % 2 !== 0 ? Math.PI / 2 : -Math.PI / 2}
                                         position={[
                                             taskIndex === 4
                                                 ? -0.1
@@ -954,12 +988,12 @@ export default function Scene(props) {
                     );
                 });
             });
-            topic.tasks.forEach((task, taskIndex) => {
+            challenge.tasks.forEach((task, taskIndex) => {
                 newText.push(
                     <DreiText
                         rotation={[-Math.PI / 2, 0, Math.PI / 2]}
                         position={[
-                            taskIndex < 2 ? taskIndex * 2 - 4 * (-topicIndex + 1) : (taskIndex - 2) * 2 - 4 * (-topicIndex + 1),
+                            taskIndex < 2 ? taskIndex * 2 - 4 * (-challengeIndex + 1) : (taskIndex - 2) * 2 - 4 * (-challengeIndex + 1),
                             -1.84,
                             taskIndex < 2 ? -0.55 : 0.55
                         ]}
@@ -994,18 +1028,18 @@ export default function Scene(props) {
               (subtopicIndex) => subsubTasks[subtopicIndex]
             )}
           </group> */}
-                <group scale-y={5}>{Object.keys(topic1Tasks).map((subtopicIndex) => topic1Tasks[subtopicIndex])}</group>
+                <group scale-y={5}>{Object.keys(challenge1Tasks).map((subtopicIndex) => challenge1Tasks[subtopicIndex])}</group>
                 <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
-                    {Object.keys(topic2Tasks).map((subtopicIndex) => topic2Tasks[subtopicIndex])}
+                    {Object.keys(challenge2Tasks).map((subtopicIndex) => challenge2Tasks[subtopicIndex])}
                 </group>
                 <group scale-y={5} position={[27, 0, 0]}>
-                    {Object.keys(topic3Tasks).map((subtopicIndex) => topic3Tasks[subtopicIndex])}
+                    {Object.keys(challenge3Tasks).map((subtopicIndex) => challenge3Tasks[subtopicIndex])}
                 </group>
                 <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[40, 0, 0]}>
-                    {Object.keys(topic4Tasks).map((subtopicIndex) => topic4Tasks[subtopicIndex])}
+                    {Object.keys(challenge4Tasks).map((subtopicIndex) => challenge4Tasks[subtopicIndex])}
                 </group>
                 <group scale-y={5} position={[54, 0, 0]}>
-                    {Object.keys(topic5Tasks).map((subtopicIndex) => topic5Tasks[subtopicIndex])}
+                    {Object.keys(challenge5Tasks).map((subtopicIndex) => challenge5Tasks[subtopicIndex])}
                 </group>
             </group>
             {/* {waterfalls} */}

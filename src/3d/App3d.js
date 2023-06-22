@@ -56,7 +56,7 @@ export default function App3d() {
     // const [mockdata, setMockdata] = useState([
     //   // { label: "Overview", icon: GrOverview },
     //   // {
-    //   //   label: "Topic 1",
+    //   //   label: "Challenge 1",
     //   //   icon: GiWaterfall,
     //   //   initiallyOpened: false,
     //   //   links: [
@@ -83,16 +83,16 @@ export default function App3d() {
     }, [mockdata]);
 
     const [opened, setOpened] = useState(false);
-    const [topicName, setTopicName] = useState('');
+    const [challengeName, setChallengeName] = useState('');
 
-    const handleAddTopic = () => {
+    const handleAddChallenge = () => {
         setOpened(false);
 
-        if (!topicName) return;
+        if (!challengeName) return;
 
-        const newTopic = {
+        const newChallenge = {
             index: mockdata.length,
-            label: topicName,
+            label: challengeName,
             icon: GiWaterfall,
             initiallyOpened: false,
             links: [],
@@ -100,8 +100,8 @@ export default function App3d() {
             subtasks: [],
             status: 'Initialized'
         };
-        setMockData([...mockdata, newTopic]);
-        setTopicName('');
+        setMockData([...mockdata, newChallenge]);
+        setChallengeName('');
     };
     const [navIndex, setNavIndex] = useState(0);
 
@@ -128,16 +128,16 @@ export default function App3d() {
                 {' '}
                 <Dialog opened={opened} withCloseButton onClose={() => setOpened(false)} size="lg" radius="md">
                     <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
-                        Add Topic
+                        Add Challenge
                     </Text>
                     <Group align="flex-end">
                         <TextInput
-                            placeholder="New Topic"
+                            placeholder="New Challenge"
                             style={{ flex: 1 }}
-                            onChange={(e) => setTopicName(e.target.value)}
-                            value={topicName}
+                            onChange={(e) => setChallengeName(e.target.value)}
+                            value={challengeName}
                         />
-                        <Button variant="light" color="violet" onClick={handleAddTopic}>
+                        <Button variant="light" color="violet" onClick={handleAddChallenge}>
                             Submit
                         </Button>
                     </Group>
@@ -165,7 +165,7 @@ export default function App3d() {
                                 rightIcon={<BsPlusSquareDotted color="violet" />}
                                 disabled={mockdata.length >= 5}
                             >
-                                Add Topic
+                                Add Challenge
                             </Button>
                         </Center>
                     </Navbar.Section>
