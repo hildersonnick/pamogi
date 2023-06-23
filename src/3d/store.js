@@ -5,8 +5,8 @@ const useStore = create((set) => ({
     setMockData: (data) => set({ mockData: data }),
     challengeIndex: 0,
     setChallengeIndex: (index) => set({ challengeIndex: index }),
-    subtopicIndex: 0,
-    setSubtopicIndex: (index) => set({ subtopicIndex: index }),
+    solutionIndex: 0,
+    setSolutionIndex: (index) => set({ solutionIndex: index }),
     taskIndex: 0,
     setTaskIndex: (index) => set({ taskIndex: index })
 }));

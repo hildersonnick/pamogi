@@ -94,21 +94,21 @@ export default function Departments(props) {
                         key: challenge.id,
                         label: challenge.label,
                         url: '',
-                        subtopics: [],
+                        solutions: [],
                         synced: challenge.synced,
                         approved: challenge.approved
                     }));
 
-                const subtopics = filteredItems.filter((item) => item.type === 'subtopic');
+                const solutions = filteredItems.filter((item) => item.type === 'solutions');
                 const subsubtopics = filteredItems.filter((item) => item.type === 'subsubtopic');
 
-                for (const subtopic of subtopics) {
-                    const parentChallenge = challenges.find((challenge) => challenge.key === subtopic.parentItemId[0]);
+                for (const solution of solutions) {
+                    const parentChallenge = challenges.find((challenge) => challenge.key === solution.parentItemId[0]);
                     if (parentChallenge) {
-                        parentChallenge.subtopics.push({
-                            key: subtopic.id,
-                            label: subtopic.label,
-                            approved: subtopic.approved,
+                        parentChallenge.solutions.push({
+                            key: solution.id,
+                            label: solution.label,
+                            approved: solution.approved,
                             url: '',
                             subsubtopics: []
                         });
@@ -117,9 +117,9 @@ export default function Departments(props) {
 
                 for (const subsubtopic of subsubtopics) {
                     for (const challenge of challenges) {
-                        const parentSubtopic = challenge.subtopics.find((subtopic) => subtopic.key === subsubtopic.parentItemId[0]);
-                        if (parentSubtopic) {
-                            parentSubtopic.subsubtopics.push({
+                        const parentSolution = challenge.solutions.find((solution) => solution.key === subsubtopic.parentItemId[0]);
+                        if (parentSolution) {
+                            parentSolution.subsubtopics.push({
                                 key: subsubtopic.id,
                                 label: subsubtopic.label,
                                 approved: subsubtopic.approved,
@@ -175,10 +175,10 @@ export default function Departments(props) {
         await pb.collection('items').delete(itemKey);
 
         if (level === 0) {
-            // If the item is a topic, delete all its subtopics and subsubtopics
-            const subtopics = challenge.find((challenge) => challenge.key === itemKey)?.subtopics || [];
-            for (const subtopic of subtopics) {
-                await deleteItemAndChildren(subtopic.key, 1);
+            // If the item is a topic, delete all its solutions and subsubtopics
+            const solutions = challenge.find((challenge) => challenge.key === itemKey)?.subtopics || [];
+            for (const solution of solutions) {
+                await deleteItemAndChildren(solution.key, 1);
             }
         } else if (level === 1) {
             // If the item is a subtopic, delete all its subsubtopics
@@ -203,7 +203,7 @@ export default function Departments(props) {
             // We're on the subsubtopic level, delete the subsubtopic from its parent subtopic
             const newChallenges = challenge.map((challenge) => ({
                 ...challenge,
-                subtopics: challenge.subtopics.map((subtopic) => ({
+                solutions: challenge.subtopics.map((subtopic) => ({
                     ...subtopic,
                     subsubtopics: subtopic.subsubtopics.filter((subsubtopic) => extractKey(subsubtopic.key) !== itemKeyToDelete)
                 }))
@@ -213,7 +213,7 @@ export default function Departments(props) {
             // We're on the subtopic level, delete only the subtopic and its children (subsubtopics)
             const newChallenges = challenge.map((challenge) => ({
                 ...challenge,
-                subtopics: challenge.subtopics.filter((subtopic) => extractKey(subtopic.key) !== itemKeyToDelete)
+                solutions: challenge.subtopics.filter((subtopic) => extractKey(subtopic.key) !== itemKeyToDelete)
             }));
             setChallenge(newChallenges);
         } else {
@@ -329,7 +329,7 @@ export default function Departments(props) {
         };
 
         if (itemType === 'challenge') {
-            newItem.subtopics = [];
+            newItem.solutions = [];
             newChallenges = [...challenge, newItem];
         } else if (itemType === 'subtopic') {
             const parentChallenge = newChallenges.find((t) => t.key === editItem.key.split('/')[0]);

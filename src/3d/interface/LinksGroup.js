@@ -69,7 +69,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         }
     }, [tasks, links]);
 
-    const items = (hasLinks ? links : []).map((link, subtopicIndex) => (
+    const items = (hasLinks ? links : []).map((link, solutionIndex) => (
         <>
             <Group position="apart">
                 <Text
@@ -77,22 +77,22 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                     className={classes.link}
                     href={link.link}
                     key={link.label}
-                    // onClick={(event) => handleLabelClick(event, index, subtopicIndex)}
+                    // onClick={(event) => handleLabelClick(event, index, solutionIndex)}
                 >
                     {link.label}
                 </Text>
 
                 <Button
                     mr={10}
-                    disabled={mockData[index]?.links[subtopicIndex]?.tasks?.length === 5}
+                    disabled={mockData[index]?.links[solutionIndex]?.tasks?.length === 5}
                     // disabled
-                    onClick={(e) => handleSubsubTask(e, index, subtopicIndex)}
+                    onClick={(e) => handleSubsubTask(e, index, solutionIndex)}
                     size="xs"
                     variant="outline"
                     color="teal"
                     compact
                 >
-                    Add Task ({links[subtopicIndex].tasks === undefined ? 0 : links[subtopicIndex].tasks?.length})
+                    Add Task ({links[solutionIndex].tasks === undefined ? 0 : links[solutionIndex].tasks?.length})
                 </Button>
             </Group>
         </>
@@ -124,15 +124,15 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         }
     };
     const [subIndex, setSubIndex] = useState(null);
-    const handleSubsubTask = (event, challengeIndex, subtopicIndex) => {
+    const handleSubsubTask = (event, challengeIndex, solutionIndex) => {
         event.stopPropagation();
         setDialogState('subsubtask');
         setOpened2(true);
         setParentIndex(challengeIndex);
-        setSubIndex(subtopicIndex);
+        setSubIndex(solutionIndex);
     };
 
-    const handleAddSubtopic = () => {
+    const handleAddSolution = () => {
         const updatedChallenges = [...mockData];
         updatedChallenges[parentIndex] = {
             ...updatedChallenges[parentIndex],
@@ -142,8 +142,8 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         setTaskName('');
         setOpened2(false);
     };
-    const handleSubtopic = (index) => {
-        setDialogState('subtopic');
+    const handleChallenge = (index) => {
+        setDialogState('challenge');
         setOpened2(true);
         setParentIndex(index);
     };
@@ -201,7 +201,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     const [taskName, setTaskName] = useState('');
 
     const [controlChallenge, setControlChallenge] = useState();
-    const [controlSubTopic, setControlSubTopic] = useState();
+    const [controlSolution, setControlSolution] = useState();
 
     // const handleLabelClick = (event, topicIndex, subtopicIndex) => {
     //   event.preventDefault();
@@ -219,7 +219,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
     const [value, setValue] = useState('initialized');
     const [opened3, setOpened3] = useState(false);
 
-    const rows = mockData[controlChallenge]?.links[controlSubTopic]?.tasks?.map(
+    const rows = mockData[controlChallenge]?.links[controlSolution]?.tasks?.map(
         (task) => (
             // console.log(link)
             // link.tasks?.map((task) => (
@@ -269,20 +269,20 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         // ))
     );
     const theChallengeIndex = useStore((state) => state.challengeIndex);
-    const theSubtopicIndex = useStore((state) => state.subtopicIndex);
+    const theSolutionIndex = useStore((state) => state.solutionIndex);
     const theTaskIndex = useStore((state) => state.taskIndex);
     const setChallengeIndex = useStore((state) => state.setChallengeIndex);
-    const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
+    const setSolutionIndex = useStore((state) => state.setSolutionIndex);
     const setTaskIndex = useStore((state) => state.setTaskIndex);
 
     // const [theChallengeIndex] = useStore((state) => state.topicIndex);
-    // const [theSubtopicIndex] = useStore((state) => state.subtopicIndex);
+    // const [theSolutionIndex] = useStore((state) => state.subtopicIndex);
 
     useEffect(() => {
-        // console.log(theChallengeIndex, theSubtopicIndex, theTaskIndex);
+        // console.log(theChallengeIndex, theSolutionIndex, theTaskIndex);
         setOpened3(true);
-        console.log(mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]);
-    }, [theChallengeIndex, theSubtopicIndex, theTaskIndex]);
+        console.log(mockData[theChallengeIndex]?.links[theSolutionIndex]?.tasks[theTaskIndex]);
+    }, [theChallengeIndex, theSolutionIndex, theTaskIndex]);
 
     const [segmentedValue, setSegmentedValue] = useState('initialized');
     const setSegmentedValueTask = (value) => {
@@ -293,27 +293,27 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
             mockData.length > 0 &&
             mockData[theChallengeIndex] &&
             mockData[theChallengeIndex].links &&
-            mockData[theChallengeIndex].links[theSubtopicIndex] &&
-            mockData[theChallengeIndex].links[theSubtopicIndex].tasks &&
-            mockData[theChallengeIndex].links[theSubtopicIndex].tasks.length > 0
+            mockData[theChallengeIndex].links[theSolutionIndex] &&
+            mockData[theChallengeIndex].links[theSolutionIndex].tasks &&
+            mockData[theChallengeIndex].links[theSolutionIndex].tasks.length > 0
         ) {
             const updatedChallenges = [...mockData];
             updatedChallenges[theChallengeIndex] = {
                 ...updatedChallenges[theChallengeIndex],
                 links: [
-                    ...updatedChallenges[theChallengeIndex].links.slice(0, theSubtopicIndex),
+                    ...updatedChallenges[theChallengeIndex].links.slice(0, theSolutionIndex),
                     {
-                        ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex],
+                        ...updatedChallenges[theChallengeIndex].links[theSolutionIndex],
                         tasks: [
-                            ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks.slice(0, theTaskIndex),
+                            ...updatedChallenges[theChallengeIndex].links[theSolutionIndex].tasks.slice(0, theTaskIndex),
                             {
-                                ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks[theTaskIndex],
+                                ...updatedChallenges[theChallengeIndex].links[theSolutionIndex].tasks[theTaskIndex],
                                 progress: value
                             },
-                            ...updatedChallenges[theChallengeIndex].links[theSubtopicIndex].tasks.slice(theTaskIndex + 1)
+                            ...updatedChallenges[theChallengeIndex].links[theSolutionIndex].tasks.slice(theTaskIndex + 1)
                         ]
                     },
-                    ...updatedChallenges[theChallengeIndex].links.slice(theSubtopicIndex + 1)
+                    ...updatedChallenges[theChallengeIndex].links.slice(theSolutionIndex + 1)
                 ]
             };
             setMockData(updatedChallenges);
@@ -324,18 +324,18 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
         <>
             {/* <Stack>
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
-            Topic: {mockData[controlChallenge]?.links[controlSubTopic]?.label}
+            Topic: {mockData[controlChallenge]?.links[controlSolution]?.label}
           </Text>
           <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
             Tasks:
-            {mockData[controlChallenge]?.links[controlSubTopic]?.tasks?.map(
+            {mockData[controlChallenge]?.links[controlSolution]?.tasks?.map(
               (task, index) => (
                 <Text key={index}>{task.label}</Text>
               )
             )}
           </Text>
         </Stack> */}
-            {mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks?.length > 0 && (
+            {mockData[theChallengeIndex]?.links[theSolutionIndex]?.tasks?.length > 0 && (
                 <>
                     <Dialog
                         onClose={() => setOpened3(false)}
@@ -347,7 +347,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                     >
                         <Center>
                             <Text td="underline" size="sm" style={{ marginBottom: 10 }} weight={500}>
-                                {mockData[theChallengeIndex]?.links[theSubtopicIndex]?.tasks[theTaskIndex]?.label}
+                                {mockData[theChallengeIndex]?.links[theSolutionIndex]?.tasks[theTaskIndex]?.label}
                             </Text>
                         </Center>
                         <Center>
@@ -373,7 +373,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                 )}
                 {dialogState === 'subtopic' && (
                     <Text size="sm" style={{ marginBottom: 10 }} weight={500}>
-                        Add Subtopic to {label}
+                        Add Challenge to {label}
                     </Text>
                 )}
                 {dialogState === 'subsubtask' && (
@@ -413,7 +413,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                         </Button>
                     )}
                     {dialogState === 'subtopic' && (
-                        <Button variant="light" color="violet" onClick={handleAddSubtopic}>
+                        <Button variant="light" color="violet" onClick={handleAddSolution}>
                             Submit
                         </Button>
                     )}
@@ -459,12 +459,12 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links, index, t
                             disabled={maxLinks}
                             mt={20}
                             mb={20}
-                            onClick={() => handleSubtopic(index)}
+                            onClick={() => handleChallenge(index)}
                             variant="light"
                             color="violet"
                             rightIcon={<BsPlusSquareDotted color="violet" />}
                         >
-                            Add Subtopic
+                            Add Challenge
                         </Button>
                     </Center>
                     {/* </Stack> */}

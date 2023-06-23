@@ -92,15 +92,15 @@ export default function Scene(props) {
     const [challenge5Tasks, setChallenge5Tasks] = useState({});
 
     const theChallengeIndex = useStore((state) => state.challengeIndex);
-    const theSubtopicIndex = useStore((state) => state.subtopicIndex);
+    const theSolutionIndex = useStore((state) => state.solutionIndex);
     const theTaskIndex = useStore((state) => state.taskIndex);
     const setChallengeIndex = useStore((state) => state.setChallengeIndex);
-    const setSubtopicIndex = useStore((state) => state.setSubtopicIndex);
+    const setSolutionIndex = useStore((state) => state.setSolutionIndex);
     const setTaskIndex = useStore((state) => state.setTaskIndex);
 
-    const handleTaskIndexer = (challengeIndex, subtopicIndex, taskIndex) => {
+    const handleTaskIndexer = (challengeIndex, solutionIndex, taskIndex) => {
         setChallengeIndex(challengeIndex);
-        setSubtopicIndex(subtopicIndex);
+        setSolutionIndex(solutionIndex);
         setTaskIndex(taskIndex);
     };
 
@@ -120,22 +120,22 @@ export default function Scene(props) {
             if (props.mockdata.length > 0) {
                 props.mockdata.map((challenge, challengeIndex) => {
                     if (challengeIndex === 0) {
-                        challenge.links.map((subtopic, subtopicIndex) => {
-                            if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                challenge1Tasks[subtopicIndex] = [];
-                                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
+                        challenge.links.map((challenge, challengeIndex) => {
+                            if (challenge.tasks && Array.isArray(challenge.tasks)) {
+                                challenge1Tasks[challengeIndex] = [];
+                                for (let taskIndex = 0; taskIndex < challenge.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
-                                        const task = subtopic.tasks[taskIndex];
-                                        const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
+                                        const task = challenge.tasks[taskIndex];
+                                        const TaskComponent = require(`../newerModels/Task${1}${challengeIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        challenge1Tasks[subtopicIndex].push(
+                                        challenge1Tasks[challengeIndex].push(
                                             <TaskComponent
-                                                key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                                                key={`Task${1}${challengeIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
                                                 onClick={
-                                                    () => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)
-                                                    // console.log(challengeIndex, subtopicIndex, taskIndex)
+                                                    () => handleTaskIndexer(challengeIndex, challengeIndex, taskIndex)
+                                                    // console.log(challengeIndex, challengeIndex, taskIndex)
                                                 }
                                                 progress={task.progress}
                                             />
@@ -147,21 +147,21 @@ export default function Scene(props) {
                         setChallenge1Tasks(challenge1Tasks);
                     }
                     if (challengeIndex === 1) {
-                        challenge.links.map((subtopic, subtopicIndex) => {
-                            if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                challenge2Tasks[subtopicIndex] = [];
-                                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
+                        challenge.links.map((challenge, challengeIndex) => {
+                            if (challenge.tasks && Array.isArray(challenge.tasks)) {
+                                challenge2Tasks[challengeIndex] = [];
+                                for (let taskIndex = 0; taskIndex < challenge.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
-                                        const task = subtopic.tasks[taskIndex];
-                                        const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
+                                        const task = challenge.tasks[taskIndex];
+                                        const TaskComponent = require(`../newerModels/Task${1}${challengeIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        challenge2Tasks[subtopicIndex].push(
+                                        challenge2Tasks[challengeIndex].push(
                                             <>
                                                 <TaskComponent
-                                                    key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                                                    key={`Task${1}${challengeIndex + 1}${taskIndex + 1}`}
                                                     rotate={Math.PI}
-                                                    onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
+                                                    onClick={() => handleTaskIndexer(challengeIndex, challengeIndex, taskIndex)}
                                                     progress={task.progress}
                                                 />
                                             </>
@@ -173,20 +173,20 @@ export default function Scene(props) {
                         setChallenge2Tasks(challenge2Tasks);
                     }
                     if (challengeIndex === 2) {
-                        challenge.links.map((subtopic, subtopicIndex) => {
-                            if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                challenge3Tasks[subtopicIndex] = [];
-                                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
+                        challenge.links.map((solution, solutionIndex) => {
+                            if (solution.tasks && Array.isArray(solution.tasks)) {
+                                challenge3Tasks[solutionIndex] = [];
+                                for (let taskIndex = 0; taskIndex < solution.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
-                                        const task = subtopic.tasks[taskIndex];
-                                        const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
+                                        const task = solution.tasks[taskIndex];
+                                        const TaskComponent = require(`../newerModels/Task${1}${solutionIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        challenge3Tasks[subtopicIndex].push(
+                                        challenge3Tasks[solutionIndex].push(
                                             <TaskComponent
-                                                key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                                                key={`Task${1}${solutionIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
-                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, solutionIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
@@ -197,20 +197,20 @@ export default function Scene(props) {
                         setChallenge3Tasks(challenge3Tasks);
                     }
                     if (challengeIndex === 3) {
-                        challenge.links.map((subtopic, subtopicIndex) => {
-                            if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                challenge4Tasks[subtopicIndex] = [];
-                                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
+                        challenge.links.map((solution, solutionIndex) => {
+                            if (solution.tasks && Array.isArray(solution.tasks)) {
+                                challenge4Tasks[solutionIndex] = [];
+                                for (let taskIndex = 0; taskIndex < solution.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
-                                        const task = subtopic.tasks[taskIndex];
-                                        const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
+                                        const task = solution.tasks[taskIndex];
+                                        const TaskComponent = require(`../newerModels/Task${1}${solutionIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        challenge4Tasks[subtopicIndex].push(
+                                        challenge4Tasks[solutionIndex].push(
                                             <TaskComponent
-                                                key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                                                key={`Task${1}${solutionIndex + 1}${taskIndex + 1}`}
                                                 rotate={Math.PI}
-                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, solutionIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
@@ -221,20 +221,20 @@ export default function Scene(props) {
                         });
                     }
                     if (challengeIndex === 4) {
-                        challenge.links.map((subtopic, subtopicIndex) => {
-                            if (subtopic.tasks && Array.isArray(subtopic.tasks)) {
-                                challenge5Tasks[subtopicIndex] = [];
-                                for (let taskIndex = 0; taskIndex < subtopic.tasks.length; taskIndex++) {
+                        challenge.links.map((solution, solutionIndex) => {
+                            if (solution.tasks && Array.isArray(solution.tasks)) {
+                                challenge5Tasks[solutionIndex] = [];
+                                for (let taskIndex = 0; taskIndex < solution.tasks.length; taskIndex++) {
                                     if (taskIndex < 5) {
-                                        const task = subtopic.tasks[taskIndex];
-                                        const TaskComponent = require(`../newerModels/Task${1}${subtopicIndex + 1}${
+                                        const task = solution.tasks[taskIndex];
+                                        const TaskComponent = require(`../newerModels/Task${1}${solutionIndex + 1}${
                                             taskIndex + 1
                                         }`).default;
-                                        challenge5Tasks[subtopicIndex].push(
+                                        challenge5Tasks[solutionIndex].push(
                                             <TaskComponent
-                                                key={`Task${1}${subtopicIndex + 1}${taskIndex + 1}`}
+                                                key={`Task${1}${solutionIndex + 1}${taskIndex + 1}`}
                                                 rotate={0}
-                                                onClick={() => handleTaskIndexer(challengeIndex, subtopicIndex, taskIndex)}
+                                                onClick={() => handleTaskIndexer(challengeIndex, solutionIndex, taskIndex)}
                                                 progress={task.progress}
                                             />
                                         );
@@ -1028,18 +1028,18 @@ export default function Scene(props) {
               (subtopicIndex) => subsubTasks[subtopicIndex]
             )}
           </group> */}
-                <group scale-y={5}>{Object.keys(challenge1Tasks).map((subtopicIndex) => challenge1Tasks[subtopicIndex])}</group>
+                <group scale-y={5}>{Object.keys(challenge1Tasks).map((solutionIndex) => challenge1Tasks[solutionIndex])}</group>
                 <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[14, 0, 0]}>
-                    {Object.keys(challenge2Tasks).map((subtopicIndex) => challenge2Tasks[subtopicIndex])}
+                    {Object.keys(challenge2Tasks).map((solutionIndex) => challenge2Tasks[solutionIndex])}
                 </group>
                 <group scale-y={5} position={[27, 0, 0]}>
-                    {Object.keys(challenge3Tasks).map((subtopicIndex) => challenge3Tasks[subtopicIndex])}
+                    {Object.keys(challenge3Tasks).map((solutionIndex) => challenge3Tasks[solutionIndex])}
                 </group>
                 <group scale-y={5} rotation={[Math.PI, 0, 0]} position={[40, 0, 0]}>
-                    {Object.keys(challenge4Tasks).map((subtopicIndex) => challenge4Tasks[subtopicIndex])}
+                    {Object.keys(challenge4Tasks).map((solutionIndex) => challenge4Tasks[solutionIndex])}
                 </group>
                 <group scale-y={5} position={[54, 0, 0]}>
-                    {Object.keys(challenge5Tasks).map((subtopicIndex) => challenge5Tasks[subtopicIndex])}
+                    {Object.keys(challenge5Tasks).map((solutionIndex) => challenge5Tasks[solutionIndex])}
                 </group>
             </group>
             {/* {waterfalls} */}
